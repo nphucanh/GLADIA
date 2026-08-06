@@ -2,12 +2,14 @@ import { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useActiveSection } from '../context/ActiveSectionContext';
 
+// `slide`: id của section tương ứng trên Trang chủ (xem SLIDE_IDS trong Home.tsx).
+// Thanh dọc sẽ cuộn mượt tới section đó thay vì điều hướng sang trang khác.
 const NAV_ITEMS = [
-  { to: '/', label: 'Trang chủ' },
-  { to: '/gioi-thieu', label: 'Giới thiệu' },
-  { to: '/du-an', label: 'Dự án' },
-  { to: '/tien-ich', label: 'Tiện ích' },
-  { to: '/lien-he', label: 'Liên hệ' },
+  { to: '/', label: 'Trang chủ', slide: 'slide-hero' },
+  { to: '/gioi-thieu', label: 'Giới thiệu', slide: 'slide-about' },
+  { to: '/du-an', label: 'Dự án', slide: 'slide-featured' },
+  { to: '/tien-ich', label: 'Tiện ích', slide: 'slide-amenities' },
+  { to: '/lien-he', label: 'Liên hệ', slide: 'slide-contact' },
 ];
 
 interface SidebarProps {
@@ -16,9 +18,12 @@ interface SidebarProps {
 }
 
 /**
- * Sidebar dọc bên trái, cố định — lấy cảm hứng từ nav icon+label của thegio.vn.
- * Khi đang ở Trang chủ, mục đang được tô sáng sẽ "bám theo" phần đang cuộn tới
- * (vd cuộn tới phần Dự án nổi bật thì mục "Dự án" sáng lên) thay vì luôn cố định ở "Trang chủ".
+ * Hai vai trò tách biệt:
+ * - Thanh dọc luôn hiện (rail, `open === false`): CHỈ cuộn mượt giữa các section của Trang chủ,
+ *   không bao giờ điều hướng sang trang khác — kể cả khi đang xem trang khác, bấm vào rail cũng
+ *   không rời trang đó.
+ * - Menu mở toàn màn hình (`open === true`, bật bằng nút hamburger trên topbar): đây mới là nơi
+ *   điều hướng thật sự sang các trang khác trong site.
  */
 export default function Sidebar({ open, onClose }: SidebarProps) {
   const location = useLocation();
@@ -31,26 +36,45 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
 
   const currentActive = location.pathname === '/' && activeSection ? activeSection : location.pathname;
 
+  function scrollToSlide(slideId?: string) {
+    if (!slideId) return;
+    document.getElementById(slideId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   return (
     <>
       <aside className={`sidebar ${open ? 'open' : ''}`}>
         <div className="sidebar-rule" />
         <nav className="sidebar-nav">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={`sidebar-link ${currentActive === item.to ? 'active' : ''}`}
-            >
+          {NAV_ITEMS.map((item) => {
+            const icon = (
               <span className="sidebar-ring" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none">
                   <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.3" />
                   <circle className="dot" cx="12" cy="12" r="3.6" stroke="currentColor" strokeWidth="1.3" />
                 </svg>
               </span>
-              {item.label}
-            </Link>
-          ))}
+            );
+            const className = `sidebar-link ${currentActive === item.to ? 'active' : ''}`;
+
+            // Menu mở (hamburger) → điều hướng thật sự sang trang khác.
+            if (open) {
+              return (
+                <Link key={item.to} to={item.to} className={className}>
+                  {icon}
+                  {item.label}
+                </Link>
+              );
+            }
+
+            // Thanh dọc cố định → chỉ cuộn section trong Trang chủ, không điều hướng.
+            return (
+              <button key={item.to} type="button" className={className} onClick={() => scrollToSlide(item.slide)}>
+                {icon}
+                {item.label}
+              </button>
+            );
+          })}
         </nav>
         <div className="sidebar-rule sidebar-rule-end" />
       </aside>

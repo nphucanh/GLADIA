@@ -141,15 +141,19 @@ header.topbar{
 .sidebar-rule{width:1px;height:40px;background:rgba(255,255,255,.35);margin-bottom:34px;flex-shrink:0;}
 .sidebar-rule-end{margin-bottom:0;margin-top:auto;}
 .sidebar-nav{display:flex;flex-direction:column;gap:30px;}
-.sidebar-nav a{
+.sidebar-nav a, .sidebar-nav button{
   display:flex;align-items:center;gap:14px;
   font-size:.8rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
   color:rgba(255,253,248,.75);
   text-shadow:0 1px 6px rgba(0,0,0,.7);
   transition:color .2s ease;
 }
-.sidebar-nav a:hover{color:var(--white);}
-.sidebar-nav a.active{color:var(--white);}
+.sidebar-nav button{
+  background:none;border:none;padding:0;margin:0;
+  width:100%;text-align:left;font-family:inherit;
+}
+.sidebar-nav a:hover, .sidebar-nav button:hover{color:var(--white);}
+.sidebar-nav a.active, .sidebar-nav button.active{color:var(--white);}
 .sidebar-ring{
   width:19px;height:19px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
@@ -159,9 +163,9 @@ header.topbar{
 }
 .sidebar-ring svg{width:100%;height:100%;}
 .sidebar-ring .dot{fill:none;transition:fill .2s ease;}
-.sidebar-nav a:hover .sidebar-ring{color:rgba(255,253,248,.8);}
-.sidebar-nav a.active .sidebar-ring{color:var(--gold);}
-.sidebar-nav a.active .sidebar-ring .dot{fill:var(--gold);}
+.sidebar-nav a:hover .sidebar-ring, .sidebar-nav button:hover .sidebar-ring{color:rgba(255,253,248,.8);}
+.sidebar-nav a.active .sidebar-ring, .sidebar-nav button.active .sidebar-ring{color:var(--gold);}
+.sidebar-nav a.active .sidebar-ring .dot, .sidebar-nav button.active .sidebar-ring .dot{fill:var(--gold);}
 .sidebar-scrim{
   display:block;position:fixed;inset:0;z-index:95;background:rgba(10,9,7,.45);
   animation:fadeIn .25s ease;
@@ -285,7 +289,7 @@ html.nav-open, html.nav-open body{
   }
 }
 .hero h1{font-size:clamp(2.4rem,5vw,4rem);color:var(--white);line-height:1.05;}
-.hero h1 .line{display:block;overflow:hidden;}
+.hero h1 .line{display:block;}
 .hero h1 .line span{display:inline-block;animation:riseUp .8s cubic-bezier(.2,.8,.2,1) both;}
 .hero h1 .line:nth-child(1) span{animation-delay:.05s;}
 .hero h1 .line:nth-child(2) span{animation-delay:.2s;}
@@ -299,7 +303,6 @@ html.nav-open, html.nav-open body{
 .hero-logotype{opacity:0;animation:fadeUp 1s ease .3s forwards;}
 .hero p.lead{font-size:1.1rem;color:#e6e2d2;max-width:520px;margin-top:1.2em;}
 
-/* Cuộn — chữ dọc góc dưới trái, giống thegio.vn */
 .scroll-cue{
   position:absolute;left:32px;bottom:32px;z-index:5;
   display:flex;flex-direction:column;align-items:center;gap:16px;
@@ -422,6 +425,26 @@ html.nav-open, html.nav-open body{
 .amenity-card .ic svg{width:24px;height:24px;}
 .amenity-card h3{font-size:1.05rem;margin-bottom:8px;}
 .amenity-card p{color:#6b6558;font-size:.86rem;margin:0;}
+
+/* ---------- Trang chủ: slide "Tiện ích" (teaser) ---------- */
+.home-slide-inset{
+  position:absolute;right:6%;bottom:110px;z-index:2;
+  width:280px;height:180px;object-fit:cover;
+  border:6px solid var(--canvas);box-shadow:var(--shadow);
+}
+@media (max-width:860px){.home-slide-inset{display:none;}}
+
+/* ---------- Trang chủ: slide "Liên hệ" (CTA đóng trang) ---------- */
+.contact-cta-slide{background:linear-gradient(160deg, var(--ink) 0%, #23281f 60%, var(--forest) 130%);}
+.contact-inline-row{display:flex;justify-content:center;flex-wrap:wrap;gap:16px;margin:0 auto 36px;}
+.contact-inline-item{
+  display:flex;align-items:center;gap:10px;font-weight:600;font-size:.9rem;
+  color:var(--white);padding:12px 20px;border:1px solid rgba(255,255,255,.25);border-radius:100px;
+  transition:border-color .2s ease, background .2s ease;
+}
+.contact-inline-item:hover{border-color:var(--gold);background:rgba(255,255,255,.06);}
+.contact-inline-item .ic{width:17px;height:17px;color:var(--gold);flex-shrink:0;}
+.contact-inline-item .ic svg{width:100%;height:100%;}
 
 /* ---------- Contact page ---------- */
 .contact-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;}
