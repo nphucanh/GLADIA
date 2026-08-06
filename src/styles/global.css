@@ -10,6 +10,7 @@
   --white:#fffdf8;
   --shadow: 0 20px 60px -30px rgba(28,27,24,.35);
   --radius: 2px;
+  --sidebar-w: 232px;
 }
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;}
@@ -130,7 +131,6 @@ header.topbar{
 
 /* ---------- Sidebar dọc (thegio.vn-inspired) ---------- */
 .sidebar{
-  --sidebar-w: 232px;
   position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);z-index:100;
   padding:150px 30px 40px;
   background:linear-gradient(90deg, rgba(15,14,12,.5) 0%, rgba(15,14,12,.22) 65%, transparent 100%);
@@ -273,6 +273,17 @@ html.nav-open, html.nav-open body{
 
 .hero-skyline-svg{position:absolute;left:0;right:0;bottom:0;z-index:1;opacity:.5;}
 .hero-inner{position:relative;z-index:2;max-width:680px;}
+/* Đảm bảo khối chữ hero luôn nằm bên phải sidebar cố định, không bị canh giữa đè lên sidebar ở màn hình hẹp */
+@media (min-width:641px){
+  .hero .wrap.hero-inner{
+    margin-left:max(calc((100% - 680px) / 2), calc(var(--sidebar-w) + 32px));
+    margin-right:auto;
+  }
+  .page-hero-photo .wrap{
+    margin-left:max(calc((100% - 1180px) / 2), calc(var(--sidebar-w) + 24px));
+    margin-right:auto;
+  }
+}
 .hero h1{font-size:clamp(2.4rem,5vw,4rem);color:var(--white);line-height:1.05;}
 .hero h1 .line{display:block;overflow:hidden;}
 .hero h1 .line span{display:inline-block;animation:riseUp .8s cubic-bezier(.2,.8,.2,1) both;}
