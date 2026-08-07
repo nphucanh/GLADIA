@@ -10,6 +10,11 @@ export function fmtNumber(n: number): string {
   return n.toLocaleString('vi-VN');
 }
 
+export function fmtNewsDate(iso: string): { day: string; monthYear: string } {
+  const [y, m, d] = iso.split('-');
+  return { day: d, monthYear: `${m}-${y}` };
+}
+
 export const bgByBuilding: Record<BuildingType, string> = {
   apartment: '#1f3d2b',
   villa: '#2c5540',

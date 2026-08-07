@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
-import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import { ProjectsProvider } from './context/ProjectsContext';
 import { ActiveSectionProvider } from './context/ActiveSectionContext';
@@ -11,6 +10,7 @@ import About from './pages/About';
 import ProjectsPage from './pages/Projects';
 import Amenities from './pages/Amenities';
 import Contact from './pages/Contact';
+import News from './pages/News';
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -24,6 +24,12 @@ export default function App() {
       <ProjectsProvider>
         <ActiveSectionProvider>
           <ScrollToTop />
+          <div className="bg-scene" aria-hidden="true">
+            <span className="blob blob-1" />
+            <span className="blob blob-2" />
+            <span className="blob blob-3" />
+            <span className="veil" />
+          </div>
           <Header sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen((v) => !v)} />
           <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
           <div className="app-shell">
@@ -31,10 +37,10 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="/gioi-thieu" element={<About />} />
               <Route path="/du-an" element={<ProjectsPage />} />
+              <Route path="/tin-tuc" element={<News />} />
               <Route path="/tien-ich" element={<Amenities />} />
               <Route path="/lien-he" element={<Contact />} />
             </Routes>
-            <Footer />
           </div>
         </ActiveSectionProvider>
       </ProjectsProvider>

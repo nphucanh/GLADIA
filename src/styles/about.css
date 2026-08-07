@@ -1,0 +1,49 @@
+/* =========================================================
+   Trang Giới thiệu (About.tsx) — bản đồ Sứ mệnh/Tầm nhìn/Định hướng/Giá trị
+   Nền trong suốt (không có card/màu riêng), lộ đúng nền động của trang; mỗi mốc có
+   hiệu ứng động khi trỏ chuột vào (icon phóng to + phát sáng, chữ dịch về phía đường kẻ).
+   ========================================================= */
+.map-timeline{position:relative;padding:12px 0;}
+.map-timeline::before{
+  content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;transform:translateX(-50%);
+  background:repeating-linear-gradient(to bottom, rgba(255,255,255,.4) 0 8px, transparent 8px 18px);
+}
+.map-item{
+  position:relative;display:grid;grid-template-columns:1fr 88px 1fr;gap:36px;align-items:center;
+  margin-bottom:64px;
+}
+.map-item:last-child{margin-bottom:0;}
+.map-text{transition:transform .3s ease, opacity .3s ease;opacity:.85;}
+.map-text-left{grid-column:1;text-align:right;}
+.map-text-right{grid-column:3;text-align:left;}
+.map-label{
+  font-family:'Fraunces',serif;font-weight:600;font-size:1.3rem;color:var(--fg);
+  text-transform:uppercase;letter-spacing:.02em;margin-bottom:10px;
+}
+.map-body p{color:var(--fg-dim);font-size:.9rem;line-height:1.6;margin-bottom:.6em;}
+.map-body p:last-child{margin-bottom:0;}
+.map-icon-wrap{grid-column:2;display:flex;justify-content:center;}
+.map-icon{
+  width:68px;height:68px;border-radius:50%;flex-shrink:0;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.28);color:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .35s ease, box-shadow .35s ease, background .35s ease, color .35s ease;
+}
+.map-icon svg{width:28px;height:28px;}
+.map-item:hover .map-text{opacity:1;}
+.map-item:hover .map-text-left{transform:translateX(8px);}
+.map-item:hover .map-text-right{transform:translateX(-8px);}
+.map-item:hover .map-icon{
+  transform:scale(1.14) rotate(6deg);
+  background:var(--gold);color:var(--color-highlight-dark);
+  box-shadow:0 0 0 10px rgba(255,163,54,.14), 0 10px 28px rgba(0,0,0,.3);
+}
+@media (max-width:760px){
+  .map-timeline::before{left:26px;}
+  .map-item{grid-template-columns:56px 1fr;gap:20px;}
+  .map-icon-wrap{grid-column:1;}
+  .map-icon{width:52px;height:52px;}
+  .map-icon svg{width:22px;height:22px;}
+  .map-text-left,.map-text-right{grid-column:2;text-align:left;}
+  .map-item:hover .map-text-left,.map-item:hover .map-text-right{transform:translateX(6px);}
+}

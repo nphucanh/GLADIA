@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useProjectsContext } from '../context/ProjectsContext';
 import { supabase } from '../lib/supabaseClient';
+import '../styles/contact.css';
 
 interface LocationState {
   project?: string;

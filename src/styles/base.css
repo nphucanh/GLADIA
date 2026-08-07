@@ -1,0 +1,80 @@
+/* ---------- Reset & typography nền tảng ---------- */
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;background:var(--bg);}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font-family:'Manrope',sans-serif;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{
+  font-family:'Fraunces',serif;
+  margin:0 0 .4em 0;
+  font-weight:600;
+  letter-spacing:-.01em;
+  color:var(--fg);
+}
+p{margin:0 0 1em 0;}
+a{color:inherit;text-decoration:none;}
+.mono{font-family:'IBM Plex Mono',monospace;letter-spacing:.04em;}
+img,svg{max-width:100%;display:block;}
+button{font-family:inherit;cursor:pointer;}
+:focus-visible{outline:2px solid var(--brick);outline-offset:3px;}
+
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.72rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--gold);
+  display:flex;
+  align-items:center;
+  gap:.6em;
+  margin-bottom:.9em;
+}
+.eyebrow::before{content:'';width:22px;height:1px;background:var(--gold);display:inline-block;}
+
+/* ---------- Nút bấm dùng chung ---------- */
+.cta-btn{
+  background:var(--forest);color:var(--white);
+  padding:12px 22px;font-weight:700;font-size:.85rem;
+  border:none;border-radius:var(--radius);
+  letter-spacing:.02em;
+  transition:background .2s ease, transform .2s ease;
+}
+.cta-btn:hover{background:var(--forest-2);transform:translateY(-2px);}
+.cta-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.cta-btn.ghost{background:transparent;color:var(--forest);border:1.5px solid var(--forest);}
+.cta-btn.ghost:hover{background:var(--forest);color:var(--white);}
+.cta-btn.brick{background:var(--brick);color:var(--white);}
+.cta-btn.brick:hover{background:var(--color-normal-brown-dark);}
+
+/* ---------- Blueprint corner marks (signature element, dùng ở nhiều trang) ---------- */
+.blueprint{position:relative;}
+.blueprint::before,.blueprint::after{
+  content:'';position:absolute;width:14px;height:14px;pointer-events:none;
+  border-color:var(--forest);
+}
+.blueprint::before{top:0;left:0;border-top:1.5px solid var(--forest);border-left:1.5px solid var(--forest);}
+.blueprint::after{bottom:0;right:0;border-bottom:1.5px solid var(--forest);border-right:1.5px solid var(--forest);}
+
+/* ---------- Khung layout dùng chung ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+section{padding:96px 0;}
+@media (max-width:720px){section{padding:64px 0;}}
+.app-shell{padding-top:0;}
+
+/* ---------- Tiêu đề section dùng chung (Giới thiệu, Tiện ích...) ---------- */
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:44px;flex-wrap:wrap;}
+.sec-head h2{font-size:clamp(1.7rem,3vw,2.4rem);max-width:560px;}
+.sec-head p{color:var(--fg-dim);max-width:440px;margin:0;}
+
+/* ---------- Reveal khi cuộn tới ---------- */
+.reveal-wrap{opacity:0;transform:translateY(18px);transition:opacity .5s ease, transform .5s ease;}
+.reveal-wrap.reveal-visible{opacity:1;transform:translateY(0);}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;}
+}

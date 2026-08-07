@@ -1,6 +1,6 @@
-import HeroPhoto from '../components/HeroPhoto';
 import Reveal from '../components/Reveal';
 import { AMENITY_HERO_IMAGE, AMENITY_INSET_IMAGE } from '../data/images';
+import '../styles/amenities.css';
 
 const AMENITIES = [
   {
@@ -94,25 +94,32 @@ const AMENITIES = [
 export default function Amenities() {
   return (
     <main>
-      <section className="page-hero page-hero-photo amenity-hero">
-        <HeroPhoto image={AMENITY_HERO_IMAGE} />
-        <div className="hero-grid" />
+      <section className="amenity-showcase">
         <div className="wrap">
-          <div className="eyebrow" style={{ color: 'var(--gold)' }}>
-            Trải nghiệm sống
+          <div className="amenity-media">
+            <Reveal className="amenity-media-main amenity-flip">
+              <img src={AMENITY_HERO_IMAGE} alt="Hồ bơi vô cực Terra Việt" />
+              <h1 className="amenity-media-title">Tiện ích</h1>
+            </Reveal>
+            <Reveal delay={220} className="amenity-media-secondary amenity-flip">
+              <img src={AMENITY_INSET_IMAGE} alt="Không gian tiện ích nghỉ dưỡng Terra Việt" />
+            </Reveal>
+            <span className="amenity-watermark" aria-hidden="true">
+              Lifestyle
+            </span>
           </div>
-          <h1 style={{ color: 'var(--white)' }}>Tiện ích</h1>
-          <p className="lead" style={{ color: '#e6e2d2', maxWidth: 560 }}>
-            Bằng tinh thần trẻ trung, phóng khoáng kết hợp cùng tư duy hiện đại, Terra Việt khéo léo định hình những
-            phong cách sống mới dựa trên các đặc quyền tiện ích được thiết kế theo mô hình{' '}
-            <strong>"Live - Work - Learn - Play"</strong>, đáp ứng đầy đủ nhu cầu "Sống - Làm việc - Học tập - Giải
-            trí" của từng thành viên trong gia đình.
-          </p>
-          <a href="#amenities-grid" className="cta-btn ghost" style={{ color: '#fff', borderColor: '#fff' }}>
-            Xem thêm
-          </a>
+          <div className="amenity-showcase-foot">
+            <p>
+              Bằng tinh thần trẻ trung, phóng khoáng kết hợp cùng tư duy hiện đại, Terra Việt khéo léo định hình những
+              phong cách sống mới dựa trên các đặc quyền tiện ích được thiết kế theo mô hình{' '}
+              <strong>"Live - Work - Learn - Play"</strong>, đáp ứng đầy đủ nhu cầu "Sống - Làm việc - Học tập - Giải
+              trí" của từng thành viên trong gia đình.
+            </p>
+            <a href="#amenities-grid" className="cta-btn ghost">
+              Xem thêm →
+            </a>
+          </div>
         </div>
-        <img className="amenity-hero-inset" src={AMENITY_INSET_IMAGE} alt="Không gian tiện ích nghỉ dưỡng Terra Việt" />
       </section>
 
       <section className="wrap" id="amenities-grid">

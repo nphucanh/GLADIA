@@ -1,0 +1,75 @@
+:root{
+  /* ---------- Bảng màu thương hiệu (nguồn) ---------- */
+  --color-normal: #d6b194;
+  --color-normal-light: #e8d2b4;
+  --color-normal-light-2: #c0a886;
+  --color-normal-dark: #76563d;
+  --color-normal-brown: #c49776;
+  --color-normal-brown-dark: #b07d54;
+  --color-highlight: #467084;
+  --color-highlight-dark: #093447;
+  --color-normal-highlight: #fef4e7;
+  --color-orange: #ffa336;
+  --color-white: #fff;
+  --color-red: #ff1b25;
+  --color-violet: #c9007f;
+  --color-pink: #ffc8bb;
+  --color-green: #779d56;
+  --color-green-light: #ccdec7;
+  --color-normal-zero: rgba(214, 177, 148, 0);
+  --color-normal-alpha-05: rgba(214, 177, 148, 0.5);
+  --color-normal-alpha-08: rgba(214, 177, 148, 0.8);
+  --color-normal-alpha-98: rgba(214, 177, 148, 0.98);
+  --color-normal-dark-6: rgba(118, 86, 61, 0.6);
+  --color-highlight-08: rgba(70, 112, 132, 0.8);
+  --color-white-zero: rgba(255, 255, 255, 0);
+  --color-white-alpha-01: rgba(255, 255, 255, 0.1);
+  --color-white-alpha-02: rgba(255, 255, 255, 0.2);
+  --color-white-alpha-03: rgba(255, 255, 255, 0.3);
+  --color-white-alpha-04: rgba(255, 255, 255, 0.4);
+  --color-white-alpha-05: rgba(255, 255, 255, 0.5);
+  --color-white-alpha-06: rgba(255, 255, 255, 0.6);
+  --color-white-alpha-08: rgba(255, 255, 255, 0.8);
+  --color-black-zero: rgba(0, 0, 0, 0);
+  --color-black-alpha-01: rgba(0, 0, 0, 0.1);
+  --color-black-alpha-02: rgba(0, 0, 0, 0.2);
+  --color-black-alpha-03: rgba(0, 0, 0, 0.3);
+  --color-black-alpha-04: rgba(0, 0, 0, 0.4);
+  --color-black-alpha-05: rgba(0, 0, 0, 0.5);
+  --color-black: #333;
+  --color-grey: #555;
+  --color-grey-light: #aaa;
+  --color-light: #846751;
+  --color-white-grey: #efefef;
+  --color-bg: #bbd0b6;
+  --color-bg-grey: #959595;
+  --color-bg-black: #000;
+  --color-bg-red: #d02127;
+  --bg-gradient-menu: linear-gradient(90deg, var(--color-normal-light) 0%, var(--color-normal) 100%);
+  --bg-gradient-menu2: linear-gradient(135deg, var(--color-normal-light) 0%, var(--color-normal-brown) 80%);
+  --bg-gradient: linear-gradient(135deg, var(--color-normal-zero) 0%, var(--color-normal-alpha-05) 70%, var(--color-normal) 100%);
+  --bg-gradient-dark: linear-gradient(135deg, var(--color-normal) 0%, var(--color-highlight) 80%);
+  --bg-gradient-dark2: linear-gradient(135deg, var(--color-normal-brown) 0%, var(--color-normal-dark) 80%);
+
+  /* ---------- Alias ngữ nghĩa dùng trong toàn bộ CSS bên dưới ----------
+     Ánh xạ từ bảng màu thương hiệu ở trên — đổi theme chỉ cần sửa ở đây. */
+  --ink:var(--color-black);
+  --canvas:var(--color-normal-light);
+  --canvas-2:var(--color-normal-light-2);
+  --forest:var(--color-highlight);
+  --forest-2:var(--color-highlight-dark);
+  --brick:var(--color-normal-dark);
+  --gold:var(--color-orange);
+  --mist:var(--color-normal-light-2);
+  --white:var(--color-normal-highlight);
+  --shadow: 0 20px 60px -30px rgba(9,52,71,.35);
+  --radius: 2px;
+  --sidebar-w: 232px;
+
+  /* Nền chuyển động xuyên suốt toàn site */
+  --bg:var(--color-highlight-dark);
+  --bg-2:var(--color-highlight);
+  --bg-3:var(--color-normal-brown-dark);
+  --fg:var(--color-normal-highlight);
+  --fg-dim:rgba(254,244,231,.66);
+}

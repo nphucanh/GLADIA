@@ -1,0 +1,284 @@
+/* =========================================================
+   Trang chủ (Home.tsx) — hiệu ứng "từng trang toàn màn hình"
+   ========================================================= */
+
+@media (pointer: coarse){
+  html.home-snap{
+    scroll-snap-type: y mandatory;
+  }
+}
+.snap-section{
+  position:relative;
+  min-height:100vh;
+  overflow:hidden;
+  scroll-snap-align:start;
+  scroll-snap-stop:always;
+}
+section.snap-section{padding:64px 0;}
+.slide-center{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+@media (max-width:720px){
+  .snap-section{min-height:auto;padding-top:96px;padding-bottom:96px;}
+}
+@media (prefers-reduced-motion: reduce){
+  html.home-snap{scroll-snap-type:none;}
+}
+
+/* ---------- Slide "Hero" ---------- */
+.hero{
+  min-height:100vh;
+  display:flex;align-items:flex-end;
+  padding-bottom:100px;
+}
+.hero-photo{background:#14261b;}
+@media (max-width:720px){.hero{min-height:88vh;padding-bottom:70px;}}
+
+.hero-photo::before{
+  content:'';position:absolute;inset:0;z-index:1;
+  background:linear-gradient(90deg, rgba(10,9,7,.6) 0%, rgba(10,9,7,.2) 45%, transparent 70%);
+}
+.hero-photo::after{
+  content:'';position:absolute;inset:0;z-index:1;
+  background:linear-gradient(0deg, rgba(10,9,7,.62) 0%, rgba(10,9,7,.18) 55%, transparent 75%);
+}
+
+.hero-logotype{
+  position:absolute;top:96px;right:5%;z-index:2;
+  text-align:right;pointer-events:none;
+}
+.hlt-small{
+  position:absolute;top:.1em;left:-1.5em;
+  font-family:'Fraunces',serif;font-style:italic;font-weight:500;
+  font-size:clamp(2rem,3.4vw,2.9rem);color:var(--white);
+}
+.hlt-big{
+  display:block;font-family:'Fraunces',serif;font-weight:600;
+  font-size:clamp(6rem,14vw,11.5rem);line-height:.82;
+  background:linear-gradient(100deg, rgba(255,253,248,.85) 0%, rgba(255,253,248,.3) 55%, rgba(255,253,248,.05) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hlt-caption{
+  display:block;font-family:'IBM Plex Mono',monospace;
+  letter-spacing:.45em;font-size:.76rem;color:rgba(255,253,248,.6);
+  margin-top:.5em;padding-right:.45em;
+}
+@media (max-width:860px){.hero-logotype{display:none;}}
+
+.hero-skyline-svg{position:absolute;left:0;right:0;bottom:0;z-index:1;opacity:.5;}
+.hero-inner{position:relative;z-index:2;max-width:680px;}
+@media (min-width:641px){
+  .hero .wrap.hero-inner{
+    margin-left:max(calc((100% - 680px) / 2), calc(var(--sidebar-w) + 32px));
+    margin-right:auto;
+  }
+}
+.hero h1{font-size:clamp(2.4rem,5vw,4rem);color:var(--white);line-height:1.05;}
+.hero h1 .line{display:block;}
+.hero h1 .line span{display:inline-block;animation:riseUp .8s cubic-bezier(.2,.8,.2,1) both;}
+.hero h1 .line:nth-child(1) span{animation-delay:.05s;}
+.hero h1 .line:nth-child(2) span{animation-delay:.2s;}
+@keyframes riseUp{from{transform:translateY(110%);}to{transform:translateY(0);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+.hero .eyebrow{color:var(--gold);opacity:0;animation:fadeUp .7s ease .15s forwards;text-shadow:0 2px 10px rgba(0,0,0,.7);}
+.hero .eyebrow::before{background:var(--gold);}
+.hero p.lead{opacity:0;animation:fadeUp .7s ease .45s forwards;}
+.hero-actions{display:flex;gap:16px;margin-top:34px;flex-wrap:wrap;opacity:0;animation:fadeUp .7s ease .62s forwards;}
+.hero-logotype{opacity:0;animation:fadeUp 1s ease .3s forwards;}
+.hero p.lead{font-size:1.1rem;color:#e6e2d2;max-width:520px;margin-top:1.2em;}
+
+/* ---------- Nút cuộn nổi (dưới sidebar): xuống slide kế tiếp, đổi thành go-top ở slide cuối ---------- */
+.home-slide-nav-btn{
+  position:fixed;left:39px;bottom:40px;z-index:101;
+  transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:20px;
+  background:none;border:none;padding:0;color:var(--fg);
+}
+.hsn-label{
+  writing-mode:vertical-rl;transform:rotate(180deg);
+  font-family:'Manrope',sans-serif;font-size:.8rem;font-weight:800;
+  letter-spacing:.04em;text-transform:uppercase;
+}
+/* Wrapper riêng để hover chỉ dịch chuyển nút tròn — chữ luôn đứng yên */
+.hsn-circle-wrap{
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .35s cubic-bezier(.3,.9,.4,1);
+}
+.home-slide-nav-btn:hover .hsn-circle-wrap{transform:translateY(-14px);}
+.home-slide-nav-btn.is-last:hover .hsn-circle-wrap{transform:translateY(14px);}
+.hsn-circle{
+  width: 25px;height:25px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid rgba(255,255,255,.75);
+  display:flex;align-items:center;justify-content:center;
+  animation:hsnBob 1.8s ease-in-out infinite;
+}
+.home-slide-nav-btn:hover .hsn-circle{animation-play-state:paused;}
+.hsn-circle svg{width:16px;height:16px;}
+@keyframes hsnBob{0%,100%{transform:translateY(-4px);}50%{transform:translateY(4px);}}
+@media (max-width:640px), (max-height:560px){.home-slide-nav-btn{display:none;}}
+
+/* Nút "Nhận tin" nổi, đối xứng bên phải với nút cuộn — hiện xuyên suốt mọi slide Trang chủ */
+.home-subscribe-fab{
+  position:fixed;right:32px;bottom:40px;z-index:101;
+  display:flex;align-items:center;gap:10px;
+  background:none;border:none;color:var(--fg);
+  font-family:'Manrope',sans-serif;font-weight:800;font-size:.8rem;
+  letter-spacing:.05em;text-transform:uppercase;
+  transition:color .2s ease;
+}
+.home-subscribe-fab:hover{color:var(--gold);}
+.home-subscribe-fab .hsf-arrow{width:18px;height:18px;flex-shrink:0;animation:hsnBob 1.8s ease-in-out infinite;}
+.home-subscribe-fab:hover .hsf-arrow{animation-play-state:paused;transform:translateY(4px);}
+@media (max-width:640px), (max-height:560px){.home-subscribe-fab{display:none;}}
+
+/* ---------- Slide "Giới thiệu" (gộp chung số liệu) ---------- */
+.about-slide{overflow:hidden;}
+.about-orb{position:absolute;z-index:-1;border-radius:50%;filter:blur(70px);opacity:.6;}
+.about-orb-1{
+  width:360px;height:360px;left:-90px;top:-70px;
+  background:radial-gradient(circle, rgba(255,255,255,.55) 0%, transparent 70%);
+  animation:aboutOrbA 22s ease-in-out infinite alternate;
+}
+.about-orb-2{
+  width:300px;height:300px;right:-70px;bottom:-60px;
+  background:radial-gradient(circle, rgba(9,52,71,.4) 0%, transparent 70%);
+  animation:aboutOrbB 28s ease-in-out infinite alternate;
+}
+@keyframes aboutOrbA{0%{transform:translate(0,0) scale(1);}100%{transform:translate(46px,32px) scale(1.18);}}
+@keyframes aboutOrbB{0%{transform:translate(0,0) scale(1);}100%{transform:translate(-34px,-28px) scale(1.12);}}
+
+.about-layout{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;}
+.about-copy{color:var(--ink);}
+.about-copy h2{color:var(--ink);}
+.about-copy .eyebrow{color:var(--ink);}
+.about-copy .eyebrow::before{background:var(--ink);}
+.about-copy p{color:#5c5648;margin:14px 0 22px;}
+.about-cta{color:var(--forest);border-color:var(--forest);}
+.about-cta:hover{background:var(--forest);color:var(--white);}
+
+.about-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.about-stat-card{
+  background:var(--white);border-radius:10px;padding:26px 20px;text-align:center;
+  box-shadow:var(--shadow);transition:transform .3s ease, box-shadow .3s ease;
+}
+.about-stat-card:hover{transform:translateY(-8px) scale(1.03);box-shadow:0 26px 54px -20px rgba(9,52,71,.4);}
+.about-stat-icon{
+  width:42px;height:42px;border-radius:50%;margin:0 auto 12px;
+  background:var(--canvas);color:var(--forest);display:flex;align-items:center;justify-content:center;
+  animation:aboutIconBob 3.2s ease-in-out infinite;
+}
+.about-stat-icon svg{width:20px;height:20px;}
+.about-stat-card:nth-child(2) .about-stat-icon{animation-delay:.25s;}
+.about-stat-card:nth-child(3) .about-stat-icon{animation-delay:.5s;}
+.about-stat-card:nth-child(4) .about-stat-icon{animation-delay:.75s;}
+@keyframes aboutIconBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.about-stat-card:hover .about-stat-icon{background:var(--forest);color:var(--white);}
+.about-stat-card .stat .num{color:var(--forest);}
+.about-stat-card .stat .label{color:#6b6558;}
+
+@media (max-width:860px){
+  .about-layout{grid-template-columns:1fr;gap:36px;}
+}
+@media (max-width:520px){
+  .about-stats-grid{grid-template-columns:1fr 1fr;gap:14px;}
+  .about-stat-card{padding:20px 14px;}
+}
+
+.stat{text-align:center;}
+.stat .num{font-family:'Fraunces',serif;font-size:2rem;font-weight:600;}
+.stat .label{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;margin-top:4px;}
+
+/* ---------- Slide "Tiện ích" ---------- */
+.home-slide-inset{
+  position:absolute;right:6%;bottom:110px;z-index:2;
+  width:280px;height:180px;object-fit:cover;
+  border:6px solid var(--bg);box-shadow:var(--shadow);
+}
+@media (max-width:860px){.home-slide-inset{display:none;}}
+
+/* ---------- Slide "Liên hệ" ---------- */
+.contact-wave-bg{position:absolute;inset:0;z-index:0;opacity:.8;animation:waveBgDrift 16s ease-in-out infinite alternate;}
+.contact-wave-bg svg{width:160%;height:100%;}
+@keyframes waveBgDrift{0%{transform:translateX(-10%);}100%{transform:translateX(0%);}}
+
+.contact-showcase{position:relative;z-index:1;text-align:center;}
+.partner-block{display:flex;flex-direction:column;align-items:center;margin-bottom:64px;}
+.partner-label{
+  font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--fg-dim);margin-bottom:16px;
+}
+.partner-wordmark{font-family:'Fraunces',serif;font-weight:600;font-size:1.15rem;color:var(--fg);}
+.partner-wordmark-lg{font-size:2.8rem;letter-spacing:.02em;}
+
+/* Hàng logo phân phối & tiếp thị */
+.partner-logo-row-wrap{position:relative;overflow:hidden;width:100%;}
+/* Dùng margin-right riêng cho từng phần tử (thay vì gap chung của container) để danh sách
+   nhân đôi chia đúng làm 2 nửa bằng nhau tuyệt đối — translateX(-50%) mới khớp đúng 1 chu kỳ,
+   không bị lệch nửa khoảng cách gây khựng ngay chỗ nối giữa 2 lượt lặp. */
+.partner-logo-row{
+  display:flex;flex-wrap:nowrap;width:max-content;animation:partnerMarquee 20s linear infinite;
+  will-change:transform;backface-visibility:hidden;transform:translateZ(0);
+}
+.partner-logo-row .partner-wordmark.small{font-size:.92rem;opacity:.92;white-space:nowrap;margin-right:56px;}
+@keyframes partnerMarquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+.contact-info-block{position:relative;margin-top:80px;}
+.contact-info-block h3{position:relative;font-size:1.25rem;margin-bottom:16px;}
+.contact-info-watermark{
+  position:absolute;top:-.3em;left:50%;transform:translateX(-50%);z-index:0;
+  font-family:'Fraunces',serif;font-style:italic;font-weight:500;
+  font-size:4rem;line-height:1;white-space:nowrap;
+  color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.14);
+  pointer-events:none;user-select:none;
+}
+.contact-info-row{position:relative;display:flex;justify-content:center;flex-wrap:wrap;gap:28px;margin-bottom:18px;font-size:.9rem;}
+.contact-info-item{display:flex;align-items:center;gap:8px;color:var(--fg-dim);}
+.contact-info-item .ic{width:15px;height:15px;flex-shrink:0;}
+.contact-info-item a{color:inherit;}
+.contact-info-item a:hover{color:var(--gold);}
+.contact-disclaimer{position:relative;max-width:760px;margin:0 auto;font-size:.72rem;line-height:1.65;color:rgba(255,253,248,.5);font-style:italic;}
+
+.contact-socials{display:flex;gap:10px;}
+.contact-socials a{
+  width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.4);
+  display:flex;align-items:center;justify-content:center;color:var(--fg);
+}
+.contact-socials a:hover{background:var(--fg);color:var(--color-highlight-dark);}
+.contact-socials svg{width:14px;height:14px;}
+.contact-copyright{font-size:.76rem;color:var(--fg-dim);}
+@media (max-width:640px){.contact-info-watermark{display:none;}}
+
+/* Hàng social + copyright: nổi cố định, ngang hàng nút Scroll/Nhận tin — chỉ hiện ở slide Liên hệ */
+.home-contact-bottom-bar{
+  position:fixed;left:50%;bottom:40px;z-index:101;transform:translateX(-50%);
+  display:flex;align-items:center;gap:18px;
+}
+@media (max-width:900px){.home-contact-bottom-bar{display:none;}}
+
+#slide-about{
+  background-color:var(--color-normal);
+  background-image:
+    radial-gradient(ellipse 65% 55% at 20% 25%, rgba(232,210,180,.55) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 75%, rgba(118,86,61,.22) 0%, transparent 60%);
+  background-repeat:no-repeat;
+  background-size:180% 180%;
+  animation:marbleDrift 90s ease-in-out infinite alternate;
+}
+#slide-news{
+  background-color:var(--color-highlight-dark);
+  background-image:
+    radial-gradient(ellipse 65% 55% at 22% 22%, rgba(70,112,132,.5) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 78% 80%, rgba(0,0,0,.3) 0%, transparent 60%);
+  background-repeat:no-repeat;
+  background-size:180% 180%;
+  animation:marbleDrift 110s ease-in-out infinite alternate-reverse;
+}
+@keyframes marbleDrift{
+  0%{background-position:15% 15%, 85% 85%;}
+  100%{background-position:32% 30%, 68% 70%;}
+}
+#slide-contact{
+  background-image:linear-gradient(135deg, var(--color-highlight-dark) 0%, var(--color-highlight) 45%, var(--color-normal) 100%);
+}

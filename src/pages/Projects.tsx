@@ -8,6 +8,7 @@ import ProjectCard from '../components/ProjectCard';
 import ProjectModal from '../components/ProjectModal';
 import Reveal from '../components/Reveal';
 import { ProjectStatus, ProjectType } from '../types';
+import '../styles/projects.css';
 
 type SortKey = 'interest' | 'newest' | 'popular' | 'price-asc' | 'price-desc';
 
@@ -100,11 +101,11 @@ export default function Projects() {
             <option value="price-desc">Giá cao đến thấp</option>
           </select>
         </div>
-        <p className="mono" style={{ fontSize: '.82rem', color: '#6b6558', marginBottom: 20 }}>
+        <p className="mono" style={{ fontSize: '.82rem', color: 'var(--fg-dim)', marginBottom: 20 }}>
           {filtered.length} dự án phù hợp
         </p>
         <div className="grid-projects">
-          {filtered.length === 0 && <p style={{ color: '#6b6558' }}>Không tìm thấy dự án phù hợp với bộ lọc.</p>}
+          {filtered.length === 0 && <p style={{ color: 'var(--fg-dim)' }}>Không tìm thấy dự án phù hợp với bộ lọc.</p>}
           {filtered.map((p, i) => (
             <Reveal key={p.id} delay={(i % 6) * 60}>
               <ProjectCard project={p} onDetail={open} />

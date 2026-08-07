@@ -1,6 +1,7 @@
 import { Project } from '../types';
 import { bgByBuilding, fmtDate, fmtNumber } from '../utils/format';
 import BuildingIllustration from './BuildingIllustration';
+import '../styles/modal.css';
 
 interface ProjectModalProps {
   project: Project | null;

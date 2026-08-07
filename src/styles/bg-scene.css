@@ -1,0 +1,34 @@
+/* ---------- Nền chuyển động ----------- */
+.bg-scene{
+  position:fixed;inset:0;z-index:-1;overflow:hidden;
+  background:
+    radial-gradient(ellipse 70% 60% at 15% 10%, rgba(176,125,84,.16) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 60% at 85% 90%, rgba(70,112,132,.28) 0%, transparent 60%),
+    var(--bg);
+}
+.bg-scene .blob{position:absolute;border-radius:50%;filter:blur(110px);mix-blend-mode:screen;will-change:transform;}
+.bg-scene .blob-1{
+  width:62vmax;height:62vmax;left:-18vmax;top:-20vmax;
+  background:radial-gradient(circle, rgba(232,210,180,.14) 0%, transparent 68%);
+  animation:driftA 70s ease-in-out infinite alternate;
+}
+.bg-scene .blob-2{
+  width:58vmax;height:58vmax;right:-20vmax;top:5vmax;
+  background:radial-gradient(circle, rgba(70,112,132,.4) 0%, transparent 68%);
+  animation:driftB 85s ease-in-out infinite alternate;
+}
+.bg-scene .blob-3{
+  width:52vmax;height:52vmax;left:12vmax;bottom:-24vmax;
+  background:radial-gradient(circle, rgba(0,0,0,.28) 0%, transparent 68%);
+  animation:driftC 95s ease-in-out infinite alternate;
+}
+.bg-scene .veil{
+  position:absolute;inset:-10%;
+  background:repeating-conic-gradient(from 0deg, rgba(255,255,255,.025) 0deg 6deg, transparent 6deg 14deg);
+  mix-blend-mode:overlay;opacity:.5;
+  animation:slowSpin 220s linear infinite;
+}
+@keyframes driftA{0%{transform:translate(0,0) scale(1);}100%{transform:translate(9vmax,11vmax) scale(1.15);}}
+@keyframes driftB{0%{transform:translate(0,0) scale(1);}100%{transform:translate(-11vmax,-7vmax) scale(1.12);}}
+@keyframes driftC{0%{transform:translate(0,0) scale(1);}100%{transform:translate(7vmax,-9vmax) scale(1.2);}}
+@keyframes slowSpin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}

@@ -1,0 +1,40 @@
+/* ---------- Hero / page-hero: nền dùng chung cho mọi trang ----------
+   .hero (Trang chủ toàn màn hình) và .page-hero (banner đầu các trang con) cùng
+   dùng chung ảnh nền thật (HeroPhoto) + lưới kẻ mờ; */
+.hero, .page-hero{
+  position:relative;overflow:hidden;
+  background:var(--forest);
+  color:var(--white);
+}
+.page-hero{padding:90px 0 70px;}
+
+/* Hero minh hoạ ảnh thật (Ken Burns zoom chậm) — dùng chung Trang chủ + banner trang con */
+.hero-scene-photo{
+  position:absolute;inset:0;z-index:0;
+  background-size:cover;background-position:center;
+  animation:sceneZoom 30s ease-in-out infinite alternate;
+}
+@keyframes sceneZoom{0%{transform:scale(1.04);}100%{transform:scale(1.12);}}
+.hero-grid{
+  position:absolute;inset:0;z-index:1;
+  background-image:
+    linear-gradient(rgba(241,236,221,.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(241,236,221,.07) 1px, transparent 1px);
+  background-size:44px 44px;
+  animation:gridPan 40s linear infinite;
+}
+@keyframes gridPan{from{background-position:0 0;}to{background-position:440px 440px;}}
+
+/* Hero minh hoạ ảnh dùng chung cho các trang con (Giới thiệu/Dự án/Tiện ích/Liên hệ/Tin tức) */
+.page-hero-photo{background:#182238;}
+.page-hero-photo::before{
+  content:'';position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg, rgba(10,9,7,.35) 0%, rgba(10,9,7,.55) 60%, rgba(10,9,7,.82) 100%);
+}
+.page-hero-photo .wrap{position:relative;z-index:2;}
+@media (min-width:641px){
+  .page-hero-photo .wrap{
+    margin-left:max(calc((100% - 1180px) / 2), calc(var(--sidebar-w) + 24px));
+    margin-right:auto;
+  }
+}

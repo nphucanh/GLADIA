@@ -1,0 +1,22 @@
+/* =========================================================
+   ProjectModal — dùng ở trang Dự án (Projects.tsx)
+   ========================================================= */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(28,27,24,.6);z-index:1000;
+  display:none;align-items:center;justify-content:center;padding:24px;
+}
+.modal-overlay.open{display:flex;}
+.modal{
+  background:var(--white);color:var(--ink);max-width:720px;width:100%;max-height:88vh;overflow-y:auto;
+  position:relative;
+}
+.modal .thumb{height:240px;}
+.modal-body{padding:36px;}
+.modal-close{
+  position:absolute;top:16px;right:16px;background:var(--ink);color:var(--white);
+  width:34px;height:34px;border:none;font-size:1.1rem;z-index:2;
+}
+.spec-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:20px 0;}
+.spec{background:var(--canvas);padding:14px 16px;border-left:3px solid var(--brick);}
+.spec .k{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:#6b6558;}
+.spec .v{font-family:'IBM Plex Mono',monospace;font-weight:500;margin-top:2px;}
