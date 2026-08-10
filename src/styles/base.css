@@ -50,6 +50,8 @@ button{font-family:inherit;cursor:pointer;}
 .cta-btn.ghost:hover{background:var(--forest);color:var(--white);}
 .cta-btn.brick{background:var(--brick);color:var(--white);}
 .cta-btn.brick:hover{background:var(--color-normal-brown-dark);}
+.cta-btn.ghost.gold{color:var(--gold);border-color:var(--gold);}
+.cta-btn.ghost.gold:hover{background:var(--gold);color:var(--white);}
 
 /* ---------- Blueprint corner marks (signature element, dùng ở nhiều trang) ---------- */
 .blueprint{position:relative;}
@@ -72,8 +74,24 @@ section{padding:96px 0;}
 .sec-head p{color:var(--fg-dim);max-width:440px;margin:0;}
 
 /* ---------- Reveal khi cuộn tới ---------- */
-.reveal-wrap{opacity:0;transform:translateY(18px);transition:opacity .5s ease, transform .5s ease;}
+.reveal-wrap{
+  opacity:0;transform:translateY(26px);
+  transition:opacity .8s cubic-bezier(.22,.61,.36,1), transform .8s cubic-bezier(.22,.61,.36,1);
+}
 .reveal-wrap.reveal-visible{opacity:1;transform:translateY(0);}
+
+/* Biến thể hướng xuất hiện khác nhau — dùng qua prop `variant` của <Reveal> */
+.reveal-down{transform:translateY(-26px);}
+.reveal-down.reveal-visible{transform:translateY(0);}
+.reveal-left{transform:translateX(-46px);}
+.reveal-left.reveal-visible{transform:translateX(0);}
+.reveal-right{transform:translateX(46px);}
+.reveal-right.reveal-visible{transform:translateX(0);}
+.reveal-pop{
+  transform:scale(.72);
+  transition:opacity .7s ease, transform .7s cubic-bezier(.34,1.56,.64,1);
+}
+.reveal-pop.reveal-visible{transform:scale(1);}
 
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;}

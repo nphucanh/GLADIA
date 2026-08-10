@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePresentationScroll } from '../hooks/usePresentationScroll';
 import { useActiveSection } from '../context/ActiveSectionContext';
@@ -6,12 +6,12 @@ import NewsCard from '../components/NewsCard';
 import Reveal from '../components/Reveal';
 import StatCounter from '../components/StatCounter';
 import HeroPhoto from '../components/HeroPhoto';
-import { HERO_IMAGE, AMENITY_HERO_IMAGE, AMENITY_INSET_IMAGE } from '../data/images';
+import { HERO_IMAGE, AMENITY_HERO_IMAGE } from '../data/images';
 import { mockNews } from '../data/mockNews';
 import '../styles/home.css';
 import '../styles/news.css';
 
-const DISTRIBUTORS = ['Terra Realty', 'Sunview Homes', 'GreenKey Housing', 'Riverside Realty', 'Golden Path Homes'];
+const DISTRIBUTORS = ['Terra Realty', 'Sunview Homes', 'GreenKey Housing', 'Riverside Realty', 'Golden Path Homes', 'SGLand', 'Sunrise Estates'];
 
 const ABOUT_STATS = [
   {
@@ -62,62 +62,50 @@ const ABOUT_STATS = [
 // Thứ tự slide đồng bộ với thứ tự mục trong Sidebar: Trang chủ → Giới thiệu → Tin tức → Tiện ích → Liên hệ.
 const SLIDE_IDS = ['slide-hero', 'slide-about', 'slide-news', 'slide-amenities', 'slide-contact'];
 
-// Section nào đang cuộn tới trên Trang chủ thì mục tương ứng trong Sidebar sẽ sáng lên
-const SLIDE_NAV_MAP: Record<string, string> = {
-  'slide-hero': '/',
-  'slide-about': '/gioi-thieu',
-  'slide-news': '/tin-tuc',
-  'slide-amenities': '/tien-ich',
-  'slide-contact': '/lien-he',
-};
+// Slide duy nhất được thiết kế có thể cao hơn 1 màn hình — cuộn/vuốt sẽ ưu tiên cuộn nội
+// bộ slide này trước khi đổi sang slide khác.
+const SCROLLABLE_SLIDE_IDS = ['slide-contact'];
 
 export default function Home() {
   const navigate = useNavigate();
 
   // Cảm giác "từng trang toàn màn hình" kiểu PowerPoint — chỉ ở Trang chủ.
+  // Các slide giờ xếp chồng cố định (không cuộn tài liệu thật) nên khoá luôn scroll của trang.
   useEffect(() => {
     document.documentElement.classList.add('home-snap');
     return () => document.documentElement.classList.remove('home-snap');
   }, []);
-  usePresentationScroll(SLIDE_IDS);
+  const { activeIndex, goTo } = usePresentationScroll(SLIDE_IDS, false, SCROLLABLE_SLIDE_IDS);
 
-  // Đồng bộ mục sáng trong Sidebar + nút cuộn nổi theo section đang cuộn tới trên Trang chủ.
-  const { setActiveSection } = useActiveSection();
-  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  // Đồng bộ mục sáng trong Sidebar theo slide đang active, và đăng ký hàm chuyển slide
+  // để Sidebar (component riêng, không phải con của Home) có thể điều khiển từ xa.
+  const { setActiveSection, registerGoToSlide } = useActiveSection();
   useEffect(() => {
-    const elements = SLIDE_IDS.map((id) => document.getElementById(id)).filter(
-      (el): el is HTMLElement => Boolean(el),
-    );
-    if (elements.length === 0) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
-            setActiveSection(SLIDE_NAV_MAP[entry.target.id] ?? '/');
-            setActiveSlideIndex(SLIDE_IDS.indexOf(entry.target.id));
-          }
-        });
-      },
-      { threshold: [0.5] },
-    );
-    elements.forEach((el) => io.observe(el));
-    return () => {
-      io.disconnect();
-      setActiveSection(null);
-    };
-  }, [setActiveSection]);
+    setActiveSection(SLIDE_IDS[activeIndex]);
+    return () => setActiveSection(null);
+  }, [activeIndex, setActiveSection]);
+  useEffect(() => {
+    registerGoToSlide((slideId: string) => {
+      const idx = SLIDE_IDS.indexOf(slideId);
+      if (idx !== -1) goTo(idx);
+    });
+    return () => registerGoToSlide(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [registerGoToSlide]);
 
-  const isLastSlide = activeSlideIndex === SLIDE_IDS.length - 1;
+  const isLastSlide = activeIndex === SLIDE_IDS.length - 1;
   function handleSlideNavClick() {
-    const targetId = isLastSlide ? SLIDE_IDS[0] : SLIDE_IDS[activeSlideIndex + 1];
-    document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    goTo(isLastSlide ? 0 : activeIndex + 1);
+  }
+  function slideClass(id: string, extra = '') {
+    return `morph-slide ${extra} ${activeIndex === SLIDE_IDS.indexOf(id) ? 'is-active' : ''}`.trim();
   }
 
   const [featuredNews, ...secondaryNews] = mockNews.slice(0, 3);
 
   return (
     <main>
-      <section className="hero hero-photo snap-section" id="slide-hero">
+      <section className={slideClass('slide-hero', 'hero hero-photo')} id="slide-hero">
         <HeroPhoto image={HERO_IMAGE} />
         <div className="hero-grid" />
 
@@ -157,11 +145,11 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="snap-section slide-center about-slide" id="slide-about" style={{ paddingTop: 0 }}>
+      <section className={slideClass('slide-about', 'slide-center about-slide')} id="slide-about" style={{ paddingTop: 0 }}>
         <span className="about-orb about-orb-1" aria-hidden="true" />
         <span className="about-orb about-orb-2" aria-hidden="true" />
         <div className="wrap about-layout">
-          <Reveal>
+          <Reveal variant="left" delay={220} active={activeIndex === SLIDE_IDS.indexOf('slide-about')}>
             <div className="about-copy">
               <div className="eyebrow">Về Terra Việt</div>
               <h2>Hơn một chủ đầu tư — một người kiến tạo cộng đồng.</h2>
@@ -176,10 +164,20 @@ export default function Home() {
           </Reveal>
           <div className="about-stats-grid">
             {ABOUT_STATS.map((s, i) => (
-              <Reveal key={s.label} delay={150 + i * 90}>
+              <Reveal
+                key={s.label}
+                variant="pop"
+                delay={600 + i * 260}
+                active={activeIndex === SLIDE_IDS.indexOf('slide-about')}
+              >
                 <div className="about-stat-card">
                   <span className="about-stat-icon">{s.icon}</span>
-                  <StatCounter target={s.target} label={s.label} />
+                  <StatCounter
+                    target={s.target}
+                    label={s.label}
+                    delay={280}
+                    active={activeIndex === SLIDE_IDS.indexOf('slide-about')}
+                  />
                 </div>
               </Reveal>
             ))}
@@ -187,43 +185,51 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="snap-section slide-center" id="slide-news">
+      <section className={slideClass('slide-news', 'slide-center')} id="slide-news">
         <div className="wrap news-layout">
-          <div className="news-heading">
-            <span className="news-heading-watermark" aria-hidden="true">
-              Lifestyle
-            </span>
-            <div className="eyebrow">Cập nhật</div>
-            <h2>Tin tức</h2>
-            <p>Thông tin mới nhất về ưu đãi, hạ tầng kết nối và tiềm năng đầu tư từ Terra Việt.</p>
-          </div>
+          <Reveal variant="down" delay={150} active={activeIndex === SLIDE_IDS.indexOf('slide-news')}>
+            <div className="news-heading">
+              <span className="news-heading-watermark" aria-hidden="true">
+                Lifestyle
+              </span>
+              <div className="eyebrow">Cập nhật</div>
+              <h2>Tin tức</h2>
+              <p>Thông tin mới nhất về ưu đãi, hạ tầng kết nối và tiềm năng đầu tư từ Terra Việt.</p>
+            </div>
+          </Reveal>
           <div className="news-content">
-            <Reveal>
+            <Reveal variant="pop" delay={400} active={activeIndex === SLIDE_IDS.indexOf('slide-news')}>
               <NewsCard item={featuredNews} variant="featured" />
             </Reveal>
             <div className="news-grid-sm">
               {secondaryNews.map((n, i) => (
-                <Reveal key={n.id} delay={(i + 1) * 80}>
+                <Reveal
+                  key={n.id}
+                  variant="right"
+                  delay={680 + i * 260}
+                  active={activeIndex === SLIDE_IDS.indexOf('slide-news')}
+                >
                   <NewsCard item={n} />
                 </Reveal>
               ))}
             </div>
-            <button
-              type="button"
-              className="cta-btn ghost"
-              style={{ color: 'var(--gold)', borderColor: 'var(--gold)' }}
-              onClick={() => navigate('/tin-tuc')}
-            >
+            <button type="button" className="cta-btn ghost gold" onClick={() => navigate('/tin-tuc')}>
               Xem thêm →
             </button>
           </div>
         </div>
       </section>
 
-      <section className="hero hero-photo snap-section" id="slide-amenities">
+      <section className={slideClass('slide-amenities', 'hero hero-photo')} id="slide-amenities">
         <HeroPhoto image={AMENITY_HERO_IMAGE} />
         <div className="hero-grid" />
-        <div className="wrap hero-inner">
+        <Reveal
+          as="div"
+          className="wrap hero-inner"
+          variant="up"
+          delay={320}
+          active={activeIndex === SLIDE_IDS.indexOf('slide-amenities')}
+        >
           <div className="eyebrow" style={{ color: 'var(--gold)' }}>
             Trải nghiệm sống
           </div>
@@ -238,11 +244,10 @@ export default function Home() {
               Xem thêm
             </button>
           </div>
-        </div>
-        <img className="home-slide-inset" src={AMENITY_INSET_IMAGE} alt="Không gian tiện ích Terra Việt" />
+        </Reveal>
       </section>
 
-      <section className="contact-cta-slide snap-section slide-center" id="slide-contact">
+      <section className={slideClass('slide-contact', 'contact-cta-slide slide-center')} id="slide-contact">
         <div className="contact-wave-bg" aria-hidden="true">
           <svg viewBox="0 0 1600 500" preserveAspectRatio="none">
             <path
@@ -261,27 +266,34 @@ export default function Home() {
         </div>
 
         <div className="wrap contact-showcase">
-          <div className="partner-block">
-            <div className="partner-label">Đầu tư và phát triển bởi</div>
-            <div className="partner-wordmark partner-wordmark-lg">TERRA VIỆT</div>
-          </div>
-          <div className="partner-block">
-            <div className="partner-label">Đối tác thi công</div>
-            <div className="partner-wordmark">VietBuild Construction</div>
-          </div>
-          <div className="partner-block">
-            <div className="partner-label">Phân phối &amp; tiếp thị</div>
-            <div className="partner-logo-row-wrap">
-              <div className="partner-logo-row">
-                {[...DISTRIBUTORS, ...DISTRIBUTORS].map((d, i) => (
-                  <span className="partner-wordmark small" key={`${d}-${i}`}>
-                    {d}
-                  </span>
-                ))}
+          <Reveal variant="pop" delay={150} active={activeIndex === SLIDE_IDS.indexOf('slide-contact')}>
+            <div className="partner-block">
+              <div className="partner-label">Đầu tư và phát triển bởi</div>
+              <div className="partner-wordmark partner-wordmark-lg">TERRA VIỆT</div>
+            </div>
+          </Reveal>
+          <Reveal variant="pop" delay={400} active={activeIndex === SLIDE_IDS.indexOf('slide-contact')}>
+            <div className="partner-block">
+              <div className="partner-label">Đối tác thi công</div>
+              <div className="partner-wordmark">VietBuild Construction</div>
+            </div>
+          </Reveal>
+          <Reveal variant="pop" delay={650} active={activeIndex === SLIDE_IDS.indexOf('slide-contact')}>
+            <div className="partner-block">
+              <div className="partner-label">Phân phối &amp; tiếp thị</div>
+              <div className="partner-logo-row-wrap">
+                <div className="partner-logo-row">
+                  {[...DISTRIBUTORS, ...DISTRIBUTORS].map((d, i) => (
+                    <span className="partner-wordmark small" key={`${d}-${i}`}>
+                      {d}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          </Reveal>
 
+          <Reveal variant="up" delay={950} active={activeIndex === SLIDE_IDS.indexOf('slide-contact')}>
           <div className="contact-info-block">
             <span className="contact-info-watermark" aria-hidden="true">
               Lifestyle
@@ -314,6 +326,7 @@ export default function Home() {
               đại diện hay là một phần của hợp đồng.
             </p>
           </div>
+          </Reveal>
         </div>
       </section>
 

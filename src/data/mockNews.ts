@@ -1,4 +1,4 @@
-import { HERO_IMAGE, PAGE_HERO_IMAGE, AMENITY_HERO_IMAGE, AMENITY_INSET_IMAGE } from './images';
+import { HERO_IMAGE, PAGE_HERO_IMAGE, AMENITY_HERO_IMAGE, AMENITY_INSET_IMAGE, NEWS_FEATURED_IMAGE } from './images';
 
 export interface NewsItem {
   id: number;
@@ -10,7 +10,7 @@ export interface NewsItem {
 export const mockNews: NewsItem[] = [
   {
     id: 1,
-    image: PAGE_HERO_IMAGE,
+    image: NEWS_FEATURED_IMAGE,
     date: '2026-07-31',
     title: 'Terra Việt tung ưu đãi "Đặc quyền Priority" cho khách hàng thân thiết',
   },

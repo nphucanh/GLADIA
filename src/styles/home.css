@@ -1,30 +1,40 @@
 /* =========================================================
-   Trang chủ (Home.tsx) — hiệu ứng "từng trang toàn màn hình"
+   Trang chủ (Home.tsx) — hiệu ứng "từng trang toàn màn hình" kiểu Morph:
+   các slide xếp chồng cố định (position:fixed), không cuộn tài liệu thật —
+   usePresentationScroll đổi slide "active", CSS lo phần hoà trộn (scale+fade).
    ========================================================= */
+html.home-snap, html.home-snap body{overflow:hidden;height:100%;}
 
-@media (pointer: coarse){
-  html.home-snap{
-    scroll-snap-type: y mandatory;
-  }
+/* Selector "section.morph-slide" (chứ không phải chỉ ".morph-slide") CỐ Ý để tăng độ đặc
+   thù (specificity 0,1,1) — bắt buộc phải thắng rule ".hero{position:relative}" (dùng chung
+   với banner ảnh các trang con, xem hero-shared.css) vốn có cùng độ đặc thù dạng class đơn
+   (0,1,0) và có thể đứng sau trong thứ tự bundle CSS tùy theo thứ tự import. Nếu để thua,
+   2 slide dùng chung class "hero" (Hero + Tiện ích) sẽ rơi về layout dòng chảy thường thay vì
+   toàn màn hình cố định — nội dung bị đẩy lệch khỏi khung nhìn và không cách nào cuộn tới. */
+section.morph-slide{
+  position:fixed;inset:0;z-index:1;padding:64px 0;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transform:scale(1.14) translateY(32px);
+  filter:blur(18px);
+  will-change:opacity, transform, filter;
+  transition:opacity 1.15s cubic-bezier(.22,.61,.36,1), transform 1.3s cubic-bezier(.22,.61,.36,1),
+    filter 1.15s cubic-bezier(.22,.61,.36,1), visibility 0s linear 1.3s;
 }
-.snap-section{
-  position:relative;
-  min-height:100vh;
-  overflow:hidden;
-  scroll-snap-align:start;
-  scroll-snap-stop:always;
+section.morph-slide.is-active{
+  opacity:1;visibility:visible;pointer-events:auto;z-index:2;
+  transform:scale(1) translateY(0);
+  filter:blur(0px);
+  transition:opacity 1.15s cubic-bezier(.22,.61,.36,1), transform 1.3s cubic-bezier(.22,.61,.36,1),
+    filter 1.15s cubic-bezier(.22,.61,.36,1);
 }
-section.snap-section{padding:64px 0;}
 .slide-center{
   display:flex;
   flex-direction:column;
   justify-content:center;
 }
 @media (max-width:720px){
-  .snap-section{min-height:auto;padding-top:96px;padding-bottom:96px;}
-}
-@media (prefers-reduced-motion: reduce){
-  html.home-snap{scroll-snap-type:none;}
+  .morph-slide{padding-top:96px;padding-bottom:96px;}
 }
 
 /* ---------- Slide "Hero" ---------- */
@@ -77,17 +87,22 @@ section.snap-section{padding:64px 0;}
 }
 .hero h1{font-size:clamp(2.4rem,5vw,4rem);color:var(--white);line-height:1.05;}
 .hero h1 .line{display:block;}
-.hero h1 .line span{display:inline-block;animation:riseUp .8s cubic-bezier(.2,.8,.2,1) both;}
-.hero h1 .line:nth-child(1) span{animation-delay:.05s;}
-.hero h1 .line:nth-child(2) span{animation-delay:.2s;}
-@keyframes riseUp{from{transform:translateY(110%);}to{transform:translateY(0);}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
-.hero .eyebrow{color:var(--gold);opacity:0;animation:fadeUp .7s ease .15s forwards;text-shadow:0 2px 10px rgba(0,0,0,.7);}
+.hero h1 .line span{display:inline-block;}
+.hero .eyebrow{color:var(--gold);text-shadow:0 2px 10px rgba(0,0,0,.7);}
 .hero .eyebrow::before{background:var(--gold);}
-.hero p.lead{opacity:0;animation:fadeUp .7s ease .45s forwards;}
-.hero-actions{display:flex;gap:16px;margin-top:34px;flex-wrap:wrap;opacity:0;animation:fadeUp .7s ease .62s forwards;}
-.hero-logotype{opacity:0;animation:fadeUp 1s ease .3s forwards;}
+.hero-actions{display:flex;gap:16px;margin-top:34px;flex-wrap:wrap;}
 .hero p.lead{font-size:1.1rem;color:#e6e2d2;max-width:520px;margin-top:1.2em;}
+
+/* Xuất hiện lại mỗi lần quay về slide này (gate bằng .is-active), không chỉ lần đầu mount */
+@keyframes riseUp{from{opacity:0;transform:translateY(110%);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+.morph-slide.is-active .hero h1 .line span{animation:riseUp 1.4s cubic-bezier(.2,.8,.2,1) both;}
+.morph-slide.is-active .hero h1 .line:nth-child(1) span{animation-delay:.18s;}
+.morph-slide.is-active .hero h1 .line:nth-child(2) span{animation-delay:.52s;}
+.morph-slide.is-active .hero .eyebrow{animation:fadeUp 1.2s ease .36s both;}
+.morph-slide.is-active .hero p.lead{animation:fadeUp 1.2s ease .9s both;}
+.morph-slide.is-active .hero-actions{animation:fadeUp 1.2s ease 1.3s both;}
+.morph-slide.is-active .hero-logotype{animation:fadeUp 1.6s ease .6s both;}
 
 /* ---------- Nút cuộn nổi (dưới sidebar): xuống slide kế tiếp, đổi thành go-top ở slide cuối ---------- */
 .home-slide-nav-btn{
@@ -189,14 +204,6 @@ section.snap-section{padding:64px 0;}
 .stat{text-align:center;}
 .stat .num{font-family:'Fraunces',serif;font-size:2rem;font-weight:600;}
 .stat .label{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;margin-top:4px;}
-
-/* ---------- Slide "Tiện ích" ---------- */
-.home-slide-inset{
-  position:absolute;right:6%;bottom:110px;z-index:2;
-  width:280px;height:180px;object-fit:cover;
-  border:6px solid var(--bg);box-shadow:var(--shadow);
-}
-@media (max-width:860px){.home-slide-inset{display:none;}}
 
 /* ---------- Slide "Liên hệ" ---------- */
 .contact-wave-bg{position:absolute;inset:0;z-index:0;opacity:.8;animation:waveBgDrift 16s ease-in-out infinite alternate;}

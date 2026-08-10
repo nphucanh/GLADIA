@@ -18,3 +18,8 @@ export const AMENITY_HERO_IMAGE =
 // Khu hồ bơi lúc hoàng hôn — ảnh lồng góc dưới của banner Tiện ích
 export const AMENITY_INSET_IMAGE =
   'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=1000&q=80';
+
+// Toà nhà kính hiện đại, khung ngang — ảnh tin nổi bật đầu trang Tin tức.
+// Cắt cứng theo tỉ lệ ngang (w/h) để không bao giờ bị lệch dọc dù ảnh gốc là ảnh đứng.
+export const NEWS_FEATURED_IMAGE =
+  'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&h=1000&q=80';

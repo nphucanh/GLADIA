@@ -11,6 +11,8 @@ import ProjectsPage from './pages/Projects';
 import Amenities from './pages/Amenities';
 import Contact from './pages/Contact';
 import News from './pages/News';
+import Library from './pages/Library';
+import Careers from './pages/Careers';
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -39,6 +41,8 @@ export default function App() {
               <Route path="/du-an" element={<ProjectsPage />} />
               <Route path="/tin-tuc" element={<News />} />
               <Route path="/tien-ich" element={<Amenities />} />
+              <Route path="/thu-vien" element={<Library />} />
+              <Route path="/tuyen-dung" element={<Careers />} />
               <Route path="/lien-he" element={<Contact />} />
             </Routes>
           </div>
