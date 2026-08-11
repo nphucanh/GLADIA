@@ -51,7 +51,6 @@
   margin-top:clamp(120px,16vw,190px);
 }
 .amenity-showcase-foot p{color:#5c5648;font-size:1rem;line-height:1.85;max-width:640px;margin:0;}
-.amenity-showcase-foot .cta-btn{flex-shrink:0;}
 
 @media (max-width:860px){
   .amenity-media-secondary{position:relative;right:auto;bottom:auto;width:70%;margin:16px 0 0 auto;}

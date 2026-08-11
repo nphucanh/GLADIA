@@ -38,3 +38,26 @@
     margin-right:auto;
   }
 }
+
+/* Tiêu đề serif thanh lịch trên banner (trang con) — cùng công thức với .hero h1 */
+.page-hero h1{
+  font-family:'Fraunces',serif;font-weight:500;font-style:normal;text-transform:none;letter-spacing:-.01em;
+  line-height:1.05;
+  font-size:clamp(2.4rem,5.5vw,4.2rem);
+  color:var(--white);
+  text-shadow:0 6px 24px rgba(0,0,0,.35);
+}
+/* Đoạn "Terra Việt" bên trong tiêu đề — giữ kiểu chữ đậm-hoa Anton làm điểm nhấn thương hiệu */
+.h1-brand{
+  font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;
+  letter-spacing:.02em;font-size:.62em;
+}
+.page-hero .eyebrow{
+  display:inline-flex;align-items:center;
+  background:rgba(255,253,248,.95);color:var(--forest-2);
+  padding:.5em 1.15em;border-radius:999px;
+  font-family:'Fraunces',serif;font-style:italic;font-weight:500;
+  font-size:.92rem;letter-spacing:.01em;text-transform:none;
+  box-shadow:0 10px 24px -12px rgba(0,0,0,.5);
+}
+.page-hero .eyebrow::before{content:none;}

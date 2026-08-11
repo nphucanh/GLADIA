@@ -12,10 +12,8 @@ export default function News() {
         <HeroPhoto image={PAGE_HERO_IMAGE} />
         <div className="hero-grid" />
         <div className="wrap">
-          <div className="eyebrow" style={{ color: 'var(--gold)' }}>
-            Cập nhật
-          </div>
-          <h1 style={{ fontSize: 'clamp(1.8rem,3.5vw,2.6rem)' }}>Tin tức Terra Việt</h1>
+          <div className="eyebrow">Cập nhật</div>
+          <h1>Tin tức <span className="h1-brand">Terra Việt</span></h1>
         </div>
       </section>
 

@@ -1,6 +1,11 @@
 /* ---------- Reset & typography nền tảng ---------- */
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;background:var(--bg);}
+
+/* Ẩn thanh cuộn (scrollbar) trên toàn site — vẫn cuộn được bình thường bằng chuột/bàn phím/
+   chạm, chỉ không hiển thị thanh dọc bên cạnh trình duyệt hay bên trong từng slide. */
+*{scrollbar-width:none;-ms-overflow-style:none;}
+*::-webkit-scrollbar{display:none;width:0;height:0;}
 body{
   margin:0;
   background:var(--bg);
@@ -35,23 +40,6 @@ button{font-family:inherit;cursor:pointer;}
   margin-bottom:.9em;
 }
 .eyebrow::before{content:'';width:22px;height:1px;background:var(--gold);display:inline-block;}
-
-/* ---------- Nút bấm dùng chung ---------- */
-.cta-btn{
-  background:var(--forest);color:var(--white);
-  padding:12px 22px;font-weight:700;font-size:.85rem;
-  border:none;border-radius:var(--radius);
-  letter-spacing:.02em;
-  transition:background .2s ease, transform .2s ease;
-}
-.cta-btn:hover{background:var(--forest-2);transform:translateY(-2px);}
-.cta-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
-.cta-btn.ghost{background:transparent;color:var(--forest);border:1.5px solid var(--forest);}
-.cta-btn.ghost:hover{background:var(--forest);color:var(--white);}
-.cta-btn.brick{background:var(--brick);color:var(--white);}
-.cta-btn.brick:hover{background:var(--color-normal-brown-dark);}
-.cta-btn.ghost.gold{color:var(--gold);border-color:var(--gold);}
-.cta-btn.ghost.gold:hover{background:var(--gold);color:var(--white);}
 
 /* ---------- Blueprint corner marks (signature element, dùng ở nhiều trang) ---------- */
 .blueprint{position:relative;}

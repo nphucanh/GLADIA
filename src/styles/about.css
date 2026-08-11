@@ -3,51 +3,202 @@
    slide mở đầu (hero) + 4 slide Sứ mệnh/Tầm nhìn/Định hướng phát triển/Giá trị cốt lõi,
    xen kẽ nền sáng/tối, dùng chung cơ chế morph-slide + orb trôi của home.css.
    ========================================================= */
-.about-detail-slide{overflow:hidden;}
 
-#slide-mission, #slide-direction{
-  background-color:var(--color-normal);
-  background-image:
-    radial-gradient(ellipse 65% 55% at 20% 25%, rgba(232,210,180,.55) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 75%, rgba(118,86,61,.22) 0%, transparent 60%);
-  background-repeat:no-repeat;
-  background-size:180% 180%;
-  animation:marbleDrift 90s ease-in-out infinite alternate;
+/* ---------- Slide mở đầu (#slide-intro) — ghi đè riêng .hero h1 dùng chung với Trang chủ:
+   line-height:.6 + cỡ chữ tới 7.8rem của Trang chủ được tinh chỉnh cho tiêu đề ngắn 1-2 từ
+   ("Kiến tạo"), áp lên 2 dòng dài của About ("Xây dựng từ niềm tin," / "phát triển bằng
+   trách nhiệm.") sẽ vỡ chữ/chồng lấn khó đọc — nên tách riêng cỡ chữ & dòng hợp lý hơn. */
+#slide-intro h1{
+  font-family:'Fraunces',serif;font-weight:600;font-style:normal;letter-spacing:-.01em;
+  font-size:clamp(2.4rem,5vw,4.1rem);line-height:1.15;
 }
-#slide-vision, #slide-values{
-  background-color:var(--color-highlight-dark);
-  background-image:
-    radial-gradient(ellipse 65% 55% at 22% 22%, rgba(70,112,132,.5) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 78% 80%, rgba(0,0,0,.3) 0%, transparent 60%);
-  background-repeat:no-repeat;
-  background-size:180% 180%;
-  animation:marbleDrift 110s ease-in-out infinite alternate-reverse;
+#slide-intro h1 .line:nth-child(2) span{
+  font-family:'Fraunces',serif;font-weight:600;font-style:normal;
+  font-size:1em;letter-spacing:-.01em;
+}
+@media (min-width:641px){
+  #slide-intro.hero .wrap.hero-inner{
+    margin-left:max(calc((100% - 680px) / 2), calc(var(--sidebar-w) + 32px));
+  }
 }
 
-.about-detail-layout{
-  max-width:720px;margin:0 auto;text-align:center;
-  display:flex;flex-direction:column;align-items:center;gap:22px;
+.mission-slide{overflow:hidden;background:#14261b;}
+.mission-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg, rgba(10,9,7,.68) 0%, rgba(10,9,7,.4) 38%, rgba(10,9,7,.32) 55%, rgba(10,9,7,.62) 100%);
 }
-.about-detail-icon{
-  width:84px;height:84px;border-radius:50%;flex-shrink:0;
-  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.3);color:var(--gold);
+.mission-heading{
+  position:relative;z-index:2;
+  text-align:center;margin-bottom:130px;
+}
+.mission-heading .eyebrow{
+  display:inline-flex;justify-content:center;
+  background:rgba(255,253,248,.95);color:var(--forest-2);
+  padding:.5em 1.15em;border-radius:999px;
+  font-family:'Fraunces',serif;font-style:italic;font-weight:500;
+  font-size:.92rem;letter-spacing:.01em;text-transform:none;
+  box-shadow:0 10px 24px -12px rgba(0,0,0,.6);
+  text-shadow:none;margin-bottom:1.2em;
+}
+.mission-heading .eyebrow::before{display:none;}
+.mission-heading h2{font-size:clamp(2.6rem,5.5vw,4.4rem);color:var(--white);text-shadow:0 6px 24px rgba(0,0,0,.5);}
+@media (max-width:640px)
+{
+  .mission-heading{
+    margin-bottom:70px;
+  }
+}
+.mission-columns{
+  position:relative;
+  z-index:2;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:225px;
+  max-width:1360px;
+  margin:0 auto;
+}
+.mission-col{
+  display:flex;
+  flex-direction:column;align-items:center;text-align:center;
+  color:var(--white);cursor:default;
+}
+.mission-col-icon{
+  position:relative;
+  width:72px;height:72px;border-radius:50%;flex-shrink:0;
+  border:1px solid rgba(255,255,255,.55);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--white);
+  box-shadow:0 0 26px rgba(255,255,255,.35);
+  margin-bottom:20px;
+  transition:transform .4s cubic-bezier(.2,.8,.2,1), border-color .3s ease, color .3s ease, box-shadow .3s ease;
+}
+.mission-col-icon svg{width:28px;height:28px;position:relative;z-index:1;}
+/* Vòng sáng quét quanh viền — mô phỏng ánh kim lấp lánh, chỉ hiện khi hover */
+.mission-col-icon::before{
+  content:'';position:absolute;inset:-3px;border-radius:50%;
+  padding:1.5px;
+  background:conic-gradient(from 0deg, transparent 0%, #fff6da 6%, #ffe9a8 12%, transparent 22%, transparent 100%);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .3s ease;
+  animation:missionSparkleSpin 2.2s linear infinite;
+  pointer-events:none;
+}
+/* Tia sao nhấp nháy góc icon */
+.mission-col-icon::after{
+  content:'✦';position:absolute;top:-8px;right:-4px;z-index:2;
+  font-size:15px;line-height:1;color:#fff6da;
+  text-shadow:0 0 6px #ffe9a8, 0 0 14px #f5c451;
+  opacity:0;transform:scale(.5);
+  transition:opacity .3s ease, transform .3s ease;
+}
+.mission-col:hover .mission-col-icon::before{opacity:1;}
+.mission-col:hover .mission-col-icon::after{opacity:1;transform:scale(1);animation:missionSparkleTwinkle 1.5s ease-in-out .3s infinite;}
+@keyframes missionSparkleSpin{to{transform:rotate(360deg);}}
+@keyframes missionSparkleTwinkle{
+  0%,100%{opacity:.55;transform:scale(.85) rotate(0deg);}
+  50%{opacity:1;transform:scale(1.2) rotate(20deg);}
+}
+.mission-col h3{
+  font-family:'Manrope',sans-serif;font-weight:800;font-size:.92rem;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--white);
+  margin-bottom:12px;
+  transition:color .3s ease;
+}
+.mission-col-lines p{color:rgba(255,255,255,.88);font-size:.88rem;line-height:1.65;margin:0 0 .25em;}
+.mission-col-lines p:last-child{margin-bottom:0;}
+.mission-col-line{
+  width:1px;height:130px;flex-shrink:0;
+  background:linear-gradient(180deg, rgba(255,255,255,.75) 0%, rgba(255,255,255,0) 100%);
+  margin-top:24px;
+  transition:background .3s ease;
+}
+/* Hover: icon nhích lên + viền/đổ bóng chuyển vàng ánh kim (không phải cam), đường kẻ/tiêu đề sáng theo */
+.mission-col:hover .mission-col-icon{
+  transform:translateY(-8px) scale(1.08);
+  border-color:#f5c451;
+  color:#ffe9a8;
+  box-shadow:0 0 34px rgba(245,196,81,.65);
+}
+.mission-col:hover h3{color:#ffe9a8;}
+.mission-col:hover .mission-col-line{
+  background:linear-gradient(180deg, #f5c451 0%, rgba(245,196,81,0) 100%);
+}
+@media (max-width:860px){
+  .mission-columns{grid-template-columns:1fr;gap:48px;max-width:360px;}
+  .mission-col-line{height:60px;}
+}
+/* ---------- Slide "Tầm nhìn" — ảnh nền toàn màn hình hiện nguyên (không bảng phủ màu kem),
+   chữ căn lề phải, khối chữ nằm bên phải; phủ tối đậm như section Sứ mệnh để đọc rõ
+   (icon mục tiêu + tiêu đề lớn, danh sách icon-tròn/đoạn văn ngăn cách bằng gạch mảnh). ---------- */
+.vision-slide{overflow:hidden;background:#101d16;}
+.vision-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg, rgba(10,9,7,.68) 0%, rgba(10,9,7,.4) 38%, rgba(10,9,7,.32) 55%, rgba(10,9,7,.62) 100%);
+}
+.vision-layout{position:relative;z-index:2;max-width:600px;margin:0 auto;text-align:center;}
+.vision-heading{position:relative;z-index:2;text-align:center;margin-bottom:56px;}
+.vision-heading .eyebrow{
+  display:inline-flex;justify-content:center;
+  background:rgba(255,253,248,.95);color:var(--forest-2);
+  padding:.5em 1.15em;border-radius:999px;
+  font-family:'Fraunces',serif;font-style:italic;font-weight:500;
+  font-size:.92rem;letter-spacing:.01em;text-transform:none;
+  box-shadow:0 10px 24px -12px rgba(0,0,0,.6);
+  text-shadow:none;
+}
+.vision-heading .eyebrow::before{display:none;}
+.vision-layout h2{color:var(--white);font-size:clamp(2.2rem,4.5vw,3.4rem);margin:0 0 44px;text-shadow:0 6px 24px rgba(0,0,0,.5);}
+.vision-items{display:flex;flex-direction:column;}
+.vision-item{
+  display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:20px;
+  padding:26px 0;border-top:1px solid rgba(255,255,255,.22);
+}
+.vision-item-icon{
+  width:46px;height:46px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid #f5c451;color:#ffe9a8;
   display:flex;align-items:center;justify-content:center;
 }
-.about-detail-icon svg{width:34px;height:34px;}
-.about-detail-layout h2{font-size:clamp(1.9rem,4vw,3rem);}
-.about-detail-body p{color:var(--fg-dim);font-size:1rem;line-height:1.7;max-width:620px;margin:0 auto .8em;}
-.about-detail-body p:last-child{margin-bottom:0;}
-
-/* Slide nền sáng (Sứ mệnh, Định hướng phát triển) cần đổi màu chữ tối để đọc được */
-.about-detail-light .about-detail-icon{
-  background:rgba(0,0,0,.05);border-color:rgba(0,0,0,.18);color:var(--forest);
+.vision-item-icon svg{width:20px;height:20px;}
+.vision-item p{color:rgba(255,255,255,.88);font-size:1rem;line-height:1.7;margin:0;text-shadow:0 2px 10px rgba(0,0,0,.4);}
+@media (max-width:860px){
+  .vision-slide .wrap.vision-layout{margin:0 auto;max-width:560px;}
 }
-.about-detail-light .eyebrow{color:var(--ink);}
-.about-detail-light .eyebrow::before{background:var(--ink);}
-.about-detail-light h2{color:var(--ink);}
-.about-detail-light .about-detail-body p{color:#5c5648;}
 
-@media (max-width:640px){
-  .about-detail-icon{width:64px;height:64px;}
-  .about-detail-icon svg{width:26px;height:26px;}
+/* ---------- Slide "Định hướng phát triển" & "Giá trị cốt lõi" — dùng chung ảnh nền
+   sứ-mệnh (skyline) như 2 slide trước. Định hướng tái dùng bố cục 2 cột icon-tròn/tiêu đề/
+   đoạn văn (.mission-col + .values-columns, mỗi cột 1 mốc thời gian); Giá trị cốt lõi tái
+   dùng bố cục danh sách icon-tròn/đoạn văn (.vision-item + .direction-layout, mỗi mục 1 giá
+   trị) — hoán đổi ngược lại so với thiết kế trước đó. ---------- */
+.direction-slide{overflow:hidden;background:#1c1712;}
+.direction-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg, rgba(10,9,7,.68) 0%, rgba(10,9,7,.4) 38%, rgba(10,9,7,.32) 55%, rgba(10,9,7,.62) 100%);
+}
+.direction-heading{position:relative;z-index:2;text-align:center;margin-bottom:56px;}
+.direction-heading .eyebrow{
+  display:inline-flex;justify-content:center;
+  background:rgba(255,253,248,.95);color:var(--forest-2);
+  padding:.5em 1.15em;border-radius:999px;
+  font-family:'Fraunces',serif;font-style:italic;font-weight:500;
+  font-size:.92rem;letter-spacing:.01em;text-transform:none;
+  box-shadow:0 10px 24px -12px rgba(0,0,0,.6);
+  text-shadow:none;margin-bottom:1.2em;
+}
+.direction-heading .eyebrow::before{display:none;}
+.direction-heading h2{font-size:clamp(2.2rem,4.5vw,3.4rem);color:var(--white);margin:0;text-shadow:0 6px 24px rgba(0,0,0,.5);}
+.direction-layout{position:relative;z-index:2;max-width:600px;margin:0 auto;}
+
+.values-slide{overflow:hidden;background:#101d16;}
+.values-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg, rgba(10,9,7,.68) 0%, rgba(10,9,7,.4) 38%, rgba(10,9,7,.32) 55%, rgba(10,9,7,.62) 100%);
+}
+.values-columns{
+  position:relative;z-index:2;
+  display:grid;grid-template-columns:repeat(2,1fr);gap:120px;
+  max-width:900px;margin:0 auto;
+}
+@media (max-width:860px){
+  .values-columns{grid-template-columns:1fr;gap:48px;max-width:360px;}
 }

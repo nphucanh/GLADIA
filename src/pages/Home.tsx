@@ -6,6 +6,8 @@ import NewsCard from '../components/NewsCard';
 import Reveal from '../components/Reveal';
 import StatCounter from '../components/StatCounter';
 import HeroPhoto from '../components/HeroPhoto';
+import { Button } from '../components/ui/button';
+import { Card } from '../components/ui/card';
 import { HERO_IMAGE, AMENITY_HERO_IMAGE } from '../data/images';
 import { mockNews } from '../data/mockNews';
 import '../styles/home.css';
@@ -107,17 +109,13 @@ export default function Home() {
     <main>
       <section className={slideClass('slide-hero', 'hero hero-photo')} id="slide-hero">
         <HeroPhoto image={HERO_IMAGE} />
-        <div className="hero-grid" />
 
-        {/* Logotype khổng lồ, mờ dần — lấy cảm hứng bố cục từ thegio.vn */}
         <div className="hero-logotype" aria-hidden="true">
-          <span className="hlt-small">Terra</span>
-          <span className="hlt-big">VIỆT</span>
+          <span className="hlt-big">TERRA</span>
           <span className="hlt-caption">R E A L &nbsp; E S T A T E &nbsp; G R O U P</span>
         </div>
 
         <div className="wrap hero-inner">
-          <div className="eyebrow">Terra Việt Group · Từ 2010</div>
           <h1>
             <span className="line">
               <span>Kiến tạo</span>
@@ -131,16 +129,16 @@ export default function Home() {
             cùng tồn tại hài hoà.
           </p>
           <div className="hero-actions">
-            <button className="cta-btn brick" onClick={() => navigate('/du-an')}>
+            <Button variant="brick" onClick={() => navigate('/du-an')}>
               Khám phá dự án
-            </button>
-            <button
-              className="cta-btn ghost"
-              style={{ color: '#fff', borderColor: '#fff' }}
+            </Button>
+            <Button
+              variant="outline"
+              className="border-white text-white hover:bg-white hover:text-[var(--forest)]"
               onClick={() => navigate('/lien-he')}
             >
               Đăng ký tư vấn
-            </button>
+            </Button>
           </div>
         </div>
       </section>
@@ -157,9 +155,9 @@ export default function Home() {
                 Từ 2010, Terra Việt theo đuổi triết lý phát triển bền vững: mỗi dự án là một hệ sinh thái sống,
                 không chỉ là công trình bất động sản.
               </p>
-              <button className="cta-btn ghost about-cta" onClick={() => navigate('/gioi-thieu')}>
+              <Button variant="outline" onClick={() => navigate('/gioi-thieu')}>
                 Tìm hiểu thêm về chúng tôi
-              </button>
+              </Button>
             </div>
           </Reveal>
           <div className="about-stats-grid">
@@ -170,7 +168,7 @@ export default function Home() {
                 delay={600 + i * 260}
                 active={activeIndex === SLIDE_IDS.indexOf('slide-about')}
               >
-                <div className="about-stat-card">
+                <Card className="about-stat-card border-0">
                   <span className="about-stat-icon">{s.icon}</span>
                   <StatCounter
                     target={s.target}
@@ -178,7 +176,7 @@ export default function Home() {
                     delay={280}
                     active={activeIndex === SLIDE_IDS.indexOf('slide-about')}
                   />
-                </div>
+                </Card>
               </Reveal>
             ))}
           </div>
@@ -213,9 +211,9 @@ export default function Home() {
                 </Reveal>
               ))}
             </div>
-            <button type="button" className="cta-btn ghost gold" onClick={() => navigate('/tin-tuc')}>
+            <Button type="button" variant="gold" onClick={() => navigate('/tin-tuc')}>
               Xem thêm →
-            </button>
+            </Button>
           </div>
         </div>
       </section>
@@ -230,9 +228,7 @@ export default function Home() {
           delay={320}
           active={activeIndex === SLIDE_IDS.indexOf('slide-amenities')}
         >
-          <div className="eyebrow" style={{ color: 'var(--gold)' }}>
-            Trải nghiệm sống
-          </div>
+          <div className="eyebrow">Trải nghiệm sống</div>
           <h1>Tiện ích</h1>
           <p className="lead" style={{ color: '#e6e2d2', maxWidth: 520 }}>
             Hệ thống tiện ích nội khu được thiết kế theo mô hình{' '}
@@ -240,9 +236,9 @@ export default function Home() {
             làm việc, học tập và giải trí của từng thành viên trong gia đình.
           </p>
           <div className="hero-actions">
-            <button className="cta-btn brick" onClick={() => navigate('/tien-ich')}>
+            <Button variant="brick" onClick={() => navigate('/tien-ich')}>
               Xem thêm
-            </button>
+            </Button>
           </div>
         </Reveal>
       </section>

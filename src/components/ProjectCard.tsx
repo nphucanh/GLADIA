@@ -1,6 +1,8 @@
 import { Project } from '../types';
 import { bgByBuilding, fmtDate, fmtNumber, lotCode } from '../utils/format';
 import BuildingIllustration from './BuildingIllustration';
+import { Card } from './ui/card';
+import { Badge } from './ui/badge';
 
 interface ProjectCardProps {
   project: Project;
@@ -9,9 +11,9 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project, onDetail }: ProjectCardProps) {
   return (
-    <div className="card blueprint">
+    <Card className="card blueprint">
       <div className="thumb" style={{ background: bgByBuilding[project.building] }}>
-        <span className="badge">{project.status}</span>
+        <Badge className="badge">{project.status}</Badge>
         <span className="lot">{lotCode(project.id)}</span>
         <BuildingIllustration type={project.building} />
       </div>
@@ -33,6 +35,6 @@ export default function ProjectCard({ project, onDetail }: ProjectCardProps) {
           </button>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

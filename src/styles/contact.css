@@ -5,18 +5,10 @@
 @media (max-width:900px){.contact-grid{grid-template-columns:1fr;}}
 form.contact-form{background:var(--white);border:1px solid var(--mist);color:var(--ink);padding:40px;}
 .field{margin-bottom:22px;}
-.field label{display:block;font-size:.82rem;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;color:#4a4538;}
-.field input, .field select, .field textarea{
-  width:100%;padding:13px 16px;border:1.5px solid var(--mist);
-  background:var(--canvas);font-family:'Manrope',sans-serif;font-size:.95rem;
-  border-radius:var(--radius);
-}
-.field input:focus, .field select:focus, .field textarea:focus{border-color:var(--forest);outline:none;background:var(--white);}
-.field textarea{min-height:120px;resize:vertical;}
 .row-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
 @media (max-width:560px){.row-2{grid-template-columns:1fr;}}
 .err{color:var(--color-red);font-size:.78rem;margin-top:6px;display:none;}
-.field.invalid input,.field.invalid select,.field.invalid textarea{border-color:var(--color-red);}
+.field.invalid input,.field.invalid textarea{border-color:var(--color-red);}
 .field.invalid .err{display:block;}
 .info-card{background:var(--forest);color:var(--white);padding:36px;margin-bottom:20px;}
 .info-card h4{color:var(--white);}

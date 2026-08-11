@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import HeroPhoto from '../components/HeroPhoto';
 import Reveal from '../components/Reveal';
+import { Button } from '../components/ui/button';
+import { Card } from '../components/ui/card';
 import { PAGE_HERO_IMAGE } from '../data/images';
 import '../styles/resource-pages.css';
 
@@ -57,9 +59,7 @@ export default function Careers() {
         <HeroPhoto image={PAGE_HERO_IMAGE} />
         <div className="hero-grid" />
         <div className="wrap">
-          <div className="eyebrow" style={{ color: 'var(--gold)' }}>
-            Tuyển dụng
-          </div>
+          <div className="eyebrow">Tuyển dụng</div>
           <h1>Cùng kiến tạo không gian sống thật.</h1>
           <p className="lead" style={{ color: '#e6e2d2', maxWidth: 560 }}>
             Terra Việt luôn tìm kiếm những cộng sự tận tâm, sẵn sàng phát triển sự nghiệp lâu dài cùng chúng tôi.
@@ -78,15 +78,15 @@ export default function Careers() {
         <div className="tile-grid">
           {JOBS.map((j, i) => (
             <Reveal key={j.title} delay={i * 60}>
-              <div className="tile-card blueprint">
+              <Card className="tile-card blueprint">
                 <div className="ic">{j.icon}</div>
                 <h3>{j.title}</h3>
                 <div className="tile-meta">{j.meta}</div>
                 <p>{j.body}</p>
-                <Link to="/lien-he" className="cta-btn ghost">
-                  Ứng tuyển →
-                </Link>
-              </div>
+                <Button asChild variant="outline" className="self-start mt-1">
+                  <Link to="/lien-he">Ứng tuyển →</Link>
+                </Button>
+              </Card>
             </Reveal>
           ))}
         </div>

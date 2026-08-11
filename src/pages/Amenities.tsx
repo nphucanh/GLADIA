@@ -1,4 +1,5 @@
 import Reveal from '../components/Reveal';
+import { Button } from '../components/ui/button';
 import { AMENITY_HERO_IMAGE, AMENITY_INSET_IMAGE } from '../data/images';
 import '../styles/amenities.css';
 
@@ -115,9 +116,9 @@ export default function Amenities() {
               <strong>"Live - Work - Learn - Play"</strong>, đáp ứng đầy đủ nhu cầu "Sống - Làm việc - Học tập - Giải
               trí" của từng thành viên trong gia đình.
             </p>
-            <a href="#amenities-grid" className="cta-btn ghost">
-              Xem thêm →
-            </a>
+            <Button asChild variant="outline" className="shrink-0">
+              <a href="#amenities-grid">Xem thêm →</a>
+            </Button>
           </div>
         </div>
       </section>

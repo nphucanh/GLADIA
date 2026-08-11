@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import HeroPhoto from '../components/HeroPhoto';
 import Reveal from '../components/Reveal';
+import { Button } from '../components/ui/button';
+import { Card } from '../components/ui/card';
 import { PAGE_HERO_IMAGE } from '../data/images';
 import '../styles/resource-pages.css';
 
@@ -76,9 +78,7 @@ export default function Library() {
         <HeroPhoto image={PAGE_HERO_IMAGE} />
         <div className="hero-grid" />
         <div className="wrap">
-          <div className="eyebrow" style={{ color: 'var(--gold)' }}>
-            Thư viện
-          </div>
+          <div className="eyebrow">Thư viện</div>
           <h1>Tài liệu &amp; hình ảnh dự án.</h1>
           <p className="lead" style={{ color: '#e6e2d2', maxWidth: 560 }}>
             Toàn bộ brochure, video, mặt bằng và hồ sơ pháp lý các dự án Terra Việt — cập nhật liên tục.
@@ -97,14 +97,14 @@ export default function Library() {
         <div className="tile-grid">
           {RESOURCES.map((r, i) => (
             <Reveal key={r.title} delay={i * 60}>
-              <div className="tile-card blueprint">
+              <Card className="tile-card blueprint">
                 <div className="ic">{r.icon}</div>
                 <h3>{r.title}</h3>
                 <p>{r.body}</p>
-                <Link to="/lien-he" className="cta-btn ghost">
-                  Yêu cầu tài liệu →
-                </Link>
-              </div>
+                <Button asChild variant="outline" className="self-start mt-1">
+                  <Link to="/lien-he">Yêu cầu tài liệu →</Link>
+                </Button>
+              </Card>
             </Reveal>
           ))}
         </div>

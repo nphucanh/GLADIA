@@ -1,9 +1,16 @@
 import HeroPhoto from '../components/HeroPhoto';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Textarea } from '../components/ui/textarea';
+import { Label } from '../components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Separator } from '../components/ui/separator';
 import { PAGE_HERO_IMAGE } from '../data/images';
 import { FormEvent, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useProjectsContext } from '../context/ProjectsContext';
 import { supabase } from '../lib/supabaseClient';
+import { cn } from '../lib/utils';
 import '../styles/contact.css';
 
 interface LocationState {
@@ -91,10 +98,8 @@ export default function Contact() {
         <HeroPhoto image={PAGE_HERO_IMAGE} />
         <div className="hero-grid" />
         <div className="wrap">
-          <div className="eyebrow" style={{ color: 'var(--gold)' }}>
-            Liên hệ
-          </div>
-          <h1 style={{ fontSize: 'clamp(1.8rem,3.5vw,2.6rem)' }}>Đăng ký tư vấn miễn phí</h1>
+          <div className="eyebrow">Liên hệ</div>
+          <h1>Đăng ký tư vấn miễn phí</h1>
           <p className="lead" style={{ color: '#e6e2d2', maxWidth: 520 }}>
             Để lại thông tin, đội ngũ tư vấn của Terra Việt sẽ liên hệ trong vòng 24 giờ.
           </p>
@@ -110,8 +115,8 @@ export default function Contact() {
             <form className="contact-form blueprint" onSubmit={handleSubmit} noValidate>
               <div className="row-2">
                 <div className={`field ${errors.name ? 'invalid' : ''}`}>
-                  <label htmlFor="cName">Họ và tên *</label>
-                  <input
+                  <Label htmlFor="cName">Họ và tên *</Label>
+                  <Input
                     id="cName"
                     type="text"
                     placeholder="Nguyễn Văn A"
@@ -121,8 +126,8 @@ export default function Contact() {
                   <div className="err">Vui lòng nhập họ tên.</div>
                 </div>
                 <div className={`field ${errors.phone ? 'invalid' : ''}`}>
-                  <label htmlFor="cPhone">Số điện thoại *</label>
-                  <input
+                  <Label htmlFor="cPhone">Số điện thoại *</Label>
+                  <Input
                     id="cPhone"
                     type="tel"
                     placeholder="09xx xxx xxx"
@@ -133,8 +138,8 @@ export default function Contact() {
                 </div>
               </div>
               <div className={`field ${errors.email ? 'invalid' : ''}`}>
-                <label htmlFor="cEmail">Email *</label>
-                <input
+                <Label htmlFor="cEmail">Email *</Label>
+                <Input
                   id="cEmail"
                   type="email"
                   placeholder="ban@email.com"
@@ -144,40 +149,48 @@ export default function Contact() {
                 <div className="err">Email không hợp lệ.</div>
               </div>
               <div className="field">
-                <label htmlFor="cProject">Dự án quan tâm</label>
-                <select id="cProject" value={form.project} onChange={(e) => set('project', e.target.value)}>
-                  <option value="">— Chọn dự án (không bắt buộc) —</option>
-                  {projects.map((p) => (
-                    <option key={p.id} value={p.name}>
-                      {p.name} ({p.location})
-                    </option>
-                  ))}
-                </select>
+                <Label htmlFor="cProject">Dự án quan tâm</Label>
+                <Select value={form.project || undefined} onValueChange={(v) => set('project', v)}>
+                  <SelectTrigger id="cProject" className="w-full">
+                    <SelectValue placeholder="— Chọn dự án (không bắt buộc) —" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projects.map((p) => (
+                      <SelectItem key={p.id} value={p.name}>
+                        {p.name} ({p.location})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className={`field ${errors.topic ? 'invalid' : ''}`}>
-                <label htmlFor="cTopic">Vấn đề cần tư vấn *</label>
-                <select id="cTopic" value={form.topic} onChange={(e) => set('topic', e.target.value)}>
-                  <option value="">— Chọn chủ đề —</option>
-                  {TOPICS.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </select>
+                <Label htmlFor="cTopic">Vấn đề cần tư vấn *</Label>
+                <Select value={form.topic || undefined} onValueChange={(v) => set('topic', v)}>
+                  <SelectTrigger id="cTopic" className={cn('w-full', errors.topic && 'border-(--color-red)')}>
+                    <SelectValue placeholder="— Chọn chủ đề —" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TOPICS.map((t) => (
+                      <SelectItem key={t} value={t}>
+                        {t}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <div className="err">Vui lòng chọn chủ đề.</div>
               </div>
               <div className="field">
-                <label htmlFor="cMsg">Nội dung chi tiết</label>
-                <textarea
+                <Label htmlFor="cMsg">Nội dung chi tiết</Label>
+                <Textarea
                   id="cMsg"
                   placeholder="Mô tả thêm về nhu cầu của bạn..."
                   value={form.message}
                   onChange={(e) => set('message', e.target.value)}
                 />
               </div>
-              <button type="submit" className="cta-btn brick" style={{ width: '100%' }} disabled={submitting}>
+              <Button type="submit" variant="brick" className="w-full" disabled={submitting}>
                 {submitting ? 'Đang gửi...' : 'Gửi yêu cầu tư vấn'}
-              </button>
+              </Button>
             </form>
           </div>
           <div>
@@ -191,6 +204,7 @@ export default function Contact() {
                 <span className="ic">MAIL</span>
                 <span>lienhe@terraviet.vn</span>
               </div>
+              <Separator className="my-4 bg-white/15" />
               <div className="info-row">
                 <span className="ic">ADD</span>
                 <span>Tòa nhà Terra, 88 Nguyễn Huệ, Q.1, TP.HCM</span>

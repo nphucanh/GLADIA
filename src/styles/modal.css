@@ -1,16 +1,8 @@
 /* =========================================================
    ProjectModal — dùng ở trang Dự án (Projects.tsx)
+   Phần overlay/vị trí/kích thước khung modal nay do component Dialog (shadcn) đảm nhiệm
+   (xem src/components/ui/dialog.tsx) — file này chỉ còn giữ style riêng cho nội dung bên trong.
    ========================================================= */
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(28,27,24,.6);z-index:1000;
-  display:none;align-items:center;justify-content:center;padding:24px;
-}
-.modal-overlay.open{display:flex;}
-.modal{
-  background:var(--white);color:var(--ink);max-width:720px;width:100%;max-height:88vh;overflow-y:auto;
-  position:relative;
-}
-.modal .thumb{height:240px;}
 .modal-body{padding:36px;}
 .modal-close{
   position:absolute;top:16px;right:16px;background:var(--ink);color:var(--white);
