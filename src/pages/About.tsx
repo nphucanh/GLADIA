@@ -2,13 +2,13 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HeroPhoto from '../components/HeroPhoto';
 import Reveal from '../components/Reveal';
-import { ABOUT_MISSION_IMAGE } from '../data/images';
+import { ABOUT_MISSION_IMAGE, PARTNER_LOGOS } from '../data/images';
 import { usePresentationScroll } from '../hooks/usePresentationScroll';
 import { useActiveSection, type RailItem } from '../context/ActiveSectionContext';
 import '../styles/home.css';
 import '../styles/about.css';
 
-const SLIDE_IDS = ['slide-intro', 'slide-mission', 'slide-vision', 'slide-direction', 'slide-values'];
+const SLIDE_IDS = ['slide-intro', 'slide-mission', 'slide-vision', 'slide-direction', 'slide-values', 'slide-partners'];
 
 const ABOUT_RAIL_ITEMS: RailItem[] = [
   { to: '/gioi-thieu', label: 'Giới thiệu', slide: 'slide-intro' },
@@ -16,11 +16,12 @@ const ABOUT_RAIL_ITEMS: RailItem[] = [
   { to: '/gioi-thieu', label: 'Tầm nhìn', slide: 'slide-vision' },
   { to: '/gioi-thieu', label: 'Định hướng phát triển', slide: 'slide-direction' },
   { to: '/gioi-thieu', label: 'Giá trị cốt lõi', slide: 'slide-values' },
+  { to: '/gioi-thieu', label: 'Đối tác', slide: 'slide-partners' },
 ];
 
-// Tổng số slide chi tiết (Sứ mệnh/Tầm nhìn/Định hướng phát triển/Giá trị cốt lõi) — dùng
-// để đánh số "0x / 04" nhất quán cho cả 4 slide, mỗi slide đều có bố cục riêng bên dưới.
-const TOTAL_DETAIL_SECTIONS = 4;
+// Tổng số slide chi tiết (Sứ mệnh/Tầm nhìn/Định hướng phát triển/Giá trị cốt lõi/Đối tác) — dùng
+// để đánh số "0x / 05" nhất quán cho cả 5 slide, mỗi slide đều có bố cục riêng bên dưới.
+const TOTAL_DETAIL_SECTIONS = 5;
 
 // Sứ mệnh: 3 cột nổi trên ảnh nền (xem MISSION_COLUMNS).
 const MISSION_COLUMNS = [
@@ -310,6 +311,42 @@ export default function About() {
                 </div>
               </div>
             </>
+          );
+        })()}
+      </section>
+
+      <section className={slideClass('slide-partners', 'slide-center partners-slide')} id="slide-partners">
+        <HeroPhoto image={ABOUT_MISSION_IMAGE} />
+        <div className="partners-overlay" aria-hidden="true" />
+        {(() => {
+          const active = activeIndex === SLIDE_IDS.indexOf('slide-partners');
+          return (
+            <div className="wrap partners-layout">
+              <Reveal variant="up" delay={100} active={active}>
+                <div className="eyebrow">{`05 / 0${TOTAL_DETAIL_SECTIONS}`}</div>
+                <h2>ĐỐI TÁC CỦA CHÚNG TÔI</h2>
+              </Reveal>
+              <Reveal variant="up" delay={220} active={active}>
+                <p className="partners-lead">
+                  Được biết đến là thương hiệu phân phối Bất động sản chuyên nghiệp, đẳng cấp trên thị trường Bất
+                  động sản hiện nay. Terra Việt đã và đang nhận được sự đánh giá cao về năng lực, kinh nghiệm, uy tín
+                  kinh doanh từ nhiều đối tác kinh doanh. Để vươn tới mục tiêu trở thành Nhà đầu tư và phát triển Bất
+                  động sản hàng đầu Việt Nam, Terra Việt mong muốn liên kết và hợp tác với tất cả các đối tác có cùng
+                  chiến lược phát triển trên cơ sở hợp tác bền vững và phát triển.
+                </p>
+              </Reveal>
+              <Reveal variant="pop" delay={340} active={active}>
+                <div className="partner-logo-row-wrap partners-logo-row-wrap">
+                  <div className="partner-logo-row">
+                    {[...PARTNER_LOGOS, ...PARTNER_LOGOS].map((p, i) => (
+                      <span className="partner-logo-chip" key={`${p.name}-${i}`}>
+                        <img src={p.src} alt={p.name} />
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </Reveal>
+            </div>
           );
         })()}
       </section>

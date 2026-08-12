@@ -5,9 +5,14 @@
  */
 import heroRiverside from '../assets/hero-1.png';
 import missionSkyline from '../assets/sứ-mệnh.png';
+import vinLogo from '../assets/vin-logo.png';
+import vcbLogo from '../assets/vcb-logo.png';
+import namLongLogo from '../assets/nam-long-logo.png';
+import hadoLogo from '../assets/hado-logo.png';
+import keppelLandLogo from '../assets/keppelLand-logo.png';
 
 // Cụm tháp đôi ven sông, cầu bắc ngang lúc hoàng hôn — ảnh render dự án, dùng chung cho hero
-// Trang chủ / Giới thiệu / Dự án / Liên hệ / Tuyển dụng / Thư viện / Tin tức
+// Trang chủ / Giới thiệu / Dự án / Liên hệ / Tuyển dụng / Tin tức
 export const HERO_IMAGE = heroRiverside;
 
 export const PAGE_HERO_IMAGE = heroRiverside;
@@ -43,3 +48,12 @@ export const ABOUT_DIRECTION_IMAGE =
 // Đội ngũ họp bàn, hợp tác — minh hoạ slide Giá trị cốt lõi (trang Giới thiệu)
 export const ABOUT_VALUES_IMAGE =
   'https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1200&q=80';
+
+// Logo đối tác — dùng cho dải logo chạy ở slide "Đối tác của chúng tôi" (trang Giới thiệu)
+export const PARTNER_LOGOS = [
+  { name: 'Vingroup', src: vinLogo },
+  { name: 'Vietcombank', src: vcbLogo },
+  { name: 'Nam Long', src: namLongLogo },
+  { name: 'Hà Đô Group', src: hadoLogo },
+  { name: 'Keppel Land', src: keppelLandLogo },
+];

@@ -1,5 +1,5 @@
 /* =========================================================
-   Lưới thẻ tài nguyên dùng chung — Thư viện (Library.tsx) & Tuyển dụng (Careers.tsx)
+   Lưới thẻ tài nguyên dùng cho trang Tuyển dụng (Careers.tsx)
    ========================================================= */
 .tile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
 @media (max-width:980px){.tile-grid{grid-template-columns:repeat(2,1fr);}}

@@ -147,20 +147,50 @@
   box-shadow:0 10px 24px -12px rgba(0,0,0,.6);
   text-shadow:none;
 }
-.vision-heading .eyebrow::before{display:none;}
-.vision-layout h2{color:var(--white);font-size:clamp(2.2rem,4.5vw,3.4rem);margin:0 0 44px;text-shadow:0 6px 24px rgba(0,0,0,.5);}
-.vision-items{display:flex;flex-direction:column;}
+.vision-heading .eyebrow::before{
+  display:none;
+}
+.vision-layout h2{
+  color:var(--white);
+  font-size:clamp(2.2rem,4.5vw,3.4rem);
+  margin:0 0 44px;
+  text-shadow:0 6px 24px rgba(0,0,0,.5);
+}
+.vision-items{
+  display:flex;
+  flex-direction:column;
+}
 .vision-item{
-  display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:20px;
-  padding:26px 0;border-top:1px solid rgba(255,255,255,.22);
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  justify-content:flex-start;
+  gap:20px;
+  padding:26px 0;
+  border-top:1px solid rgba(255,255,255,.22);
 }
 .vision-item-icon{
-  width:46px;height:46px;border-radius:50%;flex-shrink:0;
-  border:1.5px solid #f5c451;color:#ffe9a8;
-  display:flex;align-items:center;justify-content:center;
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  flex-shrink:0;
+  border:1.5px solid #f5c451;
+  color:#ffe9a8;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
-.vision-item-icon svg{width:20px;height:20px;}
-.vision-item p{color:rgba(255,255,255,.88);font-size:1rem;line-height:1.7;margin:0;text-shadow:0 2px 10px rgba(0,0,0,.4);}
+.vision-item-icon svg {
+  width:20px;
+  height:20px;
+}
+.vision-item p {
+  color:rgba(255,255,255,.88);
+  font-size:1rem;
+  line-height:1.7;
+  margin:0;
+  text-shadow:0 2px 10px rgba(0,0,0,.4);
+}
 @media (max-width:860px){
   .vision-slide .wrap.vision-layout{margin:0 auto;max-width:560px;}
 }
@@ -170,7 +200,10 @@
    đoạn văn (.mission-col + .values-columns, mỗi cột 1 mốc thời gian); Giá trị cốt lõi tái
    dùng bố cục danh sách icon-tròn/đoạn văn (.vision-item + .direction-layout, mỗi mục 1 giá
    trị) — hoán đổi ngược lại so với thiết kế trước đó. ---------- */
-.direction-slide{overflow:hidden;background:#1c1712;}
+.direction-slide {
+  overflow:hidden;
+  background:#1c1712;
+}
 .direction-overlay{
   position:absolute;inset:0;z-index:1;
   background:linear-gradient(180deg, rgba(10,9,7,.68) 0%, rgba(10,9,7,.4) 38%, rgba(10,9,7,.32) 55%, rgba(10,9,7,.62) 100%);
@@ -201,4 +234,51 @@
 }
 @media (max-width:860px){
   .values-columns{grid-template-columns:1fr;gap:48px;max-width:360px;}
+}
+
+/* ---------- Slide "Đối tác của chúng tôi" — tiêu đề + đoạn giới thiệu canh giữa như các
+   slide trước, cùng khối logo/wordmark chạy ngang (marquee) tái dùng từ section liên hệ ở
+   Trang chủ (.partner-logo-row*, .partner-wordmark, @keyframes partnerMarquee — home.css). ---------- */
+.partners-slide{overflow:hidden;background:#1c1712;}
+.partners-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg, rgba(10,9,7,.68) 0%, rgba(10,9,7,.4) 38%, rgba(10,9,7,.32) 55%, rgba(10,9,7,.62) 100%);
+}
+.partners-layout{position:relative;z-index:2;max-width:760px;margin:0 auto;text-align:center;}
+.partners-layout .eyebrow{
+  display:inline-flex;justify-content:center;
+  background:rgba(255,253,248,.95);color:var(--forest-2);
+  padding:.5em 1.15em;border-radius:999px;
+  font-family:'Fraunces',serif;font-style:italic;font-weight:500;
+  font-size:.92rem;letter-spacing:.01em;text-transform:none;
+  box-shadow:0 10px 24px -12px rgba(0,0,0,.6);
+  text-shadow:none;margin-bottom:1.2em;
+}
+.partners-layout .eyebrow::before{display:none;}
+.partners-layout h2{
+  font-size:clamp(2rem,4.2vw,3.1rem);color:var(--white);margin:0 0 28px;
+  text-shadow:0 6px 24px rgba(0,0,0,.5);
+}
+.partners-lead{
+  color:rgba(255,255,255,.88);font-size:1rem;line-height:1.75;
+  margin:0 0 56px;text-shadow:0 2px 10px rgba(0,0,0,.4);
+}
+.partners-logo-row-wrap{
+  max-width:640px;margin:0 auto;
+  -webkit-mask-image:linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  mask-image:linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+/* Logo đối tác là ảnh nền trắng đặc (không có kênh alpha) — dùng mix-blend-mode:multiply
+   để "xoá" nền trắng, hoà vào nền tối của slide thay vì đặt trong khung thẻ. */
+.partner-logo-row .partner-logo-chip{
+  display:inline-flex;align-items:center;justify-content:center;
+  height:96px;padding:0 20px;margin-right:36px;flex-shrink:0;
+}
+.partner-logo-row .partner-logo-chip img{
+  height:60px;width:auto;max-width:220px;object-fit:contain;display:block;
+  mix-blend-mode:multiply;
+  filter:contrast(1.1) saturate(1.15);
+}
+@media (max-width:860px){
+  .partners-layout{max-width:520px;}
 }
