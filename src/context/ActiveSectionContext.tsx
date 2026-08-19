@@ -11,7 +11,6 @@ export const DEFAULT_RAIL_ITEMS: RailItem[] = [
   { to: '/', label: 'Trang chủ', slide: 'slide-hero' },
   { to: '/gioi-thieu', label: 'Giới thiệu', slide: 'slide-about' },
   { to: '/tin-tuc', label: 'Tin tức', slide: 'slide-news' },
-  { to: '/tien-ich', label: 'Tiện ích', slide: 'slide-amenities' },
   { to: '/lien-he', label: 'Liên hệ', slide: 'slide-contact' },
 ];
 

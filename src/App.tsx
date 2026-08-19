@@ -8,7 +8,7 @@ import { ActiveSectionProvider } from './context/ActiveSectionContext';
 import Home from './pages/Home';
 import About from './pages/About';
 import ProjectsPage from './pages/Projects';
-import Amenities from './pages/Amenities';
+import ProjectDetail from './pages/ProjectDetail';
 import Contact from './pages/Contact';
 import News from './pages/News';
 import NewsDetail from './pages/NewsDetail';
@@ -39,9 +39,9 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="/gioi-thieu" element={<About />} />
               <Route path="/du-an" element={<ProjectsPage />} />
+              <Route path="/du-an/:id" element={<ProjectDetail />} />
               <Route path="/tin-tuc" element={<News />} />
               <Route path="/tin-tuc/:id" element={<NewsDetail />} />
-              <Route path="/tien-ich" element={<Amenities />} />
               <Route path="/tuyen-dung" element={<Careers />} />
               <Route path="/lien-he" element={<Contact />} />
             </Routes>

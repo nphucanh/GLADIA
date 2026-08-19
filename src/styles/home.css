@@ -9,7 +9,7 @@ html.home-snap, html.home-snap body{overflow:hidden;height:100%;}
    thù (specificity 0,1,1) — bắt buộc phải thắng rule ".hero{position:relative}" (dùng chung
    với banner ảnh các trang con, xem hero-shared.css) vốn có cùng độ đặc thù dạng class đơn
    (0,1,0) và có thể đứng sau trong thứ tự bundle CSS tùy theo thứ tự import. Nếu để thua,
-   2 slide dùng chung class "hero" (Hero + Tiện ích) sẽ rơi về layout dòng chảy thường thay vì
+   slide dùng chung class "hero" (Hero) sẽ rơi về layout dòng chảy thường thay vì
    toàn màn hình cố định — nội dung bị đẩy lệch khỏi khung nhìn và không cách nào cuộn tới. */
 section.morph-slide{
   position:fixed;inset:0;z-index:1;padding:64px 0;

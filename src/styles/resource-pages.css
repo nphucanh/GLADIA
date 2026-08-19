@@ -1,21 +1,191 @@
 /* =========================================================
-   Lưới thẻ tài nguyên dùng cho trang Tuyển dụng (Careers.tsx)
+   Trang Tuyển dụng (Careers.tsx) — cùng ngôn ngữ thiết kế với Dự án/Tin tức:
+   panel kính tối bán trong suốt (rgba(255,253,248,.06)) nổi trên nền tối
+   chung của site, viền góc "blueprint" làm điểm nhấn thương hiệu.
    ========================================================= */
-.tile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
-@media (max-width:980px){.tile-grid{grid-template-columns:repeat(2,1fr);}}
-@media (max-width:640px){.tile-grid{grid-template-columns:1fr;}}
-.tile-card{
-  background:var(--white);border:1px solid var(--mist);color:var(--ink);
-  padding:28px 26px;display:flex;flex-direction:column;gap:12px;
+
+/* Neo cuộn của 3 section đăng ký trong sidebar nhỏ (rail) — trừ hao chiều cao header
+   cố định (76px, xem layout.css) để tiêu đề section không bị nút menu/hotline đè lên. */
+#career-intro,#career-why,#career-jobs,#career-apply{scroll-margin-top:128px;}
+
+/* Rail (sidebar nhỏ) giờ canh giữa theo chiều dọc màn hình (layout.css) nên có thể trôi tới
+   bất kỳ section nào khi cuộn trang, không còn chỉ nằm gọn trong banner hero như trước — mỗi
+   section vì vậy cần tự chừa chỗ bên trái cho rail, giống cách .page-hero-photo .wrap đã làm. */
+@media (min-width:641px){
+  #career-intro > .wrap,
+  #career-why > .wrap,
+  #career-jobs > .wrap,
+  #career-apply > .wrap{
+    margin-left:max(calc((100% - 1180px) / 2), calc(var(--sidebar-w) + 24px));
+    margin-right:auto;
+  }
 }
-.tile-card .ic{
+
+/* ---------- Giới thiệu ---------- */
+.intro-layout{display:grid;grid-template-columns:1.2fr 1fr;gap:56px;align-items:center;}
+@media (max-width:900px){.intro-layout{grid-template-columns:1fr;gap:36px;}}
+.intro-layout p{color:var(--fg-dim);font-size:1rem;line-height:1.75;max-width:520px;margin-bottom:18px;}
+.intro-layout h2{margin-bottom:20px;}
+
+.career-stats{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.career-stat{
+  background:rgba(255,253,248,.06);border-radius:18px;
+  padding:28px 20px;text-align:center;transition:background .25s ease,transform .3s ease;
+}
+.career-stat:hover{background:rgba(255,253,248,.1);transform:translateY(-4px);}
+.career-stat .stat .num{font-family:'Fraunces',serif;font-size:2rem;font-weight:600;color:var(--gold);}
+.career-stat .stat .label{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-dim);margin-top:8px;}
+
+/* ---------- Phúc lợi ---------- */
+.benefit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
+@media (max-width:980px){.benefit-grid{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:640px){.benefit-grid{grid-template-columns:1fr;}}
+.benefit-card{
+  background:rgba(255,253,248,.06);border-radius:20px;
+  padding:32px 28px;display:flex;flex-direction:column;gap:16px;
+  transition:background .25s ease,transform .3s ease;
+}
+.benefit-card:hover{background:rgba(255,253,248,.1);transform:translateY(-4px);}
+.benefit-card .ic{
   width:48px;height:48px;border-radius:50%;flex-shrink:0;
-  background:var(--canvas);display:flex;align-items:center;justify-content:center;color:var(--forest);
+  background:rgba(255,253,248,.08);display:flex;align-items:center;justify-content:center;color:var(--gold);
 }
-.tile-card .ic svg{width:22px;height:22px;}
-.tile-card h3{font-size:1.05rem;margin:0;}
-.tile-card p{color:#6b6558;font-size:.86rem;margin:0;flex:1;line-height:1.6;}
-.tile-card .tile-meta{
-  font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.06em;
-  text-transform:uppercase;color:var(--forest);
+.benefit-card .ic svg{width:22px;height:22px;}
+.benefit-card h3{font-size:1.05rem;margin:0;}
+.benefit-card p{color:var(--fg-dim);font-size:.88rem;margin:0;line-height:1.65;}
+
+/* ---------- Vị trí đang tuyển ---------- */
+.job-list{display:flex;flex-direction:column;gap:22px;}
+.job-panel{
+  flex-direction:row;align-items:center;gap:28px;
+  background:rgba(255,253,248,.06);border-radius:20px;
+  padding:28px 32px;transition:background .25s ease;
 }
+.job-panel:hover{background:rgba(255,253,248,.1);}
+.job-panel-icon{
+  width:52px;height:52px;border-radius:50%;flex-shrink:0;
+  background:rgba(255,253,248,.08);display:flex;align-items:center;justify-content:center;color:var(--gold);
+}
+.job-panel-icon svg{width:24px;height:24px;}
+.job-panel-body{flex:1;min-width:0;}
+.job-panel-top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-bottom:14px;}
+.job-panel-top h3{font-size:1.05rem;margin:0;}
+.job-panel-tags{display:flex;flex-wrap:wrap;gap:8px;}
+.job-tag{
+  font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.04em;
+  color:var(--fg-dim);background:rgba(255,253,248,.08);
+  padding:.35em .8em;border-radius:999px;
+}
+.job-panel-body p{color:var(--fg-dim);font-size:.88rem;margin:0;line-height:1.65;}
+
+/* Nút "Ứng tuyển" — đảo ngược variant "gold" mặc định (đặc ngay từ đầu thay vì chỉ viền)
+   để nổi bật hơn, mũi tên trượt sang phải khi hover thu hút thao tác click. */
+.job-panel-cta[data-slot='button']{
+  border-radius:999px;padding:.85em 1.6em;
+  background:var(--gold);color:var(--ink);border-color:var(--gold);
+  align-self:center;
+}
+.job-panel-cta[data-slot='button']:hover{background:transparent;color:var(--gold);}
+.job-panel-cta svg{transition:transform .25s ease;}
+.job-panel-cta:hover svg{transform:translateX(4px);}
+@media (max-width:720px){
+  .job-panel{flex-direction:column;align-items:flex-start;}
+  .job-panel-cta[data-slot='button']{align-self:stretch;justify-content:center;}
+}
+
+/* Phân trang riêng của section "Vị trí đang tuyển" — cùng kiểu pill với phân trang Dự án. */
+.job-pagination{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:32px;}
+.job-page-btn{
+  min-width:38px;height:38px;padding:0 .4em;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:.8rem;letter-spacing:.02em;
+  border-radius:999px;border:1px solid var(--color-white-alpha-02);
+  background:transparent;color:var(--fg-dim);cursor:pointer;transition:all .25s ease;
+}
+.job-page-btn:hover:not(:disabled){color:var(--fg);border-color:var(--color-white-alpha-04);}
+.job-page-btn.active{background:var(--gold);border-color:var(--gold);color:var(--ink);}
+.job-page-btn:disabled{opacity:.35;cursor:default;}
+.job-page-nav{font-size:1rem;}
+
+/* ---------- Form ứng tuyển ---------- */
+.apply-layout{display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:start;}
+@media (max-width:900px){.apply-layout{grid-template-columns:1fr;}}
+
+.apply-form{background:rgba(255,253,248,.06);border-radius:22px;padding:40px;}
+@media (max-width:560px){.apply-form{padding:28px 22px;}}
+.apply-row-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media (max-width:560px){.apply-row-2{grid-template-columns:1fr;}}
+.apply-field{margin-bottom:24px;}
+.apply-field:last-of-type{margin-bottom:32px;}
+.apply-err{color:var(--color-red);font-size:.78rem;margin-top:8px;display:none;}
+.apply-field.invalid .apply-err{display:block;}
+
+[data-slot='label'].apply-label{color:var(--fg-dim);margin-bottom:10px;}
+
+[data-slot='input'].apply-input,
+[data-slot='textarea'].apply-input{
+  background:rgba(255,253,248,.05);border-color:var(--color-white-alpha-02);color:var(--fg);
+  border-radius:12px;
+}
+[data-slot='input'].apply-input::placeholder,
+[data-slot='textarea'].apply-input::placeholder{color:var(--fg-dim);opacity:.65;}
+[data-slot='input'].apply-input:focus-visible,
+[data-slot='textarea'].apply-input:focus-visible{border-color:var(--gold);background:rgba(255,253,248,.08);}
+.apply-field.invalid [data-slot='input'].apply-input{border-color:var(--color-red);}
+
+[data-slot='select-trigger'].apply-select-trigger{
+  height:auto;width:100%;
+  font-family:'Manrope',sans-serif;font-size:.92rem;
+  padding:.75em 1em;border-radius:12px;
+  border:1.5px solid var(--color-white-alpha-02);
+  background:rgba(255,253,248,.05);color:var(--fg);
+}
+[data-slot='select-trigger'].apply-select-trigger[data-placeholder]{color:var(--fg-dim);}
+[data-slot='select-trigger'].apply-select-trigger:hover{border-color:var(--color-white-alpha-04);}
+[data-slot='select-trigger'].apply-select-trigger[data-state='open']{border-color:var(--gold);}
+[data-slot='select-trigger'].apply-select-trigger:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+
+[data-slot='select-content'].apply-select-content{
+  background:linear-gradient(165deg, rgba(9,52,71,.98), rgba(70,112,132,.96));
+  border:1px solid var(--color-white-alpha-02);border-radius:14px;padding:6px;
+  box-shadow:0 24px 60px -20px rgba(0,0,0,.55);backdrop-filter:blur(20px);
+}
+[data-slot='select-content'].apply-select-content [data-slot='select-item']{
+  font-family:'Manrope',sans-serif;font-size:.88rem;color:var(--fg-dim);
+  border-radius:10px;padding:.6em .8em .6em 2.1em;
+}
+[data-slot='select-content'].apply-select-content [data-slot='select-item'][data-highlighted]{
+  background:rgba(255,253,248,.1);color:var(--fg);
+}
+[data-slot='select-content'].apply-select-content [data-slot='select-item'][data-state='checked']{
+  color:var(--gold);font-weight:700;
+}
+[data-slot='select-content'].apply-select-content [data-slot='select-item'] svg{color:var(--gold);}
+
+.apply-submit[data-slot='button']{
+  width:100%;border-radius:999px;padding:1em 1.5em;
+  background:var(--gold);color:var(--ink);border-color:var(--gold);
+}
+.apply-submit[data-slot='button']:hover{background:transparent;color:var(--gold);}
+.apply-submit svg{transition:transform .25s ease;}
+.apply-submit:hover svg{transform:translateX(4px);}
+
+.apply-success{
+  background:rgba(119,157,86,.16);border:1.5px solid var(--color-green);color:#cfe8bb;
+  padding:18px 22px;margin-bottom:24px;border-radius:14px;font-weight:600;display:none;
+}
+.apply-success.show{display:block;}
+
+.apply-side{background:rgba(255,253,248,.06);border-radius:22px;padding:34px 32px;}
+@media (max-width:560px){.apply-side{padding:26px 22px;}}
+.apply-side h4{color:var(--fg);font-size:1.05rem;margin-bottom:20px;}
+.apply-side ul{margin:0 0 28px 0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:16px;}
+.apply-side li{display:flex;gap:12px;color:var(--fg-dim);font-size:.88rem;line-height:1.6;}
+.apply-side li svg{color:var(--gold);flex-shrink:0;margin-top:2px;}
+.apply-side-contact{
+  border-top:1px solid var(--color-white-alpha-02);padding-top:22px;
+  display:flex;flex-direction:column;gap:10px;font-size:.88rem;
+}
+.apply-side-contact span{color:var(--fg-dim);}
+.apply-side-contact a{color:var(--gold);font-weight:600;}
+.apply-side-contact a:hover{text-decoration:underline;}

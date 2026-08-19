@@ -8,7 +8,6 @@ const MAIN_NAV_ITEMS = [
   { to: '/gioi-thieu', label: 'Giới thiệu' },
   { to: '/du-an', label: 'Dự án' },
   { to: '/tin-tuc', label: 'Tin tức' },
-  { to: '/tien-ich', label: 'Tiện ích' },
   { to: '/tuyen-dung', label: 'Tuyển dụng' },
   { to: '/lien-he', label: 'Liên hệ' },
 ];
@@ -36,9 +35,10 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
-  // Trang Tin tức tự quản lý bố cục riêng, không cần thanh rail luôn hiện bên trái.
-  // Menu toàn màn hình (hamburger) vẫn hoạt động bình thường trên trang này.
-  if (!open && location.pathname.startsWith('/tin-tuc')) {
+  // Trang Tin tức / Dự án tự quản lý bố cục riêng, không cần thanh rail luôn hiện bên trái —
+  // bỏ rail để nhường toàn bộ chiều rộng cho nội dung. Menu toàn màn hình (hamburger) vẫn
+  // hoạt động bình thường trên các trang này.
+  if (!open && (location.pathname.startsWith('/tin-tuc') || location.pathname.startsWith('/du-an'))) {
     return null;
   }
 

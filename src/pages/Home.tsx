@@ -8,7 +8,7 @@ import StatCounter from '../components/StatCounter';
 import HeroPhoto from '../components/HeroPhoto';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { HERO_IMAGE, AMENITY_HERO_IMAGE } from '../data/images';
+import { HERO_IMAGE } from '../data/images';
 import { mockNews } from '../data/mockNews';
 import '../styles/home.css';
 import '../styles/news.css';
@@ -61,8 +61,8 @@ const ABOUT_STATS = [
   },
 ];
 
-// Thứ tự slide đồng bộ với thứ tự mục trong Sidebar: Trang chủ → Giới thiệu → Tin tức → Tiện ích → Liên hệ.
-const SLIDE_IDS = ['slide-hero', 'slide-about', 'slide-news', 'slide-amenities', 'slide-contact'];
+// Thứ tự slide đồng bộ với thứ tự mục trong Sidebar: Trang chủ → Giới thiệu → Tin tức → Liên hệ.
+const SLIDE_IDS = ['slide-hero', 'slide-about', 'slide-news', 'slide-contact'];
 
 // Slide duy nhất được thiết kế có thể cao hơn 1 màn hình — cuộn/vuốt sẽ ưu tiên cuộn nội
 // bộ slide này trước khi đổi sang slide khác.
@@ -216,31 +216,6 @@ export default function Home() {
             </Button>
           </div>
         </div>
-      </section>
-
-      <section className={slideClass('slide-amenities', 'hero hero-photo')} id="slide-amenities">
-        <HeroPhoto image={AMENITY_HERO_IMAGE} />
-        <div className="hero-grid" />
-        <Reveal
-          as="div"
-          className="wrap hero-inner"
-          variant="up"
-          delay={320}
-          active={activeIndex === SLIDE_IDS.indexOf('slide-amenities')}
-        >
-          <div className="eyebrow">Trải nghiệm sống</div>
-          <h1>Tiện ích</h1>
-          <p className="lead" style={{ color: '#e6e2d2', maxWidth: 520 }}>
-            Hệ thống tiện ích nội khu được thiết kế theo mô hình{' '}
-            <strong style={{ color: '#fff' }}>"Live - Work - Learn - Play"</strong>, đáp ứng đầy đủ nhu cầu sống,
-            làm việc, học tập và giải trí của từng thành viên trong gia đình.
-          </p>
-          <div className="hero-actions">
-            <Button variant="brick" onClick={() => navigate('/tien-ich')}>
-              Xem thêm
-            </Button>
-          </div>
-        </Reveal>
       </section>
 
       <section className={slideClass('slide-contact', 'contact-cta-slide slide-center')} id="slide-contact">

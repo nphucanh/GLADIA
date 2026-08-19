@@ -56,7 +56,7 @@ section{padding:96px 0;}
 @media (max-width:720px){section{padding:64px 0;}}
 .app-shell{padding-top:0;}
 
-/* ---------- Tiêu đề section dùng chung (Giới thiệu, Tiện ích...) ---------- */
+/* ---------- Tiêu đề section dùng chung (Giới thiệu, Dự án...) ---------- */
 .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:44px;flex-wrap:wrap;}
 .sec-head h2{font-size:clamp(1.7rem,3vw,2.4rem);max-width:560px;}
 .sec-head p{color:var(--fg-dim);max-width:440px;margin:0;}
@@ -80,6 +80,10 @@ section{padding:96px 0;}
   transition:opacity .7s ease, transform .7s cubic-bezier(.34,1.56,.64,1);
 }
 .reveal-pop.reveal-visible{transform:scale(1);}
+
+/* ---------- Crossfade nội dung khi chuyển trang (phân trang) ---------- */
+.page-fade{transition:opacity .22s ease, transform .22s ease;}
+.page-fade.is-leaving{opacity:0;transform:translateY(6px);}
 
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;}

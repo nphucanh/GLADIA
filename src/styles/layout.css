@@ -47,9 +47,9 @@ header.topbar > *{pointer-events:auto;}
 /* ---------- Sidebar (rail nhỏ, luôn hiện — chỉ dùng để cuộn section của Trang chủ) ---------- */
 .sidebar{
   position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);z-index:100;
-  padding:150px 30px 40px;
+  padding:0 30px;
   background:linear-gradient(90deg, rgba(15,14,12,.5) 0%, rgba(15,14,12,.22) 65%, transparent 100%);
-  display:flex;flex-direction:column;
+  display:flex;flex-direction:column;justify-content:center;
   transform:translateX(0);
   transition:transform .3s ease;
 }

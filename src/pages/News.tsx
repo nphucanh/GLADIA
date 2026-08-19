@@ -14,6 +14,7 @@ const FIRST_PAGE_SIZE = FEATURED_COUNT + GRID_PAGE_SIZE;
 export default function News() {
   const [active, setActive] = useState<NewsCategory>(NEWS_CATEGORIES[0].id);
   const [page, setPage] = useState(1);
+  const [pageTransitioning, setPageTransitioning] = useState(false);
 
   const activeLabel = NEWS_CATEGORIES.find((c) => c.id === active)?.label ?? 'Tin tức';
   useDocumentTitle(`${activeLabel} — Terra Việt`);
@@ -49,11 +50,12 @@ export default function News() {
   }
 
   function goToPage(p: number) {
-    setPage(p);
-    // Cuộn hẳn về đỉnh trang (không chỉ tới tabs) để khớp với .news-page-bg
-    // (cao đúng 100vh) — nếu còn cuộn dở, phần dưới viewport sẽ lộ ra ngoài
-    // khung nền hoa văn, hở xuống nền phẳng của body.
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (p === safePage || pageTransitioning) return;
+    setPageTransitioning(true);
+    window.setTimeout(() => {
+      setPage(p);
+      setPageTransitioning(false);
+    }, 200);
   }
 
   return (
@@ -82,29 +84,31 @@ export default function News() {
           <p className="news-empty">Chưa có tin trong danh mục này.</p>
         ) : (
           <>
-            {(featured || promo) && (
-              <div className="news-top-row">
-                {featured && (
-                  <Reveal>
-                    <NewsCard item={featured} variant="featured" pillDate ribbon panel />
-                  </Reveal>
-                )}
-                {promo && (
-                  <Reveal delay={80}>
-                    <NewsCard item={promo} variant="promo" pillDate ribbon panel />
-                  </Reveal>
-                )}
-              </div>
-            )}
-            {gridItems.length > 0 && (
-              <div className="news-grid-sm news-grid-list">
-                {gridItems.map((n, i) => (
-                  <Reveal key={n.id} delay={(i % 6) * 60}>
-                    <NewsCard item={n} pillDate ribbon panel />
-                  </Reveal>
-                ))}
-              </div>
-            )}
+            <div className={`page-fade${pageTransitioning ? ' is-leaving' : ''}`}>
+              {(featured || promo) && (
+                <div className="news-top-row">
+                  {featured && (
+                    <Reveal>
+                      <NewsCard item={featured} variant="featured" pillDate ribbon panel />
+                    </Reveal>
+                  )}
+                  {promo && (
+                    <Reveal delay={80}>
+                      <NewsCard item={promo} variant="promo" pillDate ribbon panel />
+                    </Reveal>
+                  )}
+                </div>
+              )}
+              {gridItems.length > 0 && (
+                <div className="news-grid-sm news-grid-list">
+                  {gridItems.map((n, i) => (
+                    <Reveal key={n.id} delay={(i % 6) * 60}>
+                      <NewsCard item={n} pillDate ribbon panel />
+                    </Reveal>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {totalPages > 1 && (
               <nav className="news-pagination" aria-label="Phân trang tin tức">

@@ -25,7 +25,7 @@
 }
 @keyframes gridPan{from{background-position:0 0;}to{background-position:440px 440px;}}
 
-/* Hero minh hoạ ảnh dùng chung cho các trang con (Giới thiệu/Dự án/Tiện ích/Liên hệ/Tin tức) */
+/* Hero minh hoạ ảnh dùng chung cho các trang con (Giới thiệu/Dự án/Liên hệ/Tin tức) */
 .page-hero-photo{background:#182238;}
 .page-hero-photo::before{
   content:'';position:absolute;inset:0;z-index:1;
