@@ -17,7 +17,7 @@ const ROWS_PER_PAGE = 3;
 
 export default function Projects() {
   const { projects } = useProjectsContext();
-  useDocumentTitle('Dự án — Terra Việt');
+  useDocumentTitle('Dự án — Terra');
   const columns = useGridColumns();
   const PAGE_SIZE = columns * ROWS_PER_PAGE;
 

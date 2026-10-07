@@ -11,7 +11,10 @@ import { Textarea } from '../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { useActiveSection, type RailItem } from '../context/ActiveSectionContext';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
-import { supabase } from '../lib/supabaseClient';
+import { submitApplication } from '../api/public';
+import { isValidEmail, isValidName, isValidPhone } from '../api/validate';
+import { useJobs } from '../hooks/useApiData';
+import { JOB_ICONS } from '../components/JobIcon';
 import { PAGE_HERO_IMAGE } from '../data/images';
 import '../styles/resource-pages.css';
 
@@ -22,7 +25,7 @@ const CARD_RESET = 'border-0 bg-transparent block';
 // tới section (trang này không dùng cơ chế trình chiếu toàn màn hình như Trang chủ/Giới thiệu).
 const CAREER_RAIL_ITEMS: RailItem[] = [
   { to: '/tuyen-dung', label: 'Giới thiệu', slide: 'career-intro' },
-  { to: '/tuyen-dung', label: 'Vì sao chọn Terra Việt', slide: 'career-why' },
+  { to: '/tuyen-dung', label: 'Vì sao chọn Terra', slide: 'career-why' },
   { to: '/tuyen-dung', label: 'Vị trí đang tuyển', slide: 'career-jobs' },
 ];
 
@@ -102,81 +105,6 @@ const BENEFITS = [
   },
 ];
 
-const JOBS = [
-  {
-    title: 'Chuyên viên Kinh doanh Bất động sản',
-    location: 'TP.HCM',
-    employment: 'Toàn thời gian',
-    body: 'Tư vấn, giới thiệu sản phẩm và chăm sóc khách hàng cho các dự án đang mở bán của Terra Việt.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-        <path d="M3 21V9l9-6 9 6v12" strokeLinejoin="round" />
-        <path d="M9 21v-8h6v8" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  {
-    title: 'Trưởng phòng Marketing',
-    location: 'TP.HCM',
-    employment: 'Toàn thời gian',
-    body: 'Xây dựng chiến lược thương hiệu, truyền thông đa kênh cho danh mục dự án của công ty.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-        <path d="M3 11l18-7-7 18-2-8-9-3Z" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  {
-    title: 'Kỹ sư Giám sát công trình',
-    location: 'Bình Dương',
-    employment: 'Toàn thời gian',
-    body: 'Giám sát chất lượng, tiến độ thi công thực tế tại công trường theo đúng hồ sơ thiết kế.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-        <path d="M14 3l7 7-9 9-7-7 9-9Z" strokeLinejoin="round" />
-        <path d="M4 20l3-3" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    title: 'Chuyên viên Chăm sóc khách hàng',
-    location: 'TP.HCM',
-    employment: 'Toàn thời gian',
-    body: 'Hỗ trợ, giải đáp và đồng hành cùng cư dân trong suốt quá trình sử dụng dịch vụ tại dự án.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-        <circle cx="12" cy="8" r="3.4" />
-        <path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    title: 'Chuyên viên Pháp lý dự án',
-    location: 'TP.HCM',
-    employment: 'Toàn thời gian',
-    body: 'Soát xét hồ sơ pháp lý, hỗ trợ thủ tục cấp phép và sổ hồng cho các dự án đang triển khai.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-        <path d="M6 3h9l5 5v13H6V3Z" strokeLinejoin="round" />
-        <path d="M15 3v5h5" strokeLinejoin="round" />
-        <path d="M9 12h6M9 16h6" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    title: 'Kế toán tổng hợp',
-    location: 'Đồng Nai',
-    employment: 'Toàn thời gian',
-    body: 'Ghi nhận, đối soát chứng từ kế toán và lập báo cáo tài chính định kỳ cho khu vực phụ trách.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-        <rect x="4" y="4" width="16" height="16" rx="2" />
-        <path d="M8 9h8M8 13h8M8 17h5" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-];
-
 const JOBS_PER_PAGE = 3;
 
 interface ApplyFormState {
@@ -191,7 +119,7 @@ interface ApplyFormState {
 const EMPTY_APPLY_FORM: ApplyFormState = { name: '', phone: '', email: '', position: '', cv: '', message: '' };
 
 export default function Careers() {
-  useDocumentTitle('Tuyển dụng — Terra Việt');
+  useDocumentTitle('Tuyển dụng — Terra');
 
   const { setActiveSection, registerGoToSlide, registerRailItems } = useActiveSection();
 
@@ -233,6 +161,7 @@ export default function Careers() {
 
   // Phân trang riêng cho section "Vị trí đang tuyển" — độc lập với cuộn trang chính, giữ
   // nguyên vị trí cuộn hiện tại khi đổi trang (chỉ crossfade nội dung, không cuộn).
+  const { data: JOBS } = useJobs();
   const [jobPage, setJobPage] = useState(1);
   const [jobPageTransitioning, setJobPageTransitioning] = useState(false);
   const jobTotalPages = Math.max(1, Math.ceil(JOBS.length / JOBS_PER_PAGE));
@@ -265,40 +194,33 @@ export default function Careers() {
   async function handleApplySubmit(e: FormEvent) {
     e.preventDefault();
     const nextErrors = {
-      name: applyForm.name.trim().length < 2,
-      phone: !/^[0-9]{9,11}$/.test(applyForm.phone.replace(/\s/g, '')),
-      email: !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(applyForm.email.trim()),
+      name: !isValidName(applyForm.name),
+      phone: !isValidPhone(applyForm.phone),
+      email: !isValidEmail(applyForm.email),
     };
     setApplyErrors(nextErrors);
     if (Object.values(nextErrors).some(Boolean)) return;
 
     setApplySubmitting(true);
     try {
-      if (supabase) {
-        const composedMessage = [
-          applyForm.cv.trim() ? `CV/Portfolio: ${applyForm.cv.trim()}` : null,
-          applyForm.message.trim() || null,
-        ]
-          .filter(Boolean)
-          .join('\n\n');
-        const { error } = await supabase.from('contact_submissions').insert([
-          {
-            full_name: applyForm.name.trim(),
-            phone: applyForm.phone.trim(),
-            email: applyForm.email.trim(),
-            project_interest: null,
-            topic: `Ứng tuyển: ${applyForm.position || 'Vị trí khác'}`,
-            message: composedMessage || null,
-          },
-        ]);
-        if (error) throw error;
-      }
+      // Ô "CV / Portfolio" nhận link; nội dung khác link (vd. ghi chú) được gộp vào lời nhắn
+      const cv = applyForm.cv.trim();
+      const cvIsLink = /^https?:\/\//i.test(cv);
+      await submitApplication({
+        job_id: JOBS.find((j) => j.title === applyForm.position)?.id ?? null,
+        position: applyForm.position || 'Vị trí khác',
+        full_name: applyForm.name,
+        phone: applyForm.phone,
+        email: applyForm.email,
+        cv_url: cvIsLink ? cv : null,
+        message: [cv && !cvIsLink ? `CV/Portfolio: ${cv}` : '', applyForm.message.trim()].filter(Boolean).join('\n\n'),
+      });
       setApplySuccess(true);
       setApplyForm(EMPTY_APPLY_FORM);
       setApplyErrors({});
       setTimeout(() => setApplySuccess(false), 6000);
     } catch (err) {
-      alert(`Gửi hồ sơ thất bại, vui lòng thử lại sau. (${(err as Error).message})`);
+      alert(`Gửi hồ sơ thất bại: ${(err as Error).message}`);
     } finally {
       setApplySubmitting(false);
     }
@@ -312,8 +234,8 @@ export default function Careers() {
         <div className="wrap">
           <div className="eyebrow">Tuyển dụng</div>
           <h1>Cùng kiến tạo không gian sống thật.</h1>
-          <p className="lead" style={{ color: '#e6e2d2', maxWidth: 560 }}>
-            Terra Việt luôn tìm kiếm những cộng sự tận tâm, sẵn sàng phát triển sự nghiệp lâu dài cùng chúng tôi.
+          <p className="lead" style={{ color: '#e7decf', maxWidth: 560 }}>
+            Terra luôn tìm kiếm những cộng sự tận tâm, sẵn sàng phát triển sự nghiệp lâu dài cùng chúng tôi.
           </p>
         </div>
       </section>
@@ -322,9 +244,9 @@ export default function Careers() {
         <div className="wrap intro-layout">
           <Reveal variant="left">
             <div className="eyebrow">Giới thiệu</div>
-            <h2>Làm việc tại Terra Việt</h2>
+            <h2>Làm việc tại Terra</h2>
             <p>
-              Terra Việt là nơi những con người tận tâm, giàu năng lượng cùng nhau kiến tạo những không gian sống
+              Terra là nơi những con người tận tâm, giàu năng lượng cùng nhau kiến tạo những không gian sống
               thật — không chỉ cho khách hàng, mà cho chính đội ngũ của mình.
             </p>
             <p>
@@ -352,7 +274,7 @@ export default function Careers() {
         <div className="wrap">
           <div className="sec-head">
             <div>
-              <div className="eyebrow">Vì sao chọn Terra Việt</div>
+              <div className="eyebrow">Vì sao chọn Terra</div>
               <h2>Phúc lợi & môi trường làm việc</h2>
             </div>
             <p>Chúng tôi đầu tư vào con người như đầu tư vào chính các dự án — bền vững và lâu dài.</p>
@@ -376,15 +298,15 @@ export default function Careers() {
           <div className="sec-head">
             <div>
               <div className="eyebrow">Vị trí đang tuyển</div>
-              <h2>Cơ hội nghề nghiệp tại Terra Việt</h2>
+              <h2>Cơ hội nghề nghiệp tại Terra</h2>
             </div>
             <p>Chọn "Ứng tuyển" ở vị trí phù hợp, thông tin sẽ tự điền sẵn vào form bên dưới.</p>
           </div>
           <div className={`job-list page-fade${jobPageTransitioning ? ' is-leaving' : ''}`}>
             {jobPageItems.map((j, i) => (
-              <Reveal key={j.title} delay={i * 60}>
+              <Reveal key={j.id} delay={i * 60}>
                 <Card className={`job-panel blueprint ${CARD_RESET}`}>
-                  <div className="job-panel-icon">{j.icon}</div>
+                  <div className="job-panel-icon">{JOB_ICONS[j.icon] ?? JOB_ICONS.building}</div>
                   <div className="job-panel-body">
                     <div className="job-panel-top">
                       <h3>{j.title}</h3>
@@ -568,7 +490,7 @@ export default function Careers() {
               <div className="apply-side-contact">
                 <span>Hoặc liên hệ trực tiếp phòng Nhân sự</span>
                 <a href="tel:19006868">Hotline: 1900 6868</a>
-                <a href="mailto:tuyendung@terraviet.vn">tuyendung@terraviet.vn</a>
+                <a href="mailto:tuyendung@terra.vn">tuyendung@terra.vn</a>
               </div>
             </div>
           </div>

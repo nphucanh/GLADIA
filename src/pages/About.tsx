@@ -119,7 +119,7 @@ const VALUES_ITEMS = [
         <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     ),
-    text: 'Chính trực: giá trị quan trọng nhất hình thành phong cách của Terra Việt, luôn giữ vững uy tín với đối tác, khách hàng.',
+    text: 'Chính trực: giá trị quan trọng nhất hình thành phong cách của Terra, luôn giữ vững uy tín với đối tác, khách hàng.',
   },
   {
     icon: (
@@ -173,7 +173,7 @@ export default function About() {
         <HeroPhoto image={ABOUT_MISSION_IMAGE} />
         <div className="hero-grid" />
         <div className="wrap hero-inner">
-          <div className="eyebrow">Về Terra Việt</div>
+          <div className="eyebrow">Về Terra</div>
           <h1>
             <span className="line">
               <span>Xây dựng từ niềm tin,</span>
@@ -183,7 +183,7 @@ export default function About() {
             </span>
           </h1>
           <p className="lead">
-            15 năm hình thành và phát triển, Terra Việt kiên định với một triết lý: bất động sản phải phục vụ con
+            15 năm hình thành và phát triển, Terra kiên định với một triết lý: bất động sản phải phục vụ con
             người trước khi phục vụ lợi nhuận.
           </p>
         </div>
@@ -329,9 +329,9 @@ export default function About() {
               <Reveal variant="up" delay={220} active={active}>
                 <p className="partners-lead">
                   Được biết đến là thương hiệu phân phối Bất động sản chuyên nghiệp, đẳng cấp trên thị trường Bất
-                  động sản hiện nay. Terra Việt đã và đang nhận được sự đánh giá cao về năng lực, kinh nghiệm, uy tín
+                  động sản hiện nay. Terra đã và đang nhận được sự đánh giá cao về năng lực, kinh nghiệm, uy tín
                   kinh doanh từ nhiều đối tác kinh doanh. Để vươn tới mục tiêu trở thành Nhà đầu tư và phát triển Bất
-                  động sản hàng đầu Việt Nam, Terra Việt mong muốn liên kết và hợp tác với tất cả các đối tác có cùng
+                  động sản hàng đầu Việt Nam, Terra mong muốn liên kết và hợp tác với tất cả các đối tác có cùng
                   chiến lược phát triển trên cơ sở hợp tác bền vững và phát triển.
                 </p>
               </Reveal>

@@ -10,26 +10,35 @@ body{
   margin:0;
   background:var(--bg);
   color:var(--fg);
-  font-family:'Manrope',sans-serif;
+  font-family:var(--font-body);
   line-height:1.55;
   -webkit-font-smoothing:antialiased;
 }
 h1,h2,h3,h4{
-  font-family:'Fraunces',serif;
+  font-family:var(--font-display);
   margin:0 0 .4em 0;
   font-weight:600;
-  letter-spacing:-.01em;
+  letter-spacing:0;
+  line-height:1.15;
   color:var(--fg);
+}
+/* Cormorant Garamond có chiều cao chữ thường thấp → ở cỡ nhỏ (tiêu đề phụ, nhãn serif) trông bé
+   hơn font nội dung. font-size-adjust cho trình duyệt tự phóng theo chiều cao chữ thường để đọc rõ
+   như font nội dung; tiêu đề lớn (h1, h2, banner, logo) giữ nguyên tỉ lệ thanh mảnh. */
+h3,h4,
+.project-detail-nav-title,.project-am-seg-name,.project-am-intro,.project-am-frame figcaption em,
+.project-am-numeral,.page-hero .eyebrow,.partner-wordmark:not(.partner-wordmark-lg),.lmv-tag strong,.contact-step-no{
+  font-size-adjust:ex-height .46;
 }
 p{margin:0 0 1em 0;}
 a{color:inherit;text-decoration:none;}
-.mono{font-family:'IBM Plex Mono',monospace;letter-spacing:.04em;}
+.mono{font-family:var(--font-label);letter-spacing:.04em;font-variant-numeric:tabular-nums;}
 img,svg{max-width:100%;display:block;}
 button{font-family:inherit;cursor:pointer;}
 :focus-visible{outline:2px solid var(--brick);outline-offset:3px;}
 
 .eyebrow{
-  font-family:'IBM Plex Mono',monospace;
+  font-family:var(--font-label);
   font-size:.72rem;
   letter-spacing:.18em;
   text-transform:uppercase;
@@ -55,6 +64,19 @@ button{font-family:inherit;cursor:pointer;}
 section{padding:96px 0;}
 @media (max-width:720px){section{padding:64px 0;}}
 .app-shell{padding-top:0;}
+/* Trang Tin tức / Dự án / Liên hệ ẩn rail sidebar (xem Sidebar.tsx) — nới khung nội dung rộng hơn
+   .wrap mặc định, lề hai bên co giãn theo màn hình thay vì cố định 24px + canh giữa hẹp.
+   Các rule .wrap.xxx trong news.css / projects.css chỉ khai báo padding-top/bottom để không
+   ghi đè lề ngang này.
+   width:100% bắt buộc: .news-page-bg/.project-page-bg là flex cột, margin:0 auto của .wrap
+   trong flex container khiến section co lại vừa nội dung rồi trôi ra giữa (vd. khối tiêu đề
+   trang chi tiết dự án lệch khỏi mép trái ảnh bìa). */
+.news-page-bg > .wrap, .project-page-bg > .wrap, .contact-page-bg > .wrap{
+  width:100%;
+  max-width:var(--page-wide-max);
+  padding-left:var(--page-wide-gutter);
+  padding-right:var(--page-wide-gutter);
+}
 
 /* ---------- Tiêu đề section dùng chung (Giới thiệu, Dự án...) ---------- */
 .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:44px;flex-wrap:wrap;}

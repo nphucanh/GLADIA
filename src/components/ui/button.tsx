@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '@/lib/utils';
 
-// Các variant màu bám theo bảng màu thương hiệu Terra Việt (xem src/styles/variables.css)
+// Các variant màu bám theo bảng màu thương hiệu Terra (xem src/styles/variables.css)
 // thay cho token xám mặc định của shadcn — giữ đúng 4 kiểu nút đã dùng trong site
 // (forest đặc, brick đặc, forest viền, gold viền) nhưng chuyển sang component Tailwind dùng chung.
 const buttonVariants = cva(

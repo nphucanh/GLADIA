@@ -1,5 +1,13 @@
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Footprints } from 'lucide-react';
+import BackToProjects from '../components/BackToProjects';
 import ProjectCard from '../components/ProjectCard';
+import { ProjectAmenities, ProjectFloorPlans, ProjectLocation } from '../components/ProjectDetailSections';
+import { getFloorPlans } from '../data/projectDetails';
+import { useFloorPlanSet } from '../hooks/useApiData';
+import { getProject } from '../api/public';
+import type { Project } from '../types';
 import Reveal from '../components/Reveal';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
@@ -10,19 +18,38 @@ import { fmtDate, fmtNumber } from '../utils/format';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import '../styles/projects.css';
 
+// Tham quan 3D dựng từ ảnh không gian sống (three.js) — chỉ tải khi người xem bấm vào ảnh
+const PhotoTour3D = lazy(() => import('../components/house/PhotoTour3D'));
+
 export default function ProjectDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { projects } = useProjectsContext();
-  const project = projects.find((p) => String(p.id) === id);
+  const { projects, loading } = useProjectsContext();
+  // Ảnh không gian sống vừa bấm → mở tham quan 3D tại phòng tương ứng (-1 = đóng)
+  const [viewer, setViewer] = useState(-1);
+  const listed = projects.find((p) => String(p.id) === id);
+  // Không có trong danh sách (vd. dự án vừa thêm ở trang quản trị, danh sách đang tải lại) → hỏi riêng dự án này
+  // trước khi báo "không tìm thấy".
+  const [single, setSingle] = useState<{ id: string; project: Project | null } | null>(null);
+  useEffect(() => {
+    if (listed || !id) return;
+    let alive = true;
+    getProject(id).then((r) => alive && setSingle({ id, project: r.data }));
+    return () => {
+      alive = false;
+    };
+  }, [listed, id]);
+  const project = listed ?? (single && single.id === id ? single.project ?? undefined : undefined);
+  const checking = loading || (!listed && single?.id !== id);
+  const planSet = useFloorPlanSet(project);
 
-  useDocumentTitle(project ? `${project.name} — Terra Việt` : 'Không tìm thấy dự án — Terra Việt');
+  useDocumentTitle(project ? `${project.name} — Terra` : checking ? 'Dự án — Terra' : 'Không tìm thấy dự án — Terra');
 
   if (!project) {
     return (
       <main className="project-page-bg">
-        <section className="wrap" style={{ padding: '160px 0 120px' }}>
-          <p className="project-empty">Không tìm thấy dự án này.</p>
+        <section className="wrap" style={{ paddingTop: 160, paddingBottom: 120 }}>
+          <p className="project-empty">{checking ? 'Đang tải dự án…' : 'Không tìm thấy dự án này (có thể dự án đang được ẩn).'}</p>
           <Link to="/du-an" className="project-back-link">
             ← Quay lại Dự án
           </Link>
@@ -50,9 +77,7 @@ export default function ProjectDetail() {
   return (
     <main className="project-page-bg">
       <section className="wrap project-detail-head">
-        <Link to="/du-an" className="project-back-link">
-          ← Quay lại Dự án
-        </Link>
+        <BackToProjects />
         <div className="eyebrow">
           {project.location} · {project.type}
         </div>
@@ -65,7 +90,7 @@ export default function ProjectDetail() {
 
       <section className="wrap project-article">
         <figure className="project-detail-cover">
-          <img src={PROJECT_IMAGE_BY_BUILDING[project.building]} alt={project.name} loading="lazy" />
+          <img src={project.image ?? PROJECT_IMAGE_BY_BUILDING[project.building]} alt={project.name} loading="lazy" />
         </figure>
 
         <div className="project-article-body">
@@ -152,6 +177,10 @@ export default function ProjectDetail() {
           </Button>
         </div>
 
+        <ProjectLocation project={project} />
+        <ProjectAmenities project={project} />
+        {planSet && planSet.plans.length > 0 && <ProjectFloorPlans key={String(project.id)} project={project} planSet={planSet} />}
+
         {project.gallery && project.gallery.length > 0 && (
           <div className="project-gallery">
             <div className="sec-head">
@@ -163,15 +192,35 @@ export default function ProjectDetail() {
             <div className="project-gallery-grid">
               {project.gallery.map((room, i) => (
                 <Reveal key={room.room} delay={(i % 6) * 60} className="project-gallery-item">
-                  <div className="project-gallery-photo">
+                  <button
+                    type="button"
+                    className="project-gallery-photo"
+                    onClick={() => setViewer(i)}
+                    aria-label={`Tham quan 3D ${room.room} — ${project.name}`}
+                  >
                     <img src={room.image} alt={`${room.room} — ${project.name}`} loading="lazy" />
-                  </div>
+                    <span className="project-gallery-3d" aria-hidden="true">
+                      <Footprints size={15} /> Tham quan 3D
+                    </span>
+                  </button>
                   <h4>{room.room}</h4>
                   <p>{room.description}</p>
                 </Reveal>
               ))}
             </div>
           </div>
+        )}
+
+        {project.gallery && viewer >= 0 && (
+          <Suspense fallback={<div className="hw3d hw3d-boot">Đang dựng không gian 3D…</div>}>
+            <PhotoTour3D
+              projectName={project.name}
+              planSet={planSet ?? getFloorPlans(project)}
+              gallery={project.gallery}
+              startIndex={viewer}
+              onClose={() => setViewer(-1)}
+            />
+          </Suspense>
         )}
 
         {(prevProject || nextProject) && (

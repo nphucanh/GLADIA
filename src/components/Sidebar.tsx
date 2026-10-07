@@ -35,10 +35,11 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
-  // Trang Tin tức / Dự án tự quản lý bố cục riêng, không cần thanh rail luôn hiện bên trái —
-  // bỏ rail để nhường toàn bộ chiều rộng cho nội dung. Menu toàn màn hình (hamburger) vẫn
+  // Trang Tin tức / Dự án / Liên hệ tự quản lý bố cục riêng, không cần thanh rail luôn hiện bên
+  // trái — bỏ rail để nhường toàn bộ chiều rộng cho nội dung. Menu toàn màn hình (hamburger) vẫn
   // hoạt động bình thường trên các trang này.
-  if (!open && (location.pathname.startsWith('/tin-tuc') || location.pathname.startsWith('/du-an'))) {
+  const NO_RAIL_PREFIXES = ['/tin-tuc', '/du-an', '/lien-he'];
+  if (!open && NO_RAIL_PREFIXES.some((p) => location.pathname.startsWith(p))) {
     return null;
   }
 
@@ -59,7 +60,9 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
             <span className="sidebar-glow sidebar-glow-a" />
             <span className="sidebar-glow sidebar-glow-b" />
             <div className="sidebar-watermark">
-              Terra <span>Việt</span>
+              <span className="sidebar-logo-est">Est. 2010</span>
+              <span className="sidebar-logo-word">Terra</span>
+              <span className="sidebar-logo-tagline">Kiến tạo không gian sống</span>
             </div>
           </div>
         )}

@@ -33,7 +33,7 @@
   padding:28px 20px;text-align:center;transition:background .25s ease,transform .3s ease;
 }
 .career-stat:hover{background:rgba(255,253,248,.1);transform:translateY(-4px);}
-.career-stat .stat .num{font-family:'Fraunces',serif;font-size:2rem;font-weight:600;color:var(--gold);}
+.career-stat .stat .num{font-family:var(--font-display);font-size:2rem;font-weight:600;color:var(--gold);}
 .career-stat .stat .label{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-dim);margin-top:8px;}
 
 /* ---------- Phúc lợi ---------- */
@@ -72,7 +72,7 @@
 .job-panel-top h3{font-size:1.05rem;margin:0;}
 .job-panel-tags{display:flex;flex-wrap:wrap;gap:8px;}
 .job-tag{
-  font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.04em;
+  font-family:var(--font-label);font-size:.68rem;letter-spacing:.04em;
   color:var(--fg-dim);background:rgba(255,253,248,.08);
   padding:.35em .8em;border-radius:999px;
 }
@@ -98,7 +98,7 @@
 .job-page-btn{
   min-width:38px;height:38px;padding:0 .4em;
   display:inline-flex;align-items:center;justify-content:center;
-  font-family:'IBM Plex Mono',monospace;font-size:.8rem;letter-spacing:.02em;
+  font-family:var(--font-label);font-size:.8rem;letter-spacing:.02em;
   border-radius:999px;border:1px solid var(--color-white-alpha-02);
   background:transparent;color:var(--fg-dim);cursor:pointer;transition:all .25s ease;
 }
@@ -135,7 +135,7 @@
 
 [data-slot='select-trigger'].apply-select-trigger{
   height:auto;width:100%;
-  font-family:'Manrope',sans-serif;font-size:.92rem;
+  font-family:var(--font-body);font-size:.92rem;
   padding:.75em 1em;border-radius:12px;
   border:1.5px solid var(--color-white-alpha-02);
   background:rgba(255,253,248,.05);color:var(--fg);
@@ -146,12 +146,12 @@
 [data-slot='select-trigger'].apply-select-trigger:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
 
 [data-slot='select-content'].apply-select-content{
-  background:linear-gradient(165deg, rgba(9,52,71,.98), rgba(70,112,132,.96));
+  background:linear-gradient(165deg, rgba(94,70,54,.98), rgba(129,97,74,.96));
   border:1px solid var(--color-white-alpha-02);border-radius:14px;padding:6px;
   box-shadow:0 24px 60px -20px rgba(0,0,0,.55);backdrop-filter:blur(20px);
 }
 [data-slot='select-content'].apply-select-content [data-slot='select-item']{
-  font-family:'Manrope',sans-serif;font-size:.88rem;color:var(--fg-dim);
+  font-family:var(--font-body);font-size:.88rem;color:var(--fg-dim);
   border-radius:10px;padding:.6em .8em .6em 2.1em;
 }
 [data-slot='select-content'].apply-select-content [data-slot='select-item'][data-highlighted]{

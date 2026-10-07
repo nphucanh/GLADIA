@@ -9,7 +9,7 @@ import HeroPhoto from '../components/HeroPhoto';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { HERO_IMAGE } from '../data/images';
-import { mockNews } from '../data/mockNews';
+import { useNewsList } from '../hooks/useApiData';
 import '../styles/home.css';
 import '../styles/news.css';
 
@@ -103,7 +103,7 @@ export default function Home() {
     return `morph-slide ${extra} ${activeIndex === SLIDE_IDS.indexOf(id) ? 'is-active' : ''}`.trim();
   }
 
-  const [featuredNews, ...secondaryNews] = mockNews.slice(0, 3);
+  const [featuredNews, ...secondaryNews] = useNewsList().data.slice(0, 3);
 
   return (
     <main>
@@ -149,10 +149,10 @@ export default function Home() {
         <div className="wrap about-layout">
           <Reveal variant="left" delay={220} active={activeIndex === SLIDE_IDS.indexOf('slide-about')}>
             <div className="about-copy">
-              <div className="eyebrow">Về Terra Việt</div>
+              <div className="eyebrow">Về Terra</div>
               <h2>Hơn một chủ đầu tư — một người kiến tạo cộng đồng.</h2>
               <p>
-                Từ 2010, Terra Việt theo đuổi triết lý phát triển bền vững: mỗi dự án là một hệ sinh thái sống,
+                Từ 2010, Terra theo đuổi triết lý phát triển bền vững: mỗi dự án là một hệ sinh thái sống,
                 không chỉ là công trình bất động sản.
               </p>
               <Button variant="outline" onClick={() => navigate('/gioi-thieu')}>
@@ -192,12 +192,12 @@ export default function Home() {
               </span>
               <div className="eyebrow">Cập nhật</div>
               <h2>Tin tức</h2>
-              <p>Thông tin mới nhất về ưu đãi, hạ tầng kết nối và tiềm năng đầu tư từ Terra Việt.</p>
+              <p>Thông tin mới nhất về ưu đãi, hạ tầng kết nối và tiềm năng đầu tư từ Terra.</p>
             </div>
           </Reveal>
           <div className="news-content">
             <Reveal variant="pop" delay={400} active={activeIndex === SLIDE_IDS.indexOf('slide-news')}>
-              <NewsCard item={featuredNews} variant="featured" />
+              {featuredNews && <NewsCard item={featuredNews} variant="featured" />}
             </Reveal>
             <div className="news-grid-sm">
               {secondaryNews.map((n, i) => (
@@ -240,13 +240,13 @@ export default function Home() {
           <Reveal variant="pop" delay={150} active={activeIndex === SLIDE_IDS.indexOf('slide-contact')}>
             <div className="partner-block">
               <div className="partner-label">Đầu tư và phát triển bởi</div>
-              <div className="partner-wordmark partner-wordmark-lg">TERRA VIỆT</div>
+              <div className="partner-wordmark partner-wordmark-lg">TERRA</div>
             </div>
           </Reveal>
           <Reveal variant="pop" delay={400} active={activeIndex === SLIDE_IDS.indexOf('slide-contact')}>
             <div className="partner-block">
               <div className="partner-label">Đối tác thi công</div>
-              <div className="partner-wordmark">VietBuild Construction</div>
+              <div className="partner-wordmark">TERRA Construction</div>
             </div>
           </Reveal>
           <Reveal variant="pop" delay={650} active={activeIndex === SLIDE_IDS.indexOf('slide-contact')}>
@@ -269,7 +269,7 @@ export default function Home() {
             <span className="contact-info-watermark" aria-hidden="true">
               Lifestyle
             </span>
-            <h3>Tập đoàn Bất động sản Terra Việt</h3>
+            <h3>Tập đoàn Bất động sản Terra</h3>
             <div className="contact-info-row">
               <span className="contact-info-item">
                 <span className="ic" aria-hidden="true">
@@ -278,7 +278,7 @@ export default function Home() {
                     <circle cx="12" cy="9.5" r="2.4" />
                   </svg>
                 </span>
-                88 Nguyễn Huệ, Phường Bến Nghé, TP. Hồ Chí Minh
+                11 Hồ Xuân Hương, Phường Xuân Hòa, TP. Hồ Chí Minh
               </span>
               <span className="contact-info-item">
                 <span className="ic" aria-hidden="true">
@@ -287,7 +287,7 @@ export default function Home() {
                     <path d="M3 12h18M12 3c2.5 2.5 4 5.7 4 9s-1.5 6.5-4 9c-2.5-2.5-4-5.7-4-9s1.5-6.5 4-9Z" />
                   </svg>
                 </span>
-                <a href="https://terraviet.vn">terraviet.vn</a>
+                <a href="https://terra.vn">terra.vn</a>
               </span>
             </div>
             <p className="contact-disclaimer">
@@ -349,7 +349,7 @@ export default function Home() {
               </svg>
             </a>
           </div>
-          <span className="contact-copyright">© 2026 Terra Việt Group.</span>
+          <span className="contact-copyright">© 2026 Terra Group.</span>
         </div>
       )}
     </main>

@@ -2,8 +2,8 @@
 .bg-scene{
   position:fixed;inset:0;z-index:-1;overflow:hidden;
   background:
-    radial-gradient(ellipse 70% 60% at 15% 10%, rgba(176,125,84,.16) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 60% at 85% 90%, rgba(70,112,132,.28) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 60% at 15% 10%, rgba(218,192,155,.16) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 60% at 85% 90%, rgba(129,97,74,.28) 0%, transparent 60%),
     var(--bg);
 }
 .bg-scene .blob{position:absolute;border-radius:50%;filter:blur(110px);mix-blend-mode:screen;will-change:transform;}
@@ -14,7 +14,7 @@
 }
 .bg-scene .blob-2{
   width:58vmax;height:58vmax;right:-20vmax;top:5vmax;
-  background:radial-gradient(circle, rgba(70,112,132,.4) 0%, transparent 68%);
+  background:radial-gradient(circle, rgba(129,97,74,.4) 0%, transparent 68%);
   animation:driftB 85s ease-in-out infinite alternate;
 }
 .bg-scene .blob-3{

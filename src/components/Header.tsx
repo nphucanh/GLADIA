@@ -35,7 +35,7 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
 
       <div className="topbar-utils">
         <NavLink to="/" className="util-pill">
-          Terra Việt · Est. 2010
+          Terra · Est. 2010
         </NavLink>
       </div>
 

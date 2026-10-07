@@ -1,21 +1,28 @@
-import HeroPhoto from '../components/HeroPhoto';
+import { Building2, Clock, Mail, MapPin, Navigation, Phone } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Separator } from '../components/ui/separator';
-import { PAGE_HERO_IMAGE } from '../data/images';
 import { FormEvent, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useProjectsContext } from '../context/ProjectsContext';
-import { supabase } from '../lib/supabaseClient';
+import { submitContact } from '../api/public';
+import { isValidEmail, isValidName, isValidPhone } from '../api/validate';
 import { cn } from '../lib/utils';
 import '../styles/contact.css';
 
 interface LocationState {
   project?: string;
 }
+
+const HOTLINE = '1900 6868';
+const EMAIL = 'lienhe@terra.vn';
+const ADDRESS = '11 Hồ Xuân Hương, Phường Xuân Hòa, TP. Hồ Chí Minh';
+// Bản đồ Google Maps nhúng (không cần API key) + link chỉ đường mở ứng dụng/website Google Maps.
+const MAP_QUERY = encodeURIComponent('11 Hồ Xuân Hương, Xuân Hòa, Hồ Chí Minh, Việt Nam');
+const MAP_EMBED_URL = `https://maps.google.com/maps?q=${MAP_QUERY}&z=16&output=embed`;
+const MAP_DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${MAP_QUERY}`;
 
 const TOPICS = [
   'Thông tin dự án & bảng giá',
@@ -58,9 +65,9 @@ export default function Contact() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const nextErrors: Partial<Record<keyof FormState, boolean>> = {
-      name: form.name.trim().length < 2,
-      phone: !/^[0-9]{9,11}$/.test(form.phone.replace(/\s/g, '')),
-      email: !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()),
+      name: !isValidName(form.name),
+      phone: !isValidPhone(form.phone),
+      email: !isValidEmail(form.email),
       topic: form.topic === '',
     };
     setErrors(nextErrors);
@@ -68,51 +75,137 @@ export default function Contact() {
 
     setSubmitting(true);
     try {
-      if (supabase) {
-        const { error } = await supabase.from('contact_submissions').insert([
-          {
-            full_name: form.name.trim(),
-            phone: form.phone.trim(),
-            email: form.email.trim(),
-            project_interest: form.project || null,
-            topic: form.topic,
-            message: form.message.trim() || null,
-          },
-        ]);
-        if (error) throw error;
-      }
+      await submitContact({
+        full_name: form.name,
+        phone: form.phone,
+        email: form.email,
+        project_interest: form.project || null,
+        topic: form.topic,
+        message: form.message,
+      });
       setSuccess(true);
       setForm(EMPTY_FORM);
       setErrors({});
       setTimeout(() => setSuccess(false), 6000);
     } catch (err) {
-      alert(`Gửi thông tin thất bại, vui lòng thử lại sau. (${(err as Error).message})`);
+      alert(`Gửi thông tin thất bại: ${(err as Error).message}`);
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <main>
-      <section className="page-hero page-hero-photo" style={{ padding: '64px 0' }}>
-        <HeroPhoto image={PAGE_HERO_IMAGE} />
-        <div className="hero-grid" />
-        <div className="wrap">
+    <main className="contact-page-bg">
+      <section className="wrap contact-page-head">
+        <div className="contact-head-text">
           <div className="eyebrow">Liên hệ</div>
-          <h1>Đăng ký tư vấn miễn phí</h1>
-          <p className="lead" style={{ color: '#e6e2d2', maxWidth: 520 }}>
-            Để lại thông tin, đội ngũ tư vấn của Terra Việt sẽ liên hệ trong vòng 24 giờ.
-          </p>
+          <h1>Kết nối cùng Terra</h1>
+          <p>Ghé văn phòng, gọi hotline hoặc để lại thông tin — đội ngũ tư vấn sẽ phản hồi trong vòng 24 giờ.</p>
+        </div>
+        <div className="contact-quick">
+          <a className="contact-quick-btn primary" href={`tel:${HOTLINE.replace(/\s/g, '')}`}>
+            <Phone size={16} />
+            {HOTLINE}
+          </a>
+          <a className="contact-quick-btn" href={`mailto:${EMAIL}`}>
+            <Mail size={16} />
+            {EMAIL}
+          </a>
         </div>
       </section>
 
-      <section className="wrap">
-        <div className="contact-grid">
-          <div>
-            <div className={`success-box ${success ? 'show' : ''}`}>
+      <section className="wrap contact-map-section">
+        <div className="contact-map">
+          <iframe
+            title="Bản đồ văn phòng Terra"
+            src={MAP_EMBED_URL}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            allowFullScreen
+          />
+          <div className="contact-office-card">
+            <div className="contact-office-head">
+              <span className="contact-office-badge" aria-hidden="true">
+                <Building2 size={20} />
+              </span>
+              <div>
+                <span className="contact-office-kicker">Văn phòng chính</span>
+                <h2>Tòa nhà Terra</h2>
+              </div>
+            </div>
+            <dl className="contact-office-list">
+              <div>
+                <dt>
+                  <MapPin size={14} aria-hidden="true" />
+                  Địa chỉ
+                </dt>
+                <dd>{ADDRESS}</dd>
+              </div>
+              <div>
+                <dt>
+                  <Clock size={14} aria-hidden="true" />
+                  Giờ làm việc
+                </dt>
+                <dd>Thứ 2 – Thứ 7 · 8:00 – 18:00</dd>
+              </div>
+              <div>
+                <dt>
+                  <Phone size={14} aria-hidden="true" />
+                  Hotline
+                </dt>
+                <dd>{HOTLINE} · miễn phí</dd>
+              </div>
+            </dl>
+            <div className="contact-office-actions">
+              <a className="contact-office-btn primary" href={MAP_DIRECTIONS_URL} target="_blank" rel="noreferrer">
+                <Navigation size={15} />
+                Chỉ đường
+              </a>
+              <a className="contact-office-btn" href={`tel:${HOTLINE.replace(/\s/g, '')}`}>
+                <Phone size={15} />
+                Gọi ngay
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="wrap contact-form-section">
+        <div className="contact-layout">
+          <div className="contact-intro">
+            <div className="eyebrow">Đăng ký tư vấn</div>
+            <h2>Nhận tư vấn miễn phí</h2>
+            <p>Chỉ mất 1 phút để gửi thông tin. Chúng tôi sẽ đồng hành cùng bạn từ lúc tìm hiểu đến khi nhận nhà.</p>
+            <ol className="contact-steps">
+              <li>
+                <span className="contact-step-no">01</span>
+                <div>
+                  <h3>Gửi thông tin</h3>
+                  <p>Cho chúng tôi biết dự án và vấn đề bạn quan tâm.</p>
+                </div>
+              </li>
+              <li>
+                <span className="contact-step-no">02</span>
+                <div>
+                  <h3>Chuyên viên gọi lại</h3>
+                  <p>Tư vấn viên liên hệ trong vòng 24 giờ làm việc.</p>
+                </div>
+              </li>
+              <li>
+                <span className="contact-step-no">03</span>
+                <div>
+                  <h3>Tham quan nhà mẫu</h3>
+                  <p>Đặt lịch xem nhà mẫu và nhận bảng giá chi tiết.</p>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <div className="contact-panel">
+            <div className={`success-box ${success ? 'show' : ''}`} role="status">
               ✓ Cảm ơn bạn! Yêu cầu tư vấn đã được ghi nhận, chúng tôi sẽ liên hệ sớm nhất.
             </div>
-            <form className="contact-form blueprint" onSubmit={handleSubmit} noValidate>
+            <form className="contact-form" onSubmit={handleSubmit} noValidate>
               <div className="row-2">
                 <div className={`field ${errors.name ? 'invalid' : ''}`}>
                   <Label htmlFor="cName">Họ và tên *</Label>
@@ -148,36 +241,38 @@ export default function Contact() {
                 />
                 <div className="err">Email không hợp lệ.</div>
               </div>
-              <div className="field">
-                <Label htmlFor="cProject">Dự án quan tâm</Label>
-                <Select value={form.project || undefined} onValueChange={(v) => set('project', v)}>
-                  <SelectTrigger id="cProject" className="w-full">
-                    <SelectValue placeholder="— Chọn dự án (không bắt buộc) —" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {projects.map((p) => (
-                      <SelectItem key={p.id} value={p.name}>
-                        {p.name} ({p.location})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className={`field ${errors.topic ? 'invalid' : ''}`}>
-                <Label htmlFor="cTopic">Vấn đề cần tư vấn *</Label>
-                <Select value={form.topic || undefined} onValueChange={(v) => set('topic', v)}>
-                  <SelectTrigger id="cTopic" className={cn('w-full', errors.topic && 'border-(--color-red)')}>
-                    <SelectValue placeholder="— Chọn chủ đề —" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TOPICS.map((t) => (
-                      <SelectItem key={t} value={t}>
-                        {t}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <div className="err">Vui lòng chọn chủ đề.</div>
+              <div className="row-2">
+                <div className="field">
+                  <Label htmlFor="cProject">Dự án quan tâm</Label>
+                  <Select value={form.project || undefined} onValueChange={(v) => set('project', v)}>
+                    <SelectTrigger id="cProject" className="w-full">
+                      <SelectValue placeholder="Chọn dự án (không bắt buộc)" />
+                    </SelectTrigger>
+                    <SelectContent className="contact-select-content">
+                      {projects.map((p) => (
+                        <SelectItem key={p.id} value={p.name}>
+                          {p.name} ({p.location})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className={`field ${errors.topic ? 'invalid' : ''}`}>
+                  <Label htmlFor="cTopic">Vấn đề cần tư vấn *</Label>
+                  <Select value={form.topic || undefined} onValueChange={(v) => set('topic', v)}>
+                    <SelectTrigger id="cTopic" className={cn('w-full', errors.topic && 'border-(--color-red)')}>
+                      <SelectValue placeholder="Chọn chủ đề" />
+                    </SelectTrigger>
+                    <SelectContent className="contact-select-content">
+                      {TOPICS.map((t) => (
+                        <SelectItem key={t} value={t}>
+                          {t}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <div className="err">Vui lòng chọn chủ đề.</div>
+                </div>
               </div>
               <div className="field">
                 <Label htmlFor="cMsg">Nội dung chi tiết</Label>
@@ -188,60 +283,10 @@ export default function Contact() {
                   onChange={(e) => set('message', e.target.value)}
                 />
               </div>
-              <Button type="submit" variant="brick" className="w-full" disabled={submitting}>
+              <Button type="submit" className="contact-submit" disabled={submitting}>
                 {submitting ? 'Đang gửi...' : 'Gửi yêu cầu tư vấn'}
               </Button>
             </form>
-          </div>
-          <div>
-            <div className="info-card blueprint">
-              <h4>Thông tin liên hệ</h4>
-              <div className="info-row">
-                <span className="ic">TEL</span>
-                <span>Hotline: 1900 6868 (miễn phí)</span>
-              </div>
-              <div className="info-row">
-                <span className="ic">MAIL</span>
-                <span>lienhe@terraviet.vn</span>
-              </div>
-              <Separator className="my-4 bg-white/15" />
-              <div className="info-row">
-                <span className="ic">ADD</span>
-                <span>Tòa nhà Terra, 88 Nguyễn Huệ, Q.1, TP.HCM</span>
-              </div>
-              <div className="info-row">
-                <span className="ic">TIME</span>
-                <span>Thứ 2 – Thứ 7, 8:00 – 18:00</span>
-              </div>
-            </div>
-            <div
-              className="blueprint"
-              style={{
-                background: 'var(--white)',
-                border: '1px solid var(--mist)',
-                padding: 0,
-                height: 240,
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-            >
-              <svg viewBox="0 0 300 240" width="100%" height="100%">
-                <rect width="300" height="240" fill="#e8e1cb" />
-                <g stroke="#b8ad8f" strokeWidth={1}>
-                  <line x1="0" y1="60" x2="300" y2="60" />
-                  <line x1="0" y1="120" x2="300" y2="120" />
-                  <line x1="0" y1="180" x2="300" y2="180" />
-                  <line x1="75" y1="0" x2="75" y2="240" />
-                  <line x1="150" y1="0" x2="150" y2="240" />
-                  <line x1="225" y1="0" x2="225" y2="240" />
-                </g>
-                <circle cx="150" cy="120" r="8" fill="#a8492c" />
-                <path d="M150 100 L150 70" stroke="#a8492c" strokeWidth={2} />
-                <text x="150" y="150" textAnchor="middle" fontFamily="IBM Plex Mono" fontSize="11" fill="#1f3d2b">
-                  88 Nguyễn Huệ, Q.1
-                </text>
-              </svg>
-            </div>
           </div>
         </div>
       </section>

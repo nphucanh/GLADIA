@@ -20,7 +20,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         <div className="project-thumb">
           <Badge className="badge">{project.status}</Badge>
           <span className="lot">{lotCode(project.id)}</span>
-          <img src={PROJECT_IMAGE_BY_BUILDING[project.building]} alt={project.name} loading="lazy" />
+          <img src={project.image ?? PROJECT_IMAGE_BY_BUILDING[project.building]} alt={project.name} loading="lazy" />
         </div>
         <div className="project-body">
           <div className="loc">{project.location}</div>

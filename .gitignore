@@ -2,3 +2,7 @@ node_modules
 dist
 .env
 .env.local
+
+# Cache dữ liệu OSM/OSRM thô của scripts/map-data/generate.mjs
+scripts/map-data/.cache/
+.cache/

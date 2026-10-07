@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import NewsCard from '../components/NewsCard';
 import Reveal from '../components/Reveal';
-import { mockNews, NEWS_CATEGORIES, NewsCategory } from '../data/mockNews';
+import { NEWS_CATEGORIES, NewsCategory } from '../data/mockNews';
+import { useNewsList } from '../hooks/useApiData';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import '../styles/news.css';
 
@@ -14,17 +15,18 @@ const FIRST_PAGE_SIZE = FEATURED_COUNT + GRID_PAGE_SIZE;
 export default function News() {
   const [active, setActive] = useState<NewsCategory>(NEWS_CATEGORIES[0].id);
   const [page, setPage] = useState(1);
+  const { data: news, loading } = useNewsList();
   const [pageTransitioning, setPageTransitioning] = useState(false);
 
   const activeLabel = NEWS_CATEGORIES.find((c) => c.id === active)?.label ?? 'Tin tức';
-  useDocumentTitle(`${activeLabel} — Terra Việt`);
+  useDocumentTitle(`${activeLabel} — Terra`);
 
   const sorted = useMemo(
     () =>
-      mockNews
+      news
         .filter((n) => n.category === active)
         .sort((a, b) => (a.date < b.date ? 1 : -1)),
-    [active],
+    [news, active],
   );
 
   const totalPages = Math.max(
@@ -81,7 +83,7 @@ export default function News() {
         </div>
 
         {sorted.length === 0 ? (
-          <p className="news-empty">Chưa có tin trong danh mục này.</p>
+          <p className="news-empty">{loading ? 'Đang tải tin tức…' : 'Chưa có tin trong danh mục này.'}</p>
         ) : (
           <>
             <div className={`page-fade${pageTransitioning ? ' is-leaving' : ''}`}>

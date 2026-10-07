@@ -11,6 +11,8 @@ import villaLivingRoom from '../assets/house-2/phong_khach.png';
 import villaKitchen from '../assets/house-2/phong_bep_va_an.png';
 import villaBedRoom from '../assets/house-2/phong_ngu.png';
 import villaBathRoom from '../assets/house-2/phong_tam.png';
+// Dữ liệu dựng ảnh thành không gian 3D (tạo bằng scripts/depth/generate.mjs) — tham quan 3D từ ảnh
+import { PHOTO_3D } from './photo3d';
 
 function daysAgo(n: number): string {
   const d = new Date();
@@ -25,36 +27,42 @@ const APARTMENT_GALLERY: ProjectGalleryItem[] = [
   {
     room: 'Toàn cảnh dự án',
     image: townView,
+    photo3d: PHOTO_3D['house-1-view-town'],
     description:
       'Cụm tháp căn hộ vươn cao bên dòng sông, hệ đèn viền vàng đồng nổi bật giữa hoàng hôn thành phố — điểm nhấn kiến trúc dễ nhận diện của dự án.',
   },
   {
     room: 'Phòng khách',
     image: apartmentLivingRoom,
+    photo3d: PHOTO_3D['house-1-living-room'],
     description:
       'Không gian sinh hoạt chung mở rộng theo phong cách hiện đại sang trọng, tường ốp đá tự nhiên và cửa kính trần sàn đón trọn tầm nhìn thành phố về đêm.',
   },
   {
     room: 'Bếp & phòng ăn',
     image: apartmentKitchen,
+    photo3d: PHOTO_3D['house-1-kitchen'],
     description:
       'Bếp đảo liền khối với bàn ăn 8 chỗ, tủ bếp cao kịch trần hoàn thiện vân đá sang trọng, tích hợp đầy đủ thiết bị nhập khẩu.',
   },
   {
     room: 'Phòng ngủ chính',
     image: apartmentBedRoom,
+    photo3d: PHOTO_3D['house-1-bed-room'],
     description:
       'Phòng ngủ master rộng rãi với khu thay đồ walk-in closet riêng biệt, ánh sáng ấm và tầm nhìn toàn cảnh thành phố qua vách kính lớn.',
   },
   {
     room: 'Phòng tắm',
     image: apartmentBathRoom,
+    photo3d: PHOTO_3D['house-1-bath-room'],
     description:
       'Phòng tắm master ốp đá marble trọn khối, bồn tắm nằm độc lập và vách kính cường lực ngăn khu vực vòi sen, mang lại trải nghiệm nghỉ dưỡng ngay tại nhà.',
   },
   {
     room: 'Sân vườn trên cao',
     image: penthouseView,
+    photo3d: PHOTO_3D['house-1-view-penthouse'],
     description:
       'Ban công lounge riêng tư trên tầng cao, không gian lý tưởng để thư giãn buổi tối và ngắm trọn hoàng hôn phủ khắp thành phố.',
   },
@@ -64,36 +72,42 @@ const VILLA_GALLERY: ProjectGalleryItem[] = [
   {
     room: 'Phòng khách',
     image: villaLivingRoom,
+    photo3d: PHOTO_3D['house-2-phong_khach'],
     description:
       'Phòng khách ấm cúng với lò sưởi âm tường, sofa nhung xanh rêu và cửa kính lớn hướng ra sông — không gian tiếp khách sang trọng đậm chất nghỉ dưỡng.',
   },
   {
     room: 'Bếp & phòng ăn',
     image: villaKitchen,
+    photo3d: PHOTO_3D['house-2-phong_bep_va_an'],
     description:
       'Bếp gỗ tối màu kết hợp bàn đảo đá, khu vực ăn uống rộng cho 10 khách, phù hợp những buổi sum họp gia đình nhiều thế hệ.',
   },
   {
     room: 'Phòng ngủ chính',
     image: villaBedRoom,
+    photo3d: PHOTO_3D['house-2-phong_ngu'],
     description:
       'Phòng ngủ master tông trầm ấm, đầu giường bọc nhung xanh rêu, cửa kính lớn mở ra ban công riêng nhìn thẳng ra sông.',
   },
   {
     room: 'Phòng thay đồ',
     image: villaDressingRoom,
+    photo3d: PHOTO_3D['house-2-phong_thay_do'],
     description:
       'Không gian walk-in closet biệt lập, hệ tủ gỗ chia ngăn khoa học cùng ánh đèn hắt ấm áp — nơi lưu giữ tủ đồ như một phòng trưng bày riêng.',
   },
   {
     room: 'Phòng tắm',
     image: villaBathRoom,
+    photo3d: PHOTO_3D['house-2-phong_tam'],
     description:
       'Phòng tắm phong cách spa với đá tối màu, bồn tắm rời sơn đen nổi bật cùng vách kính khu vực vòi sen tách biệt.',
   },
   {
     room: 'Ban công',
     image: villaBalcony,
+    photo3d: PHOTO_3D['house-2-ban_cong'],
     description:
       'Ban công riêng tầng cao với sofa ngoài trời, phóng tầm mắt ra toàn cảnh sông và thành phố lên đèn về đêm.',
   },
@@ -114,7 +128,7 @@ export const mockProjects: Project[] = [
     building: 'apartment',
     gallery: APARTMENT_GALLERY,
     overview: {
-      developer: 'Tập đoàn Terra Việt',
+      developer: 'Tập đoàn Terra',
       scale: ['Cao 32 tầng, 2 tầng hầm để xe.', 'Gồm 3 tháp: Sông Xanh, Sông Vàng, Sông Bạc.', 'Khối đế 4 tầng thương mại & tiện ích nội khu.'],
       landArea: '15.200 m²',
       buildingDensity: '35%',
@@ -136,7 +150,7 @@ export const mockProjects: Project[] = [
     building: 'villa',
     gallery: VILLA_GALLERY,
     overview: {
-      developer: 'Tập đoàn Terra Việt',
+      developer: 'Tập đoàn Terra',
       scale: ['68 căn biệt thự đơn lập & song lập.', 'Diện tích mỗi căn từ 240 - 400 m².', 'Thiết kế 1 trệt + 2 lầu, sân vườn riêng.'],
       landArea: '42.000 m²',
       buildingDensity: '28%',
@@ -158,7 +172,7 @@ export const mockProjects: Project[] = [
     building: 'land',
     gallery: VILLA_GALLERY,
     overview: {
-      developer: 'Tập đoàn Terra Việt',
+      developer: 'Tập đoàn Terra',
       scale: ['620 nền đất nền thổ cư đã có sổ.', 'Diện tích mỗi nền từ 90 - 150 m².', 'Hạ tầng đường nhựa, điện, cấp thoát nước hoàn thiện 100%.'],
       landArea: '18,5 ha',
       buildingDensity: 'Tối đa 70% diện tích mỗi nền (theo quy hoạch 1/500)',
@@ -180,7 +194,7 @@ export const mockProjects: Project[] = [
     building: 'shophouse',
     gallery: APARTMENT_GALLERY,
     overview: {
-      developer: 'Tập đoàn Terra Việt',
+      developer: 'Tập đoàn Terra',
       scale: ['86 căn shophouse thương mại.', 'Thiết kế 1 trệt + 4 lầu.', 'Mặt tiền tiếp giáp trục đường chính khu vực.'],
       landArea: '9.800 m²',
       buildingDensity: '55%',
@@ -202,7 +216,7 @@ export const mockProjects: Project[] = [
     building: 'apartment',
     gallery: APARTMENT_GALLERY,
     overview: {
-      developer: 'Tập đoàn Terra Việt',
+      developer: 'Tập đoàn Terra',
       scale: ['Cao 28 tầng, 1 tầng hầm để xe.', 'Gồm 2 tháp: Emerald A, Emerald B.', 'Khối đế 3 tầng tiện ích.'],
       landArea: '11.000 m²',
       buildingDensity: '38%',
@@ -224,7 +238,7 @@ export const mockProjects: Project[] = [
     building: 'villa',
     gallery: VILLA_GALLERY,
     overview: {
-      developer: 'Tập đoàn Terra Việt',
+      developer: 'Tập đoàn Terra',
       scale: ['45 căn biệt thự nghỉ dưỡng ven biển.', 'Diện tích mỗi căn từ 300 - 500 m².', 'Thiết kế 1 trệt + 1 lầu, hồ bơi riêng.'],
       landArea: '36.000 m²',
       buildingDensity: '25%',
@@ -246,7 +260,7 @@ export const mockProjects: Project[] = [
     building: 'land',
     gallery: VILLA_GALLERY,
     overview: {
-      developer: 'Tập đoàn Terra Việt',
+      developer: 'Tập đoàn Terra',
       scale: ['410 nền đất nền thổ cư.', 'Diện tích mỗi nền từ 100 - 160 m².', 'Hạ tầng nội khu đồng bộ, công viên cây xanh trung tâm.'],
       landArea: '12,4 ha',
       buildingDensity: 'Tối đa 70% diện tích mỗi nền (theo quy hoạch 1/500)',
@@ -268,7 +282,7 @@ export const mockProjects: Project[] = [
     building: 'apartment',
     gallery: APARTMENT_GALLERY,
     overview: {
-      developer: 'Tập đoàn Terra Việt',
+      developer: 'Tập đoàn Terra',
       scale: ['Cao 35 tầng, 3 tầng hầm để xe.', 'Gồm 2 tháp: Sky Tower 1, Sky Tower 2.', 'Khối đế 5 tầng thương mại & tiện ích.'],
       landArea: '13.600 m²',
       buildingDensity: '32%',
@@ -290,7 +304,7 @@ export const mockProjects: Project[] = [
     building: 'shophouse',
     gallery: VILLA_GALLERY,
     overview: {
-      developer: 'Tập đoàn Terra Việt',
+      developer: 'Tập đoàn Terra',
       scale: ['52 căn shophouse mặt tiền đại lộ.', 'Thiết kế 1 trệt + 3 lầu.', 'Bố trí liền kề trục đường thương mại chính.'],
       landArea: '7.200 m²',
       buildingDensity: '50%',
@@ -312,7 +326,7 @@ export const mockProjects: Project[] = [
     building: 'apartment',
     gallery: APARTMENT_GALLERY,
     overview: {
-      developer: 'Tập đoàn Terra Việt',
+      developer: 'Tập đoàn Terra',
       scale: ['Cao 30 tầng, 2 tầng hầm để xe.', 'Gồm 3 tháp: Lake View A, B, C.', 'Khối đế 4 tầng tiện ích, hướng nhìn hồ trung tâm.'],
       landArea: '16.500 m²',
       buildingDensity: '36%',
@@ -334,7 +348,7 @@ export const mockProjects: Project[] = [
     building: 'villa',
     gallery: APARTMENT_GALLERY,
     overview: {
-      developer: 'Tập đoàn Terra Việt',
+      developer: 'Tập đoàn Terra',
       scale: ['58 căn biệt thự song lập trong thung lũng xanh.', 'Diện tích mỗi căn từ 220 - 380 m².', 'Thiết kế 1 trệt + 2 lầu, sân vườn bao quanh.'],
       landArea: '38.000 m²',
       buildingDensity: '27%',
@@ -356,7 +370,7 @@ export const mockProjects: Project[] = [
     building: 'land',
     gallery: VILLA_GALLERY,
     overview: {
-      developer: 'Tập đoàn Terra Việt',
+      developer: 'Tập đoàn Terra',
       scale: ['350 nền đất nền liền kề gần nhà ga Metro.', 'Diện tích mỗi nền từ 80 - 120 m².', 'Hạ tầng kết nối trực tiếp tuyến Metro số 3.'],
       landArea: '9,6 ha',
       buildingDensity: 'Tối đa 70% diện tích mỗi nền (theo quy hoạch 1/500)',

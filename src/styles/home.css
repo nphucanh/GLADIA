@@ -43,7 +43,7 @@ section.morph-slide.is-active{
   display:flex;align-items:flex-end;
   padding-bottom:100px;
 }
-.hero-photo{background:#14261b;}
+.hero-photo{background:#5e4636;}
 @media (max-width:720px){.hero{min-height:88vh;padding-bottom:70px;}}
 
 .hero-photo::before{
@@ -61,17 +61,17 @@ section.morph-slide.is-active{
 }
 .hlt-small{
   position:absolute;top:.1em;left:-2em;
-  font-family:'Fraunces',serif;font-style:italic;font-weight:500;
+  font-family:var(--font-display);font-style:italic;font-weight:500;
   font-size:clamp(2rem,3.4vw,2.9rem);color:var(--white);
 }
 .hlt-big{
-  display:block;font-family:'Fraunces',serif;font-weight:600;
+  display:block;font-family:var(--font-display);font-weight:600;
   font-size:clamp(6rem,14vw,11.5rem);line-height:.82;
   background:linear-gradient(100deg, rgba(255,253,248,.75) 0%, rgba(255,253,248,.5) 55%, rgba(255,253,248,0.5) 100%);
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
 .hlt-caption{
-  display:block;font-family:'IBM Plex Mono',monospace;
+  display:block;font-family:var(--font-label);
   letter-spacing:.45em;font-size:.76rem;color:rgba(255,253,248,.6);
   margin-top:.5em;padding-right:.45em;
 }
@@ -86,7 +86,7 @@ section.morph-slide.is-active{
   }
 }
 .hero h1{
-  font-family:'Playfair Display',serif;font-weight:600;font-style:normal;text-transform:none;letter-spacing:0;
+  font-family:var(--font-display);font-weight:600;font-style:normal;text-transform:none;letter-spacing:0;
   font-size:clamp(3.6rem,8vw,7.8rem);line-height:.6;
   color:var(--white);
   text-shadow:0 6px 30px rgba(0,0,0,.35);
@@ -95,21 +95,21 @@ section.morph-slide.is-active{
 .hero h1 .line span{display:inline-block;}
 /* Dòng phụ nhỏ hơn, in nghiêng nhẹ — cùng tinh thần phân cấp cỡ chữ của ảnh tham chiếu */
 .hero h1 .line:nth-child(2) span{
-  font-family:'Playfair Display',serif;font-weight:500;font-style:italic;
+  font-family:var(--font-display);font-weight:500;font-style:italic;
   font-size:.55em;letter-spacing:0;
 }
 .hero .eyebrow{
   display:inline-flex;align-items:center;
   background:rgba(255,253,248,.95);color:var(--forest-2);
   padding:.5em 1.15em;border-radius:999px;
-  font-family:'Fraunces',serif;font-style:italic;font-weight:500;
+  font-family:var(--font-display);font-style:italic;font-weight:500;
   font-size:.92rem;letter-spacing:.01em;text-transform:none;
   box-shadow:0 10px 24px -12px rgba(0,0,0,.5);
   text-shadow:none;
 }
 .hero .eyebrow::before{content:none;}
 .hero-actions{display:flex;gap:16px;margin-top:34px;flex-wrap:wrap;}
-.hero p.lead{font-size:1.1rem;color:#e6e2d2;max-width:520px;margin-top:1.2em;}
+.hero p.lead{font-size:1.1rem;color:#e7decf;max-width:520px;margin-top:1.2em;}
 
 /* Xuất hiện lại mỗi lần quay về slide này (gate bằng .is-active), không chỉ lần đầu mount */
 @keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
@@ -134,7 +134,7 @@ section.morph-slide.is-active{
 }
 .hsn-label{
   writing-mode:vertical-rl;transform:rotate(180deg);
-  font-family:'Manrope',sans-serif;font-size:.8rem;font-weight:800;
+  font-family:var(--font-body);font-size:.8rem;font-weight:800;
   letter-spacing:.04em;text-transform:uppercase;
 }
 /* Wrapper riêng để hover chỉ dịch chuyển nút tròn — chữ luôn đứng yên */
@@ -160,7 +160,7 @@ section.morph-slide.is-active{
   position:fixed;right:32px;bottom:40px;z-index:101;
   display:flex;align-items:center;gap:10px;
   background:none;border:none;color:var(--fg);
-  font-family:'Manrope',sans-serif;font-weight:800;font-size:.8rem;
+  font-family:var(--font-body);font-weight:800;font-size:.8rem;
   letter-spacing:.05em;text-transform:uppercase;
   transition:color .2s ease;
 }
@@ -179,7 +179,7 @@ section.morph-slide.is-active{
 }
 .about-orb-2{
   width:300px;height:300px;right:-70px;bottom:-60px;
-  background:radial-gradient(circle, rgba(9,52,71,.4) 0%, transparent 70%);
+  background:radial-gradient(circle, rgba(94,70,54,.4) 0%, transparent 70%);
   animation:aboutOrbB 28s ease-in-out infinite alternate;
 }
 @keyframes aboutOrbA{0%{transform:translate(0,0) scale(1);}100%{transform:translate(46px,32px) scale(1.18);}}
@@ -197,7 +197,7 @@ section.morph-slide.is-active{
   background:var(--white);border-radius:10px;padding:26px 20px;text-align:center;
   box-shadow:var(--shadow);transition:transform .3s ease, box-shadow .3s ease;
 }
-.about-stat-card:hover{transform:translateY(-8px) scale(1.03);box-shadow:0 26px 54px -20px rgba(9,52,71,.4);}
+.about-stat-card:hover{transform:translateY(-8px) scale(1.03);box-shadow:0 26px 54px -20px rgba(94,70,54,.4);}
 .about-stat-icon{
   width:42px;height:42px;border-radius:50%;margin:0 auto 12px;
   background:var(--canvas);color:var(--forest);display:flex;align-items:center;justify-content:center;
@@ -221,7 +221,7 @@ section.morph-slide.is-active{
 }
 
 .stat{text-align:center;}
-.stat .num{font-family:'Fraunces',serif;font-size:2rem;font-weight:600;}
+.stat .num{font-family:var(--font-display);font-size:2rem;font-weight:600;}
 .stat .label{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;margin-top:4px;}
 
 /* ---------- Slide "Liên hệ" ---------- */
@@ -232,10 +232,10 @@ section.morph-slide.is-active{
 .contact-showcase{position:relative;z-index:1;text-align:center;}
 .partner-block{display:flex;flex-direction:column;align-items:center;margin-bottom:64px;}
 .partner-label{
-  font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
+  font-family:var(--font-label);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
   color:var(--fg-dim);margin-bottom:16px;
 }
-.partner-wordmark{font-family:'Fraunces',serif;font-weight:600;font-size:1.15rem;color:var(--fg);}
+.partner-wordmark{font-family:var(--font-display);font-weight:600;font-size:1.15rem;color:var(--fg);}
 .partner-wordmark-lg{font-size:2.8rem;letter-spacing:.02em;}
 
 /* Hàng logo phân phối & tiếp thị */
@@ -254,7 +254,7 @@ section.morph-slide.is-active{
 .contact-info-block h3{position:relative;font-size:1.25rem;margin-bottom:16px;}
 .contact-info-watermark{
   position:absolute;top:-.3em;left:50%;transform:translateX(-50%);z-index:0;
-  font-family:'Fraunces',serif;font-style:italic;font-weight:500;
+  font-family:var(--font-display);font-style:italic;font-weight:500;
   font-size:4rem;line-height:1;white-space:nowrap;
   color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.14);
   pointer-events:none;user-select:none;
@@ -295,7 +295,7 @@ section.morph-slide.is-active{
 #slide-news{
   background-color:var(--color-highlight-dark);
   background-image:
-    radial-gradient(ellipse 65% 55% at 22% 22%, rgba(70,112,132,.5) 0%, transparent 60%),
+    radial-gradient(ellipse 65% 55% at 22% 22%, rgba(129,97,74,.5) 0%, transparent 60%),
     radial-gradient(ellipse 60% 50% at 78% 80%, rgba(0,0,0,.3) 0%, transparent 60%);
   background-repeat:no-repeat;
   background-size:180% 180%;

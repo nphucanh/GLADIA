@@ -2,7 +2,8 @@ import { Link, useParams } from 'react-router-dom';
 import NewsCard from '../components/NewsCard';
 import Reveal from '../components/Reveal';
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '../components/ui/carousel';
-import { mockNews, NEWS_CATEGORIES } from '../data/mockNews';
+import { NEWS_CATEGORIES } from '../data/mockNews';
+import { useNewsList } from '../hooks/useApiData';
 import { fmtDate } from '../utils/format';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import '../styles/news.css';
@@ -16,15 +17,16 @@ function estimateReadingTime(paragraphs: string[]): number {
 
 export default function NewsDetail() {
   const { id } = useParams();
-  const item = mockNews.find((n) => n.id === Number(id));
+  const { data: news, loading } = useNewsList();
+  const item = news.find((n) => n.id === Number(id));
 
-  useDocumentTitle(item ? `${item.title} — Terra Việt` : 'Không tìm thấy tin — Terra Việt');
+  useDocumentTitle(item ? `${item.title} — Terra` : loading ? 'Tin tức — Terra' : 'Không tìm thấy tin — Terra');
 
   if (!item) {
     return (
       <main className="news-page-bg">
-        <section className="wrap" style={{ padding: '160px 0 120px' }}>
-          <p className="news-empty">Không tìm thấy bài viết này.</p>
+        <section className="wrap" style={{ paddingTop: 160, paddingBottom: 120 }}>
+          <p className="news-empty">{loading ? 'Đang tải bài viết…' : 'Không tìm thấy bài viết này.'}</p>
           <Link to="/tin-tuc" className="news-back-link">
             ← Quay lại Tin tức
           </Link>
@@ -38,7 +40,7 @@ export default function NewsDetail() {
 
   // Bài trước/sau — theo thứ tự thời gian chung (mới nhất trước), giúp người đọc
   // tiếp tục đọc mà không cần quay lại danh sách.
-  const chronological = [...mockNews].sort((a, b) => (a.date < b.date ? 1 : -1));
+  const chronological = [...news].sort((a, b) => (a.date < b.date ? 1 : -1));
   const currentIndex = chronological.findIndex((n) => n.id === item.id);
   const newerArticle = currentIndex > 0 ? chronological[currentIndex - 1] : undefined;
   const olderArticle =

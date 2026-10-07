@@ -1,27 +1,36 @@
 :root{
+  /* ---------- Font chữ ----------
+     Hai họ font, đều hỗ trợ đầy đủ dấu tiếng Việt (tải từ Google Fonts trong index.html):
+     - Cormorant Garamond: serif cổ điển cho tiêu đề, số liệu, chữ nghiêng trang trí
+     - Be Vietnam Pro: sans-serif thiết kế cho tiếng Việt — nội dung, nút, nhãn
+     --font-label: nhãn nhỏ in hoa giãn chữ (eyebrow, thông số) — dùng chung font nội dung. */
+  --font-display: 'Cormorant Garamond', 'Times New Roman', Georgia, serif;
+  --font-body: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-label: var(--font-body);
+
   /* ---------- Bảng màu thương hiệu (nguồn) ---------- */
-  --color-normal: #d6b194;
-  --color-normal-light: #e8d2b4;
-  --color-normal-light-2: #c0a886;
-  --color-normal-dark: #76563d;
-  --color-normal-brown: #c49776;
-  --color-normal-brown-dark: #b07d54;
-  --color-highlight: #467084;
-  --color-highlight-dark: #093447;
-  --color-normal-highlight: #fef4e7;
-  --color-orange: #ffa336;
+  --color-normal: #d0bca1;
+  --color-normal-light: #e7decf;
+  --color-normal-light-2: #dac09b;
+  --color-normal-dark: #9f815b;
+  --color-normal-brown: #9f815b;
+  --color-normal-brown-dark: #9f815b;
+  --color-highlight: #81614a;
+  --color-highlight-dark: #5e4636;
+  --color-normal-highlight: #e7decf;
+  --color-orange: #dac09b;
   --color-white: #fff;
   --color-red: #ff1b25;
   --color-violet: #c9007f;
   --color-pink: #ffc8bb;
   --color-green: #779d56;
   --color-green-light: #ccdec7;
-  --color-normal-zero: rgba(214, 177, 148, 0);
-  --color-normal-alpha-05: rgba(214, 177, 148, 0.5);
-  --color-normal-alpha-08: rgba(214, 177, 148, 0.8);
-  --color-normal-alpha-98: rgba(214, 177, 148, 0.98);
-  --color-normal-dark-6: rgba(118, 86, 61, 0.6);
-  --color-highlight-08: rgba(70, 112, 132, 0.8);
+  --color-normal-zero: rgba(208, 188, 161, 0);
+  --color-normal-alpha-05: rgba(208, 188, 161, 0.5);
+  --color-normal-alpha-08: rgba(208, 188, 161, 0.8);
+  --color-normal-alpha-98: rgba(208, 188, 161, 0.98);
+  --color-normal-dark-6: rgba(159, 129, 91, 0.6);
+  --color-highlight-08: rgba(129, 97, 74, 0.8);
   --color-white-zero: rgba(255, 255, 255, 0);
   --color-white-alpha-01: rgba(255, 255, 255, 0.1);
   --color-white-alpha-02: rgba(255, 255, 255, 0.2);
@@ -62,14 +71,17 @@
   --gold:var(--color-orange);
   --mist:var(--color-normal-light-2);
   --white:var(--color-normal-highlight);
-  --shadow: 0 20px 60px -30px rgba(9,52,71,.35);
+  --shadow: 0 20px 60px -30px rgba(94,70,54,.35);
   --radius: 2px;
   --sidebar-w: 232px;
+  /* Khung nội dung rộng cho các trang không có rail sidebar (Tin tức, Dự án) */
+  --page-wide-max: 1640px;
+  --page-wide-gutter: clamp(20px, 4vw, 64px);
 
   /* Nền chuyển động xuyên suốt toàn site */
   --bg:var(--color-highlight-dark);
   --bg-2:var(--color-highlight);
   --bg-3:var(--color-normal-brown-dark);
   --fg:var(--color-normal-highlight);
-  --fg-dim:rgba(254,244,231,.66);
+  --fg-dim:rgba(231,222,207,.72);
 }
