@@ -1,6 +1,6 @@
 // Quản trị tin tuyển dụng. Chỉ admin.
 import type { JobIcon } from '../../types';
-import { db, unwrap } from '../client';
+import { db, deleteById, unwrap } from '../client';
 import { ensure } from '../validate';
 import type { JobRow } from '../rows';
 
@@ -41,7 +41,7 @@ export async function updateJob(id: number, patch: Partial<JobInput>): Promise<J
 
 /** Xoá vị trí; hồ sơ đã nộp vẫn giữ (job_id → null, tên vị trí lưu sẵn trong hồ sơ). */
 export async function deleteJob(id: number) {
-  unwrap(await db().from('jobs').delete().eq('id', id));
+  await deleteById('jobs', id, 'vị trí');
 }
 
 /** Sắp xếp lại theo thứ tự id truyền vào. */

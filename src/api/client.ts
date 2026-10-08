@@ -41,6 +41,9 @@ export function toApiError(err: unknown): ApiError {
   if (e?.code === '42501' || e?.code === 'PGRST301' || /row-level security|jwt|not authorized|unauthorized/i.test(msg))
     return new ApiError('Bạn không có quyền thực hiện thao tác này.', 'unauthorized', err);
   if (e?.code === 'PGRST116') return new ApiError('Không tìm thấy dữ liệu.', 'not_found', err);
+  // PGRST202 / 42883: chưa có hàm · PGRST205 / 42P01: chưa có bảng · 42703 / PGRST204: chưa có cột → database chưa chạy bản SQL mới nhất
+  if (e?.code === 'PGRST202' || e?.code === 'PGRST205' || e?.code === '42883' || e?.code === '42P01' || e?.code === '42703' || e?.code === 'PGRST204')
+    return new ApiError('Cơ sở dữ liệu chưa được cập nhật bản mới (thiếu bảng hoặc hàm). Hãy chạy file SQL mới trong thư mục supabase/ ở Supabase › SQL Editor.', 'not_configured', err);
   if (/failed to fetch|network|timeout/i.test(msg)) return new ApiError('Không kết nối được máy chủ, vui lòng thử lại.', 'network', err);
   return new ApiError(msg || 'Đã có lỗi xảy ra, vui lòng thử lại.', 'unknown', err);
 }
@@ -49,6 +52,16 @@ export function toApiError(err: unknown): ApiError {
 export function unwrap<T>(res: { data: unknown; error: unknown }): T {
   if (res.error) throw toApiError(res.error);
   return res.data as T;
+}
+
+/**
+ * Xoá 1 dòng theo id. RLS chặn thì Supabase không báo lỗi mà chỉ xoá 0 dòng → kiểm tra số dòng đã xoá, để giao diện
+ * không báo "Đã xoá" khi thực ra chưa xoá gì.
+ */
+export async function deleteById(table: string, id: number, what: string) {
+  const deleted = unwrap<{ id: number }[]>(await db().from(table).delete().eq('id', id).select('id'));
+  if (deleted.length === 0)
+    throw new ApiError(`Không xoá được ${what}: tài khoản không có quyền quản trị hoặc ${what} không còn tồn tại.`, 'unauthorized');
 }
 
 export type DataSource = 'supabase' | 'mock';

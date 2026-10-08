@@ -4,7 +4,7 @@ import { admin } from '../../api/admin';
 import type { ApplicationStatus, JobApplicationRow } from '../../api/rows';
 import { useAdmin } from '../AdminApp';
 import { APPLICATION_STATUS } from '../meta';
-import { Badge, Empty, ErrorBox, Field, fmtAgo, fmtDateTime, Loading, PageHeader, Pager, usePaging, ResultInfo, SearchBox, Seg, Sheet, useAction, useAsync, useDebounced, useFeedback } from '../ui';
+import { Badge, Empty, ErrorBox, Field, fmtAgo, fmtDateTime, Loading, PageHeader, Pager, usePaging, ResultInfo, SearchBox, Seg, Select, Sheet, useAction, useAsync, useDebounced, useFeedback } from '../ui';
 
 const STATUSES = Object.keys(APPLICATION_STATUS) as ApplicationStatus[];
 
@@ -18,7 +18,7 @@ export default function Applications() {
   const q = useDebounced(search);
   const jobs = useAsync(() => admin.jobs.listJobs(), []);
   const list = useAsync(
-    () => admin.inbox.listJobApplications({ status: status || undefined, jobId: jobId || undefined, search: q, page, pageSize }),
+    () => admin.applications.listJobApplications({ status: status || undefined, jobId: jobId || undefined, search: q, page, pageSize }),
     [status, jobId, q, page, pageSize],
   );
 
@@ -49,23 +49,16 @@ export default function Applications() {
             }}
             placeholder="Tìm tên, SĐT, email, vị trí…"
           />
-          <select
-            className="a-input"
+          <Select<number | ''>
             style={{ maxWidth: 340 }}
             value={jobId}
-            onChange={(e) => {
-              setJobId(e.target.value ? Number(e.target.value) : '');
+            onChange={(v) => {
+              setJobId(v);
               setPage(1);
             }}
             aria-label="Lọc theo vị trí"
-          >
-            <option value="">Mọi vị trí</option>
-            {(jobs.data ?? []).map((j) => (
-              <option key={j.id} value={j.id}>
-                {j.title}
-              </option>
-            ))}
-          </select>
+            options={[{ value: '', label: 'Mọi vị trí' }, ...(jobs.data ?? []).map((j) => ({ value: j.id, label: j.title }))]}
+          />
           <ResultInfo total={list.data?.total} unit="hồ sơ" />
         </div>
         {list.error ? (
@@ -154,26 +147,26 @@ function ApplicationSheet({
   onDeleted: () => void;
 }) {
   const [note, setNote] = useState(row.admin_note ?? '');
-  const { run, busy } = useAction();
+  const { run, runOk, busy } = useAction();
   const { confirm } = useFeedback();
   useEffect(() => setNote(row.admin_note ?? ''), [row.id, row.admin_note]);
 
   async function setStatus(status: ApplicationStatus) {
-    const r = await run(() => admin.inbox.updateJobApplication(row.id, { status }), `Đã chuyển sang "${APPLICATION_STATUS[status].label}"`);
+    const r = await run(() => admin.applications.updateJobApplication(row.id, { status }), `Đã chuyển sang "${APPLICATION_STATUS[status].label}"`);
     if (r) onUpdated(r);
   }
   async function saveNote() {
-    const r = await run(() => admin.inbox.updateJobApplication(row.id, { admin_note: note.trim() || null }), 'Đã lưu ghi chú');
+    const r = await run(() => admin.applications.updateJobApplication(row.id, { admin_note: note.trim() || null }), 'Đã lưu ghi chú');
     if (r) onUpdated(r);
   }
   async function downloadCv() {
     if (!row.cv_path) return;
-    const url = await run(() => admin.inbox.getCvDownloadUrl(row.cv_path!));
+    const url = await run(() => admin.applications.getCvDownloadUrl(row.cv_path!));
     if (url) window.open(url, '_blank', 'noopener');
   }
   async function remove() {
     const ok = await confirm({ title: 'Xoá hồ sơ này?', message: 'Hồ sơ và file CV đính kèm sẽ bị xoá vĩnh viễn.', confirmLabel: 'Xoá hồ sơ', danger: true });
-    if (ok && (await run(() => admin.inbox.deleteJobApplication(row.id), 'Đã xoá hồ sơ')) !== undefined) onDeleted();
+    if (ok && (await runOk(() => admin.applications.deleteJobApplication(row.id), 'Đã xoá hồ sơ'))) onDeleted();
   }
 
   return (

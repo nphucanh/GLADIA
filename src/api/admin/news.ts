@@ -1,6 +1,6 @@
 // Quản trị tin tức. Chỉ admin.
 import type { NewsCategory } from '../../data/mockNews';
-import { db, pageRange, searchTerm, toPage, unwrap, type Page, type PageQuery } from '../client';
+import { db, deleteById, pageRange, searchTerm, toPage, unwrap, type Page, type PageQuery } from '../client';
 import { ensure } from '../validate';
 import type { NewsRow } from '../rows';
 
@@ -67,5 +67,5 @@ export async function updateNews(id: number, patch: Partial<NewsInput>): Promise
 }
 
 export async function deleteNews(id: number) {
-  unwrap(await db().from('news').delete().eq('id', id));
+  await deleteById('news', id, 'bài viết');
 }

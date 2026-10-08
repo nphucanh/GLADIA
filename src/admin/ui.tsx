@@ -6,12 +6,14 @@ import {
   useRef,
   useState,
   type ChangeEvent,
+  type CSSProperties,
   type DependencyList,
   type ReactNode,
 } from 'react';
 import { Link } from 'react-router-dom';
 import * as Dialog from '@radix-ui/react-dialog';
-import { AlertTriangle, ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight, ImagePlus, Inbox, Search, Trash2, X } from 'lucide-react';
+import * as RSelect from '@radix-ui/react-select';
+import { AlertTriangle, ArrowLeft, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ImagePlus, Inbox, Search, Trash2, X } from 'lucide-react';
 import { admin, type MediaFolder } from '../api/admin';
 import { ApiError } from '../api/client';
 
@@ -84,6 +86,71 @@ export const today = () => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
+
+// ============================================================
+// Ô chọn (thay <select> gốc của trình duyệt)
+// ============================================================
+
+export interface SelectOption<V extends string | number> {
+  value: V;
+  label: ReactNode;
+}
+
+// Radix không cho giá trị rỗng → mã hoá '' (vd. "Mọi loại hình") thành một khoá riêng
+const EMPTY = '__empty__';
+const enc = (v: string | number) => (v === '' ? EMPTY : String(v));
+
+export function Select<V extends string | number>({
+  value,
+  onChange,
+  options,
+  size,
+  className,
+  style,
+  id,
+  invalid,
+  'aria-label': ariaLabel,
+}: {
+  value: V;
+  onChange: (v: V) => void;
+  options: SelectOption<V>[];
+  size?: 'sm';
+  className?: string;
+  style?: CSSProperties;
+  id?: string;
+  invalid?: boolean;
+  'aria-label'?: string;
+}) {
+  return (
+    <RSelect.Root value={enc(value)} onValueChange={(v) => onChange(options.find((o) => enc(o.value) === v)!.value)}>
+      <RSelect.Trigger
+        id={id}
+        aria-label={ariaLabel}
+        className={['a-input', 'a-select', size, invalid && 'invalid', className].filter(Boolean).join(' ')}
+        style={style}
+      >
+        <RSelect.Value />
+        <RSelect.Icon className="a-select-icon">
+          <ChevronDown size={16} />
+        </RSelect.Icon>
+      </RSelect.Trigger>
+      <RSelect.Portal>
+        <RSelect.Content className="a-select-menu" position="popper" sideOffset={6} collisionPadding={12}>
+          <RSelect.Viewport className="a-select-list">
+            {options.map((o) => (
+              <RSelect.Item key={enc(o.value)} value={enc(o.value)} className="a-select-item">
+                <RSelect.ItemText>{o.label}</RSelect.ItemText>
+                <RSelect.ItemIndicator className="a-select-check">
+                  <Check size={15} strokeWidth={2.4} />
+                </RSelect.ItemIndicator>
+              </RSelect.Item>
+            ))}
+          </RSelect.Viewport>
+        </RSelect.Content>
+      </RSelect.Portal>
+    </RSelect.Root>
+  );
+}
 
 // ============================================================
 // Bố cục
@@ -302,13 +369,7 @@ export function Pager({
         {onPageSize && total > PAGE_SIZES[0] && (
           <label className="a-pager-size">
             <span>Mỗi trang</span>
-            <select className="a-input" value={pageSize} onChange={(e) => onPageSize(Number(e.target.value))}>
-              {PAGE_SIZES.map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </select>
+            <Select value={pageSize} onChange={onPageSize} aria-label="Số dòng mỗi trang" options={PAGE_SIZES.map((n) => ({ value: n, label: n }))} />
           </label>
         )}
       </div>
@@ -396,6 +457,7 @@ export function ResultInfo({ total, unit, onClear }: { total?: number; unit: str
 }
 
 /** Ngăn kéo bên phải (chi tiết yêu cầu, sửa nhanh). */
+/** Khung nổi: ngăn kéo bên phải (mặc định) hoặc hộp giữa màn hình (variant="modal"), cùng phần đầu / thân / chân. */
 export function Sheet({
   open,
   onClose,
@@ -403,6 +465,7 @@ export function Sheet({
   subtitle,
   children,
   footer,
+  variant = 'drawer',
 }: {
   open: boolean;
   onClose: () => void;
@@ -410,12 +473,13 @@ export function Sheet({
   subtitle?: ReactNode;
   children: ReactNode;
   footer?: ReactNode;
+  variant?: 'drawer' | 'modal';
 }) {
   return (
     <Dialog.Root open={open} onOpenChange={(v) => !v && onClose()}>
       <Dialog.Portal>
         <Dialog.Overlay className="a-overlay" />
-        <Dialog.Content className="a-sheet" aria-describedby={undefined}>
+        <Dialog.Content className={`a-sheet${variant === 'modal' ? ' a-sheet--modal' : ''}`} aria-describedby={undefined}>
           <div className="a-sheet-head">
             <div>
               <Dialog.Title asChild>
@@ -527,7 +591,12 @@ export function useAction() {
     },
     [toast],
   );
-  return { run, busy };
+  /** Như run(), nhưng trả về true / false — dùng cho thao tác không trả dữ liệu (vd. xoá), vì run() trả undefined cả khi thành công. */
+  const runOk = useCallback(
+    async (fn: () => Promise<unknown>, success?: string): Promise<boolean> => (await run(async () => (await fn(), true), success)) === true,
+    [run],
+  );
+  return { run, runOk, busy };
 }
 
 // ============================================================

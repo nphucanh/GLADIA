@@ -11,12 +11,13 @@ import { Textarea } from '../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { useActiveSection, type RailItem } from '../context/ActiveSectionContext';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
-import { submitApplication } from '../api/public';
+import { submitApplication } from '../api/public/careers';
 import { isValidEmail, isValidName, isValidPhone } from '../api/validate';
 import { useJobs } from '../hooks/useApiData';
 import { JOB_ICONS } from '../components/JobIcon';
 import { PAGE_HERO_IMAGE } from '../data/images';
 import '../styles/resource-pages.css';
+import { LoadingNote, RowSkeleton } from '../components/Loading';
 
 const CARD_RESET = 'border-0 bg-transparent block';
 
@@ -161,7 +162,8 @@ export default function Careers() {
 
   // Phân trang riêng cho section "Vị trí đang tuyển" — độc lập với cuộn trang chính, giữ
   // nguyên vị trí cuộn hiện tại khi đổi trang (chỉ crossfade nội dung, không cuộn).
-  const { data: JOBS } = useJobs();
+  const { data: JOBS, loading: jobsLoading } = useJobs();
+  const jobsWaiting = jobsLoading && JOBS.length === 0;
   const [jobPage, setJobPage] = useState(1);
   const [jobPageTransitioning, setJobPageTransitioning] = useState(false);
   const jobTotalPages = Math.max(1, Math.ceil(JOBS.length / JOBS_PER_PAGE));
@@ -303,6 +305,14 @@ export default function Careers() {
             <p>Chọn "Ứng tuyển" ở vị trí phù hợp, thông tin sẽ tự điền sẵn vào form bên dưới.</p>
           </div>
           <div className={`job-list page-fade${jobPageTransitioning ? ' is-leaving' : ''}`}>
+            {jobsWaiting && (
+              <>
+                <LoadingNote label="Đang tải vị trí tuyển dụng" />
+                {[0, 1, 2].map((i) => (
+                  <RowSkeleton key={i} />
+                ))}
+              </>
+            )}
             {jobPageItems.map((j, i) => (
               <Reveal key={j.id} delay={i * 60}>
                 <Card className={`job-panel blueprint ${CARD_RESET}`}>
@@ -430,6 +440,11 @@ export default function Careers() {
                       <SelectValue placeholder="— Chọn vị trí —" />
                     </SelectTrigger>
                     <SelectContent className="apply-select-content">
+                      {jobsWaiting && (
+                        <SelectItem value="__loading" disabled>
+                          Đang tải danh sách vị trí…
+                        </SelectItem>
+                      )}
                       {JOBS.map((j) => (
                         <SelectItem key={j.title} value={j.title}>
                           {j.title}

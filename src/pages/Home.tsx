@@ -12,6 +12,7 @@ import { HERO_IMAGE } from '../data/images';
 import { useNewsList } from '../hooks/useApiData';
 import '../styles/home.css';
 import '../styles/news.css';
+import { CardSkeleton, LoadingNote } from '../components/Loading';
 
 const DISTRIBUTORS = ['Terra Realty', 'Sunview Homes', 'GreenKey Housing', 'Riverside Realty', 'Golden Path Homes', 'SGLand', 'Sunrise Estates'];
 
@@ -103,7 +104,9 @@ export default function Home() {
     return `morph-slide ${extra} ${activeIndex === SLIDE_IDS.indexOf(id) ? 'is-active' : ''}`.trim();
   }
 
-  const [featuredNews, ...secondaryNews] = useNewsList().data.slice(0, 3);
+  const newsList = useNewsList();
+  const [featuredNews, ...secondaryNews] = newsList.data.slice(0, 3);
+  const newsWaiting = newsList.loading && newsList.data.length === 0;
 
   return (
     <main>
@@ -198,8 +201,15 @@ export default function Home() {
           <div className="news-content">
             <Reveal variant="pop" delay={400} active={activeIndex === SLIDE_IDS.indexOf('slide-news')}>
               {featuredNews && <NewsCard item={featuredNews} variant="featured" />}
+              {newsWaiting && (
+                <>
+                  <LoadingNote label="Đang tải tin tức" />
+                  <CardSkeleton ratio="16 / 9" lines={2} />
+                </>
+              )}
             </Reveal>
             <div className="news-grid-sm">
+              {newsWaiting && [0, 1].map((i) => <CardSkeleton key={i} ratio="16 / 10" lines={2} />)}
               {secondaryNews.map((n, i) => (
                 <Reveal
                   key={n.id}

@@ -6,7 +6,7 @@ import type { JobRow } from '../../api/rows';
 import type { JobIcon } from '../../types';
 import { JOB_ICON_LABEL, JOB_ICONS } from '../../components/JobIcon';
 import { ADMIN_BASE } from '../AdminApp';
-import { Badge, Empty, ErrorBox, Field, Loading, PageHeader, paginate, Pager, Sheet, Switch, useAction, useAsync, useFeedback, usePaging } from '../ui';
+import { Badge, Empty, ErrorBox, Field, Loading, PageHeader, paginate, Pager, Select, Sheet, Switch, useAction, useAsync, useFeedback, usePaging } from '../ui';
 
 const ICONS = Object.keys(JOB_ICONS) as JobIcon[];
 
@@ -14,7 +14,7 @@ const blank = (): JobInput => ({ title: '', location: 'TP.HCM', employment_type:
 
 export default function Jobs() {
   const jobs = useAsync(() => admin.jobs.listJobs(), []);
-  const { run } = useAction();
+  const { run, runOk } = useAction();
   const { confirm } = useFeedback();
   const [editing, setEditing] = useState<JobRow | 'new' | null>(null);
   const list = jobs.data ?? [];
@@ -40,7 +40,7 @@ export default function Jobs() {
       confirmLabel: 'Xoá vị trí',
       danger: true,
     });
-    if (ok && (await run(() => admin.jobs.deleteJob(j.id), 'Đã xoá vị trí')) !== undefined) jobs.reload();
+    if (ok && (await runOk(() => admin.jobs.deleteJob(j.id), 'Đã xoá vị trí'))) jobs.reload();
   }
 
   const open = list.filter((j) => j.is_open).length;
@@ -202,11 +202,11 @@ function JobSheet({ job, onClose, onSaved }: { job: JobRow | null; onClose: () =
           <input className="a-input" value={d.location} onChange={(e) => set('location', e.target.value)} />
         </Field>
         <Field label="Hình thức">
-          <select className="a-input" value={d.employment_type} onChange={(e) => set('employment_type', e.target.value)}>
-            {['Toàn thời gian', 'Bán thời gian', 'Thực tập', 'Cộng tác viên'].map((t) => (
-              <option key={t}>{t}</option>
-            ))}
-          </select>
+          <Select<string>
+            value={d.employment_type ?? 'Toàn thời gian'}
+            onChange={(v) => set('employment_type', v)}
+            options={['Toàn thời gian', 'Bán thời gian', 'Thực tập', 'Cộng tác viên'].map((t) => ({ value: t, label: t }))}
+          />
         </Field>
       </div>
       <Field label="Mô tả ngắn" hint="Một–hai câu hiện trên thẻ vị trí.">

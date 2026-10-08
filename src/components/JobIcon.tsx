@@ -35,8 +35,12 @@ export const JOB_ICONS: Record<JobIcon, ReactNode> = {
   ),
   finance: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-      <rect x="4" y="4" width="16" height="16" rx="2" />
-      <path d="M8 9h8M8 13h8M8 17h5" strokeLinecap="round" />
+      <circle cx="12" cy="12" r="8.5" />
+      <path
+        d="M14.8 9.2c-.5-.9-1.6-1.4-2.8-1.4-1.6 0-2.8.8-2.8 2s1.2 1.7 2.8 2 2.8.9 2.8 2.1-1.2 2.1-2.8 2.1c-1.3 0-2.4-.5-2.9-1.5"
+        strokeLinecap="round"
+      />
+      <path d="M12 6v1.8M12 16.2V18" strokeLinecap="round" />
     </svg>
   ),
 };

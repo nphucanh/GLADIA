@@ -5,7 +5,7 @@ import type { FloorPlanRow, FloorPlanSetRow } from '../api/rows';
 import type { FloorPlan, FloorPlanRoom, RoomKind } from '../data/projectDetails';
 import FloorPlanDrawing from '../components/FloorPlanDrawing';
 import { ROOM_KIND_LABEL } from './meta';
-import { Field, useAction, useFeedback } from './ui';
+import { Field, Select, useAction, useFeedback } from './ui';
 import '../styles/projects.css';
 
 /**
@@ -148,7 +148,7 @@ function PlanEditor({
 }) {
   const initial = useMemo(() => (plan ? toInput(plan) : blankPlan(nextOrder)), [plan, nextOrder]);
   const [d, setD] = useState<FloorPlanInput>(initial);
-  const { run, busy } = useAction();
+  const { run, runOk, busy } = useAction();
   const { confirm } = useFeedback();
   const dirty = JSON.stringify(d) !== JSON.stringify(initial);
   const set = <K extends keyof FloorPlanInput>(k: K, v: FloorPlanInput[K]) => setD((x) => ({ ...x, [k]: v }));
@@ -183,7 +183,7 @@ function PlanEditor({
   async function remove() {
     if (!plan) return;
     const ok = await confirm({ title: `Xoá mặt bằng ${plan.code}?`, message: 'Tab này sẽ biến mất khỏi trang dự án.', confirmLabel: 'Xoá', danger: true });
-    if (ok && (await run(() => admin.floorPlans.deleteFloorPlan(plan.id), 'Đã xoá mặt bằng')) !== undefined) onDeleted();
+    if (ok && (await runOk(() => admin.floorPlans.deleteFloorPlan(plan.id), 'Đã xoá mặt bằng'))) onDeleted();
   }
 
   return (
@@ -257,13 +257,13 @@ function PlanEditor({
                           />
                         </td>
                         <td>
-                          <select className="a-input sm" value={r.kind} onChange={(e) => setRoom(i, { kind: e.target.value as RoomKind })} aria-label="Loại phòng">
-                            {ROOM_KINDS.map((k) => (
-                              <option key={k} value={k}>
-                                {ROOM_KIND_LABEL[k]}
-                              </option>
-                            ))}
-                          </select>
+                          <Select
+                            size="sm"
+                            value={r.kind}
+                            onChange={(v) => setRoom(i, { kind: v })}
+                            aria-label="Loại phòng"
+                            options={ROOM_KINDS.map((k) => ({ value: k, label: ROOM_KIND_LABEL[k] }))}
+                          />
                         </td>
                         {(['x', 'y', 'w', 'h'] as const).map((k) => (
                           <td key={k}>

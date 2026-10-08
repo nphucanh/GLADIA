@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { FormEvent, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useProjectsContext } from '../context/ProjectsContext';
-import { submitContact } from '../api/public';
+import { submitContact } from '../api/public/contact';
 import { isValidEmail, isValidName, isValidPhone } from '../api/validate';
 import { cn } from '../lib/utils';
 import '../styles/contact.css';
@@ -44,7 +44,7 @@ interface FormState {
 const EMPTY_FORM: FormState = { name: '', phone: '', email: '', project: '', topic: '', message: '' };
 
 export default function Contact() {
-  const { projects } = useProjectsContext();
+  const { projects, loading: projectsLoading } = useProjectsContext();
   const location = useLocation();
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, boolean>>>({});
@@ -249,6 +249,11 @@ export default function Contact() {
                       <SelectValue placeholder="Chọn dự án (không bắt buộc)" />
                     </SelectTrigger>
                     <SelectContent className="contact-select-content">
+                      {projectsLoading && projects.length === 0 && (
+                        <SelectItem value="__loading" disabled>
+                          Đang tải danh sách dự án…
+                        </SelectItem>
+                      )}
                       {projects.map((p) => (
                         <SelectItem key={p.id} value={p.name}>
                           {p.name} ({p.location})

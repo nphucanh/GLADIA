@@ -6,7 +6,8 @@ import ProjectCard from '../components/ProjectCard';
 import { ProjectAmenities, ProjectFloorPlans, ProjectLocation } from '../components/ProjectDetailSections';
 import { getFloorPlans } from '../data/projectDetails';
 import { useFloorPlanSet } from '../hooks/useApiData';
-import { getProject } from '../api/public';
+import { getProject } from '../api/public/projects';
+import { trackView } from '../api/public/tracking';
 import type { Project } from '../types';
 import Reveal from '../components/Reveal';
 import { Badge } from '../components/ui/badge';
@@ -17,6 +18,7 @@ import { PROJECT_IMAGE_BY_BUILDING } from '../data/images';
 import { fmtDate, fmtNumber } from '../utils/format';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import '../styles/projects.css';
+import { Spinner } from '../components/Loading';
 
 // Tham quan 3D dựng từ ảnh không gian sống (three.js) — chỉ tải khi người xem bấm vào ảnh
 const PhotoTour3D = lazy(() => import('../components/house/PhotoTour3D'));
@@ -42,6 +44,10 @@ export default function ProjectDetail() {
   const project = listed ?? (single && single.id === id ? single.project ?? undefined : undefined);
   const checking = loading || (!listed && single?.id !== id);
   const planSet = useFloorPlanSet(project);
+  const projectId = project ? Number(project.id) : 0;
+  useEffect(() => {
+    if (projectId) trackView('project', projectId);
+  }, [projectId]);
 
   useDocumentTitle(project ? `${project.name} — Terra` : checking ? 'Dự án — Terra' : 'Không tìm thấy dự án — Terra');
 
@@ -49,7 +55,11 @@ export default function ProjectDetail() {
     return (
       <main className="project-page-bg">
         <section className="wrap" style={{ paddingTop: 160, paddingBottom: 120 }}>
-          <p className="project-empty">{checking ? 'Đang tải dự án…' : 'Không tìm thấy dự án này (có thể dự án đang được ẩn).'}</p>
+          {checking ? (
+            <Spinner label="Đang tải dự án…" />
+          ) : (
+            <p className="project-empty">Không tìm thấy dự án này (có thể dự án đang được ẩn).</p>
+          )}
           <Link to="/du-an" className="project-back-link">
             ← Quay lại Dự án
           </Link>
@@ -179,7 +189,13 @@ export default function ProjectDetail() {
 
         <ProjectLocation project={project} />
         <ProjectAmenities project={project} />
-        {planSet && planSet.plans.length > 0 && <ProjectFloorPlans key={String(project.id)} project={project} planSet={planSet} />}
+        {planSet === null ? (
+          <section className="wrap">
+            <Spinner label="Đang tải mặt bằng…" />
+          </section>
+        ) : (
+          planSet.plans.length > 0 && <ProjectFloorPlans key={String(project.id)} project={project} planSet={planSet} />
+        )}
 
         {project.gallery && project.gallery.length > 0 && (
           <div className="project-gallery">

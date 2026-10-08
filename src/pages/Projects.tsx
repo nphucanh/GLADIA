@@ -8,6 +8,7 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useGridColumns } from '../hooks/useGridColumns';
 import { ProjectStatus, ProjectType } from '../types';
 import '../styles/projects.css';
+import { CardSkeleton, LoadingNote } from '../components/Loading';
 
 type SortKey = 'interest' | 'newest' | 'popular' | 'price-asc' | 'price-desc';
 
@@ -16,7 +17,8 @@ type SortKey = 'interest' | 'newest' | 'popular' | 'price-asc' | 'price-desc';
 const ROWS_PER_PAGE = 3;
 
 export default function Projects() {
-  const { projects } = useProjectsContext();
+  const { projects, loading } = useProjectsContext();
+  const waiting = loading && projects.length === 0;
   useDocumentTitle('Dự án — Terra');
   const columns = useGridColumns();
   const PAGE_SIZE = columns * ROWS_PER_PAGE;
@@ -156,10 +158,17 @@ export default function Projects() {
             </button>
           )}
         </div>
-        <p className="project-result-count">{filtered.length} dự án phù hợp</p>
+        <p className="project-result-count">{waiting ? 'Đang tải dự án…' : `${filtered.length} dự án phù hợp`}</p>
 
         <div className={`page-fade${pageTransitioning ? ' is-leaving' : ''}`}>
-          {pageItems.length === 0 ? (
+          {waiting ? (
+            <div className="grid-projects">
+              <LoadingNote label="Đang tải danh sách dự án" />
+              {Array.from({ length: 6 }, (_, i) => (
+                <CardSkeleton key={i} lines={4} />
+              ))}
+            </div>
+          ) : pageItems.length === 0 ? (
             <p className="project-empty">Không tìm thấy dự án phù hợp với bộ lọc.</p>
           ) : (
             <div className="grid-projects">

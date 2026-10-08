@@ -124,6 +124,21 @@ export interface JobApplicationRow {
   updated_at: string;
 }
 
+export type AdminRole = 'owner' | 'editor';
+
+/** Một quản trị viên (bảng admin_users + email / lần đăng nhập gần nhất từ auth.users). */
+export interface AdminUserRow {
+  user_id: string;
+  email: string;
+  full_name: string | null;
+  phone: string | null;
+  avatar_url: string | null;
+  role: AdminRole;
+  is_active: boolean;
+  created_at: string;
+  last_sign_in_at: string | null;
+}
+
 // ---------- Chuyển dòng database → kiểu giao diện ----------
 
 const sortByOrder = <T extends { sort_order: number; id: number }>(rows: T[] = []) =>

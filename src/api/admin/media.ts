@@ -1,8 +1,8 @@
-// Tải ảnh lên kho công khai "media" (ảnh dự án, ảnh không gian sống, ảnh tin tức). Chỉ admin.
+// Tải ảnh lên kho công khai "media" (ảnh dự án, ảnh không gian sống, ảnh tin tức, ảnh đại diện quản trị viên). Chỉ admin.
 import { ApiError, db, toApiError } from '../client';
 import { MEDIA_MAX_BYTES, MEDIA_MIME_TYPES, ensure, uniqueName } from '../validate';
 
-export type MediaFolder = 'projects' | 'gallery' | 'news';
+export type MediaFolder = 'projects' | 'gallery' | 'news' | 'avatars';
 
 export interface UploadedMedia {
   path: string; // đường dẫn trong kho, vd "news/3f2a…-anh.jpg"

@@ -1,7 +1,7 @@
 // Quản trị mặt bằng: bộ mặc định theo loại hình, hoặc bộ riêng của một dự án (ghi đè bộ mặc định).
 import type { BuildingType } from '../../types';
 import type { FloorPlanRoom, RoomKind } from '../../data/projectDetails';
-import { db, unwrap } from '../client';
+import { db, deleteById, unwrap } from '../client';
 import { ensure } from '../validate';
 import type { FloorPlanRow, FloorPlanSetRow } from '../rows';
 
@@ -76,7 +76,7 @@ export async function saveFloorPlanSet(scope: FloorPlanScope, input: FloorPlanSe
 
 /** Xoá bộ mặt bằng (kèm các mặt bằng con). Xoá bộ riêng của dự án → dự án quay về bộ mặc định. */
 export async function deleteFloorPlanSet(id: number) {
-  unwrap(await db().from('floor_plan_sets').delete().eq('id', id));
+  await deleteById('floor_plan_sets', id, 'bộ mặt bằng');
 }
 
 export async function createFloorPlan(setId: number, input: FloorPlanInput): Promise<FloorPlanRow> {
@@ -100,5 +100,5 @@ export async function updateFloorPlan(id: number, patch: Partial<FloorPlanInput>
 }
 
 export async function deleteFloorPlan(id: number) {
-  unwrap(await db().from('floor_plans').delete().eq('id', id));
+  await deleteById('floor_plans', id, 'mặt bằng');
 }

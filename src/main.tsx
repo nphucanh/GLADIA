@@ -7,6 +7,7 @@ import './styles/base.css';
 import './styles/bg-scene.css';
 import './styles/layout.css';
 import './styles/hero-shared.css';
+import './styles/loading.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

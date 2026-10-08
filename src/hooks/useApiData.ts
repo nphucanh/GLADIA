@@ -1,15 +1,8 @@
 import { useEffect, useState } from 'react';
 import { isSupabaseConfigured, type DataSource, type Sourced } from '../api/client';
-import {
-  fallbackFloorPlanSet,
-  fallbackJobs,
-  fallbackNews,
-  fallbackProjects,
-  getFloorPlanSet,
-  listJobs,
-  listNews,
-  listProjects,
-} from '../api/public';
+import { fallbackFloorPlanSet, fallbackProjects, getFloorPlanSet, listProjects } from '../api/public/projects';
+import { fallbackNews, listNews } from '../api/public/news';
+import { fallbackJobs, listJobs } from '../api/public/careers';
 import type { FloorPlanSet } from '../data/projectDetails';
 import type { NewsItem } from '../data/mockNews';
 import type { Job, Project } from '../types';

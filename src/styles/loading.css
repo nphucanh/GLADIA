@@ -1,0 +1,47 @@
+/* ---------- Trạng thái chờ dùng chung (src/components/Loading.tsx) ----------
+   Màu theo currentColor → tự hợp nền sáng / nền tối của từng trang. */
+
+/* Vòng xoay + chữ */
+.site-loading{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  padding:48px 16px;text-align:center;
+}
+.site-loading--full{position:fixed;inset:0;z-index:50;background:#2a1f19;color:#f3e9da;}
+.site-spinner{
+  width:34px;height:34px;border-radius:50%;
+  border:2.5px solid color-mix(in srgb, currentColor 18%, transparent);
+  border-top-color:var(--gold, #c19a5f);
+  animation:siteSpin .8s linear infinite;
+}
+.site-loading-label{font-size:.95rem;letter-spacing:.02em;opacity:.78;}
+@keyframes siteSpin{to{transform:rotate(360deg);}}
+
+/* Khung xương */
+.sk{
+  display:block;border-radius:8px;
+  background:
+    linear-gradient(100deg, transparent 20%, color-mix(in srgb, currentColor 9%, transparent) 50%, transparent 80%) 0 0 / 220% 100% no-repeat,
+    color-mix(in srgb, currentColor 9%, transparent);
+  animation:skShimmer 1.5s ease-in-out infinite;
+}
+@keyframes skShimmer{from{background-position:130% 0, 0 0;}to{background-position:-30% 0, 0 0;}}
+.sk-line{height:12px;}
+.sk-line--sm{height:10px;}
+.sk-line--lg{height:20px;}
+.sk-media{width:100%;border-radius:12px;}
+.sk-card{display:flex;flex-direction:column;gap:16px;padding:14px;border-radius:16px;border:1px solid color-mix(in srgb, currentColor 10%, transparent);}
+.sk-card-body{display:flex;flex-direction:column;gap:11px;padding:0 4px 6px;}
+.sk-row{display:flex;align-items:center;gap:20px;padding:24px;border-radius:16px;border:1px solid color-mix(in srgb, currentColor 10%, transparent);}
+.sk-row-body{flex:1;display:flex;flex-direction:column;gap:11px;min-width:0;}
+.sk-icon{width:52px;height:52px;border-radius:14px;flex:none;}
+.sk-btn{width:120px;height:44px;border-radius:999px;flex:none;}
+@media (max-width:640px){.sk-btn{display:none;}}
+
+/* Lưới khung xương: dùng lại lưới thật của từng trang (grid-projects, news-grid-sm…) */
+.sk-stack{display:grid;gap:16px;}
+
+@media (prefers-reduced-motion:reduce){
+  .site-spinner{animation-duration:2.4s;}
+  .sk{animation:none;}
+}
+

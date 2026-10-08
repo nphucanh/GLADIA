@@ -1,6 +1,6 @@
 // Quản trị dự án + ảnh "Không gian sống". Chỉ admin (RLS chặn mọi người khác).
 import type { BuildingType, ProjectOverview, ProjectStatus, ProjectType } from '../../types';
-import { db, pageRange, searchTerm, toPage, unwrap, type Page, type PageQuery } from '../client';
+import { db, deleteById, pageRange, searchTerm, toPage, unwrap, type Page, type PageQuery } from '../client';
 import { ensure } from '../validate';
 import type { GalleryRow, ProjectRow } from '../rows';
 
@@ -78,7 +78,7 @@ export async function updateProject(id: number, patch: Partial<ProjectInput>): P
 
 /** Xoá dự án (ảnh không gian sống + mặt bằng riêng của dự án bị xoá theo). Ảnh trong kho media không bị xoá. */
 export async function deleteProject(id: number) {
-  unwrap(await db().from('projects').delete().eq('id', id));
+  await deleteById('projects', id, 'dự án');
 }
 
 // ---------- Ảnh "Không gian sống" ----------
@@ -116,7 +116,7 @@ export async function updateGalleryItem(id: number, patch: Partial<GalleryInput>
 }
 
 export async function deleteGalleryItem(id: number) {
-  unwrap(await db().from('project_gallery').delete().eq('id', id));
+  await deleteById('project_gallery', id, 'ảnh');
 }
 
 /** Sắp xếp lại ảnh theo thứ tự id truyền vào. */

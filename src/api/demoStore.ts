@@ -1,5 +1,5 @@
 // Kho dữ liệu của CHẾ ĐỘ XEM THỬ (chưa cấu hình Supabase).
-// Trang quản trị (admin/demo.ts) ghi vào đây, website (public.ts) đọc từ đây — nên dự án / tin / vị trí thêm ở
+// Trang quản trị (api/admin/demo/) ghi vào đây, website (api/public/) đọc từ đây — nên dự án / tin / vị trí thêm ở
 // trang quản trị hiện ngay trên website. Lưu trong localStorage của trình duyệt: giữ qua các lần tải trang và
 // giữa các tab, nhưng chỉ trên máy này. Khởi tạo từ dữ liệu mẫu (src/data/*).
 import { mockProjects } from '../data/mockProjects';
@@ -9,6 +9,7 @@ import { getFloorPlans } from '../data/projectDetails';
 import type { BuildingType } from '../types';
 import { ApiError } from './client';
 import type {
+  AdminUserRow,
   ApplicationStatus,
   ContactStatus,
   ContactSubmissionRow,
@@ -32,6 +33,16 @@ export interface DemoDb {
   jobs: JobRow[];
   contacts: ContactSubmissionRow[];
   applications: JobApplicationRow[];
+  /** Lượt xem theo ngày — xem demoViews(). Kho cũ chưa có thì tạo khi cần. */
+  views?: DemoViews;
+  /** Người quản trị — xem demoAdmins(). Kho cũ chưa có thì tạo khi cần. */
+  admins?: AdminUserRow[];
+}
+
+/** items["project:1"][i] = số lượt xem ngày (base + i). */
+export interface DemoViews {
+  base: string;
+  items: Record<string, number[]>;
 }
 
 const KEY = 'terra-demo-db-v1';
@@ -258,3 +269,112 @@ if (typeof window !== 'undefined') {
 }
 
 export const nextDemoId = () => ++demoDb().seq;
+
+// ---------- Người quản trị (xem thử) ----------
+
+/** id cố định của người đang đăng nhập ở chế độ xem thử (đăng nhập bằng email bất kỳ). */
+export const DEMO_SELF_ID = 'demo-admin';
+
+/** Danh sách người quản trị mẫu; người đang đăng nhập luôn là owner đầu tiên. */
+export function demoAdmins(selfEmail: string): AdminUserRow[] {
+  const d = demoDb();
+  if (!d.admins) {
+    const person = (id: string, email: string, full_name: string, role: 'owner' | 'editor', is_active: boolean, days: number, lastSeen: number | null): AdminUserRow => ({
+      user_id: id,
+      email,
+      full_name,
+      phone: null,
+      avatar_url: null,
+      role,
+      is_active,
+      created_at: daysAgo(days),
+      last_sign_in_at: lastSeen === null ? null : daysAgo(lastSeen, 15),
+    });
+    d.admins = [
+      person(DEMO_SELF_ID, selfEmail, 'Quản trị viên', 'owner', true, 240, 0),
+      person('demo-editor-1', 'bientap@terra.vn', 'Nguyễn Minh Anh', 'editor', true, 120, 1),
+      person('demo-editor-2', 'tuyendung@terra.vn', 'Trần Thu Trang', 'editor', true, 60, 6),
+      person('demo-editor-3', 'ctv.noidung@terra.vn', 'Lê Quốc Bảo', 'editor', false, 30, null),
+    ];
+  }
+  const self = d.admins.find((a) => a.user_id === DEMO_SELF_ID);
+  if (self) {
+    self.email = selfEmail;
+    self.last_sign_in_at = self.last_sign_in_at ?? nowIso();
+  }
+  return d.admins;
+}
+
+// ---------- Lượt xem (thống kê) ----------
+
+/** Ngày theo giờ Việt Nam (YYYY-MM-DD), lệch `offset` ngày so với hôm nay. */
+export function vnDay(offset = 0) {
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' });
+  return shiftDay(today, offset);
+}
+export function shiftDay(isoDay: string, offset: number) {
+  const d = new Date(`${isoDay}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + offset);
+  return d.toISOString().slice(0, 10);
+}
+export const dayDiff = (a: string, b: string) => Math.round((Date.parse(`${a}T00:00:00Z`) - Date.parse(`${b}T00:00:00Z`)) / 864e5);
+
+const HISTORY_DAYS = 180;
+
+/** Lịch sử lượt xem mẫu: tỉ lệ theo độ quan tâm của dự án, bài mới đăng được đọc nhiều hơn, cuối tuần đông hơn. */
+function seedViews(d: DemoDb): DemoViews {
+  const base = vnDay(-(HISTORY_DAYS - 1));
+  let s = 7;
+  const rand = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646;
+  const items: Record<string, number[]> = {};
+  const weekend = (i: number) => {
+    const w = new Date(`${shiftDay(base, i)}T00:00:00Z`).getUTCDay();
+    return w === 0 || w === 6 ? 1.35 : 1;
+  };
+  const growth = (i: number) => 0.7 + (0.3 * i) / HISTORY_DAYS;
+  for (const p of d.projects) {
+    const level = 2 + Math.sqrt(Math.max(p.interest_count, 1)) / 2.2;
+    items[`project:${p.id}`] = Array.from({ length: HISTORY_DAYS }, (_, i) => Math.round(level * weekend(i) * growth(i) * (0.55 + rand() * 0.9)));
+  }
+  for (const n of d.news) {
+    const start = dayDiff(n.published_at, base);
+    const level = n.is_featured ? 9 : 4 + rand() * 4;
+    items[`news:${n.id}`] = Array.from({ length: HISTORY_DAYS }, (_, i) => {
+      const age = i - start;
+      if (age < 0) return 0;
+      return Math.round((level * 6) / (1 + age / 4) + level * 0.25 * weekend(i) * (0.4 + rand() * 1.2));
+    });
+  }
+  return { base, items };
+}
+
+/** Lượt xem của kho xem thử (tạo lịch sử mẫu ở lần đầu). */
+export function demoViews(): DemoViews {
+  const d = demoDb();
+  if (!d.views) {
+    d.views = seedViews(d);
+    try {
+      saveDemoDb();
+    } catch {
+      /* chỉ là số liệu mẫu */
+    }
+  }
+  return d.views;
+}
+
+/** Số lượt xem của một dự án / bài viết vào một ngày. */
+export function demoViewsOn(kind: 'project' | 'news', id: number, day: string) {
+  const v = demoViews();
+  return v.items[`${kind}:${id}`]?.[dayDiff(day, v.base)] ?? 0;
+}
+
+/** Website (chế độ xem thử) ghi 1 lượt xem. */
+export function addDemoView(kind: 'project' | 'news', id: number) {
+  const v = demoViews();
+  const i = dayDiff(vnDay(), v.base);
+  if (i < 0) return;
+  const arr = (v.items[`${kind}:${id}`] ??= []);
+  while (arr.length <= i) arr.push(0);
+  arr[i] += 1;
+  saveDemoDb();
+}

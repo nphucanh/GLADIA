@@ -9,8 +9,45 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
+  <style>
+    /* Màn hình chờ lúc mở web — hiện ngay, trước khi JS / ảnh tải xong. Ẩn bằng hideSplash() (src/lib/splash.ts). */
+    #boot-splash{
+      position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;
+      background:radial-gradient(900px 520px at 50% 40%, #3a2b21 0%, #2a1f19 55%, #1d1511 100%);
+      color:#f3e9da;font-family:'Cormorant Garamond',Georgia,serif;transition:opacity .5s ease, visibility .5s ease;
+    }
+    #boot-splash.is-done{opacity:0;visibility:hidden;}
+    #boot-splash .bs-inner{display:flex;flex-direction:column;align-items:center;gap:18px;}
+    #boot-splash .bs-logo{font-size:44px;font-weight:600;letter-spacing:.22em;padding-left:.22em;line-height:1;animation:bsBreathe 2.4s ease-in-out infinite;}
+    #boot-splash .bs-bar{position:relative;width:148px;height:2px;border-radius:2px;overflow:hidden;background:rgba(243,233,218,.14);}
+    #boot-splash .bs-bar::after{
+      content:"";position:absolute;inset:0;width:40%;border-radius:inherit;
+      background:linear-gradient(90deg,transparent,#c19a5f,transparent);animation:bsSlide 1.3s ease-in-out infinite;
+    }
+    #boot-splash .bs-text{font-family:'Be Vietnam Pro',system-ui,sans-serif;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(243,233,218,.55);}
+    @keyframes bsSlide{from{transform:translateX(-110%);}to{transform:translateX(260%);}}
+    @keyframes bsBreathe{0%,100%{opacity:.75;}50%{opacity:1;}}
+    @media (prefers-reduced-motion:reduce){
+      #boot-splash .bs-logo{animation:none;}
+      #boot-splash .bs-bar::after{animation:none;width:100%;opacity:.5;}
+    }
+  </style>
 </head>
 <body>
+  <div id="boot-splash" role="status" aria-live="polite">
+    <div class="bs-inner">
+      <div class="bs-logo">TERRA</div>
+      <div class="bs-bar"></div>
+      <div class="bs-text">Đang tải…</div>
+    </div>
+  </div>
+  <script>
+    // Chốt an toàn: không để màn hình chờ kẹt quá 10 giây (vd. mạng rất chậm, ảnh lỗi)
+    setTimeout(function () {
+      var el = document.getElementById('boot-splash');
+      if (el) { el.classList.add('is-done'); setTimeout(function () { el.remove(); }, 600); }
+    }, 10000);
+  </script>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>

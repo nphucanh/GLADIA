@@ -7,12 +7,12 @@ import type { ProjectStatus, ProjectType } from '../../types';
 import { PROJECT_IMAGE_BY_BUILDING } from '../../data/images';
 import { ADMIN_BASE } from '../AdminApp';
 import { PROJECT_STATUSES, PROJECT_STATUS_TONE, PROJECT_TYPES } from '../meta';
-import { Badge, Empty, ErrorBox, Loading, PageHeader, Pager, usePaging, ResultInfo, SearchBox, Switch, useAction, useAsync, useDebounced, useFeedback } from '../ui';
+import { Badge, Empty, ErrorBox, Loading, PageHeader, Pager, usePaging, ResultInfo, SearchBox, Select, Switch, useAction, useAsync, useDebounced, useFeedback } from '../ui';
 
 export default function Projects() {
   const navigate = useNavigate();
   const { confirm } = useFeedback();
-  const { run } = useAction();
+  const { run, runOk } = useAction();
   const [search, setSearch] = useState('');
   const [type, setType] = useState<ProjectType | ''>('');
   const [status, setStatus] = useState<ProjectStatus | ''>('');
@@ -35,7 +35,7 @@ export default function Projects() {
       confirmLabel: 'Xoá dự án',
       danger: true,
     });
-    if (ok && (await run(() => admin.projects.deleteProject(p.id), 'Đã xoá dự án')) !== undefined) list.reload();
+    if (ok && (await runOk(() => admin.projects.deleteProject(p.id), 'Đã xoá dự án'))) list.reload();
   }
 
   const filtered = Boolean(q || type || status);
@@ -61,36 +61,24 @@ export default function Projects() {
             }}
             placeholder="Tìm theo tên hoặc vị trí…"
           />
-          <select
-            className="a-input"
-           
+          <Select<ProjectType | ''>
             value={type}
-            onChange={(e) => {
-              setType(e.target.value as ProjectType | '');
+            onChange={(v) => {
+              setType(v);
               setPage(1);
             }}
             aria-label="Lọc theo loại hình"
-          >
-            <option value="">Mọi loại hình</option>
-            {PROJECT_TYPES.map((t) => (
-              <option key={t}>{t}</option>
-            ))}
-          </select>
-          <select
-            className="a-input"
-           
+            options={[{ value: '', label: 'Mọi loại hình' }, ...PROJECT_TYPES.map((t) => ({ value: t, label: t }))]}
+          />
+          <Select<ProjectStatus | ''>
             value={status}
-            onChange={(e) => {
-              setStatus(e.target.value as ProjectStatus | '');
+            onChange={(v) => {
+              setStatus(v);
               setPage(1);
             }}
             aria-label="Lọc theo trạng thái"
-          >
-            <option value="">Mọi trạng thái</option>
-            {PROJECT_STATUSES.map((s) => (
-              <option key={s}>{s}</option>
-            ))}
-          </select>
+            options={[{ value: '', label: 'Mọi trạng thái' }, ...PROJECT_STATUSES.map((s) => ({ value: s, label: s }))]}
+          />
           <ResultInfo
             total={list.data?.total}
             unit="dự án"

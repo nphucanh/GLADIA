@@ -15,7 +15,7 @@ export default function Contacts() {
   const { page, setPage, pageSize, setPageSize } = usePaging('contacts');
   const [open, setOpen] = useState<ContactSubmissionRow | null>(null);
   const q = useDebounced(search);
-  const list = useAsync(() => admin.inbox.listContactSubmissions({ status: status || undefined, search: q, page, pageSize }), [status, q, page, pageSize]);
+  const list = useAsync(() => admin.contacts.listContactSubmissions({ status: status || undefined, search: q, page, pageSize }), [status, q, page, pageSize]);
 
   const updated = (row: ContactSubmissionRow) => {
     list.setData((d) => d && { ...d, items: d.items.map((x) => (x.id === row.id ? row : x)) });
@@ -135,21 +135,21 @@ function ContactSheet({
   onDeleted: () => void;
 }) {
   const [note, setNote] = useState(row.admin_note ?? '');
-  const { run, busy } = useAction();
+  const { run, runOk, busy } = useAction();
   const { confirm } = useFeedback();
   useEffect(() => setNote(row.admin_note ?? ''), [row.id, row.admin_note]);
 
   async function setStatus(status: ContactStatus) {
-    const r = await run(() => admin.inbox.updateContactSubmission(row.id, { status }), `Đã chuyển sang "${CONTACT_STATUS[status].label}"`);
+    const r = await run(() => admin.contacts.updateContactSubmission(row.id, { status }), `Đã chuyển sang "${CONTACT_STATUS[status].label}"`);
     if (r) onUpdated(r);
   }
   async function saveNote() {
-    const r = await run(() => admin.inbox.updateContactSubmission(row.id, { admin_note: note.trim() || null }), 'Đã lưu ghi chú');
+    const r = await run(() => admin.contacts.updateContactSubmission(row.id, { admin_note: note.trim() || null }), 'Đã lưu ghi chú');
     if (r) onUpdated(r);
   }
   async function remove() {
     const ok = await confirm({ title: 'Xoá yêu cầu này?', message: 'Thông tin khách hàng sẽ bị xoá vĩnh viễn.', confirmLabel: 'Xoá', danger: true });
-    if (ok && (await run(() => admin.inbox.deleteContactSubmission(row.id), 'Đã xoá yêu cầu')) !== undefined) onDeleted();
+    if (ok && (await runOk(() => admin.contacts.deleteContactSubmission(row.id), 'Đã xoá yêu cầu'))) onDeleted();
   }
 
   return (

@@ -5,6 +5,7 @@ import { NEWS_CATEGORIES, NewsCategory } from '../data/mockNews';
 import { useNewsList } from '../hooks/useApiData';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import '../styles/news.css';
+import { CardSkeleton, LoadingNote } from '../components/Loading';
 
 // Trang 1 luôn có 2 card lớn (mới nhất) + 9 card lưới (3 hàng x 3 cột, không hở ô);
 // các trang sau hiển thị đúng 9 card lưới mỗi trang (cũng luôn đầy hàng).
@@ -82,8 +83,21 @@ export default function News() {
           ))}
         </div>
 
-        {sorted.length === 0 ? (
-          <p className="news-empty">{loading ? 'Đang tải tin tức…' : 'Chưa có tin trong danh mục này.'}</p>
+        {sorted.length === 0 && loading ? (
+          <div className="sk-stack">
+            <LoadingNote label="Đang tải tin tức" />
+            <div className="news-top-row">
+              <CardSkeleton ratio="16 / 9" />
+              <CardSkeleton ratio="16 / 9" />
+            </div>
+            <div className="news-grid-sm news-grid-list">
+              {Array.from({ length: 6 }, (_, i) => (
+                <CardSkeleton key={i} ratio="16 / 10" />
+              ))}
+            </div>
+          </div>
+        ) : sorted.length === 0 ? (
+          <p className="news-empty">Chưa có tin trong danh mục này.</p>
         ) : (
           <>
             <div className={`page-fade${pageTransitioning ? ' is-leaving' : ''}`}>

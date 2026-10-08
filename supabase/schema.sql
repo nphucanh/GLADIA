@@ -5,9 +5,12 @@
 --
 -- Mô hình quyền:
 --   anon / người dùng thường : ĐỌC nội dung đã xuất bản; GỬI form liên hệ + hồ sơ ứng tuyển (không đọc lại được)
---   admin (có trong bảng admin_users) : toàn quyền nội dung + xem/xử lý liên hệ, hồ sơ, CV
--- Thêm admin: tạo user ở Authentication > Users, rồi
---   insert into public.admin_users (user_id, email) select id, email from auth.users where email = 'admin@terra.vn';
+--   admin (có trong bảng admin_users, đang hoạt động) : toàn quyền nội dung + xem/xử lý liên hệ, hồ sơ, CV
+--     owner  : thêm cả quản lý người quản trị (trang Quản trị › Người quản trị)
+--     editor : chỉ nội dung / hộp thư / thống kê
+-- Admin ĐẦU TIÊN: tạo user ở Authentication > Users, rồi
+--   insert into public.admin_users (user_id, email, role) select id, email, 'owner' from auth.users where email = 'admin@terra.vn';
+-- Các admin sau: owner thêm ngay trên trang quản trị.
 -- ============================================================
 
 -- ---------- Tiện ích chung ----------
@@ -22,24 +25,140 @@ $$;
 
 -- ============================================================
 -- 1. Quản trị viên
+--   admin_users : ai là quản trị viên + hồ sơ (họ tên, SĐT, ảnh) + vai trò + đang hoạt động / tạm khoá.
+--   Vai trò: owner  = toàn quyền, kể cả quản lý người quản trị
+--            editor = quản lý nội dung, hộp thư, thống kê; KHÔNG quản lý người quản trị
+--   Tài khoản bị tạm khoá (is_active = false) mất toàn bộ quyền admin ngay (is_admin() trả false).
+--   Sửa hồ sơ của chính mình: admin_update_profile(). Quản lý người khác (chỉ owner): các hàm admin_*_user().
+--   Tạo tài khoản đăng nhập mới cần khoá service_role → Edge Function supabase/functions/admin-create-user.
 -- ============================================================
 create table if not exists public.admin_users (
   user_id uuid primary key references auth.users (id) on delete cascade,
   email text,
   created_at timestamptz not null default now()
 );
+alter table public.admin_users add column if not exists full_name text;
+alter table public.admin_users add column if not exists phone text;
+alter table public.admin_users add column if not exists avatar_url text;
+-- admin có sẵn từ trước thành owner; admin thêm mới mặc định là editor
+alter table public.admin_users add column if not exists role text not null default 'owner';
+alter table public.admin_users alter column role set default 'editor';
+alter table public.admin_users add column if not exists is_active boolean not null default true;
+alter table public.admin_users add column if not exists updated_at timestamptz not null default now();
+do $$ begin
+  alter table public.admin_users add constraint admin_users_role_chk check (role in ('owner', 'editor'));
+exception when duplicate_object then null; end $$;
+do $$ begin
+  alter table public.admin_users add constraint admin_users_profile_chk check (
+    coalesce(char_length(full_name), 0) <= 120
+    and (phone is null or phone ~ '^[0-9+ ]{9,15}$')
+    and coalesce(char_length(avatar_url), 0) <= 1000
+  );
+exception when duplicate_object then null; end $$;
 
 -- security definer: đọc admin_users mà không bị chính RLS của bảng chặn (tránh đệ quy policy)
 create or replace function public.is_admin() returns boolean
 language sql stable security definer set search_path = public as $$
-  select exists (select 1 from public.admin_users where user_id = auth.uid());
+  select exists (select 1 from public.admin_users where user_id = auth.uid() and is_active);
+$$;
+
+create or replace function public.is_owner() returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.admin_users where user_id = auth.uid() and is_active and role = 'owner');
 $$;
 
 alter table public.admin_users enable row level security;
 drop policy if exists "Admin users: read self or admin" on public.admin_users;
 create policy "Admin users: read self or admin" on public.admin_users
   for select using (user_id = auth.uid() or public.is_admin());
--- Thêm / xoá admin chỉ qua SQL Editor (service role), không có policy ghi.
+-- Không có policy ghi: mọi thay đổi đi qua các hàm bên dưới (kiểm tra quyền + không cho tự đổi vai trò).
+
+-- Hồ sơ của chính mình (chỉ họ tên / SĐT / ảnh — không đổi được vai trò hay trạng thái)
+create or replace function public.admin_update_profile(p_full_name text, p_phone text, p_avatar_url text)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_admin() then raise exception 'not authorized' using errcode = '42501'; end if;
+  update public.admin_users
+     set full_name = nullif(trim(p_full_name), ''),
+         phone = nullif(regexp_replace(coalesce(p_phone, ''), '\s', '', 'g'), ''),
+         avatar_url = nullif(trim(p_avatar_url), ''),
+         updated_at = now()
+   where user_id = auth.uid();
+end;
+$$;
+
+-- Danh sách người quản trị (chỉ owner) — kèm lần đăng nhập gần nhất từ auth.users
+create or replace function public.admin_list_users()
+returns table (
+  user_id uuid, email text, full_name text, phone text, avatar_url text, role text, is_active boolean,
+  created_at timestamptz, last_sign_in_at timestamptz
+)
+language sql stable security definer set search_path = public as $$
+  select a.user_id, coalesce(u.email, a.email)::text, a.full_name, a.phone, a.avatar_url, a.role, a.is_active,
+         a.created_at, u.last_sign_in_at
+    from public.admin_users a
+    left join auth.users u on u.id = a.user_id
+   where public.is_owner()
+   order by (a.role = 'owner') desc, a.created_at;
+$$;
+
+-- Cấp quyền quản trị cho một tài khoản ĐÃ CÓ (theo email). Trả về user_id; không có tài khoản → lỗi P0002.
+create or replace function public.admin_grant_user(p_email text, p_role text, p_full_name text)
+returns uuid language plpgsql security definer set search_path = public as $$
+declare v_id uuid; v_email text;
+begin
+  if not public.is_owner() then raise exception 'not authorized' using errcode = '42501'; end if;
+  if p_role not in ('owner', 'editor') then raise exception 'invalid role' using errcode = '22023'; end if;
+  select id, email into v_id, v_email from auth.users where lower(email) = lower(trim(p_email)) limit 1;
+  if v_id is null then raise exception 'user not found' using errcode = 'P0002'; end if;
+  insert into public.admin_users (user_id, email, full_name, role, is_active)
+  values (v_id, v_email, nullif(trim(p_full_name), ''), p_role, true)
+  on conflict (user_id) do update
+    set role = excluded.role, is_active = true,
+        full_name = coalesce(excluded.full_name, public.admin_users.full_name), updated_at = now();
+  return v_id;
+end;
+$$;
+
+-- Đổi vai trò / khoá - mở khoá. Không tự đổi chính mình; luôn giữ ít nhất 1 owner đang hoạt động.
+create or replace function public.admin_set_user(p_user_id uuid, p_role text, p_is_active boolean)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_owner() then raise exception 'not authorized' using errcode = '42501'; end if;
+  if p_user_id = auth.uid() then raise exception 'cannot change yourself' using errcode = '22023'; end if;
+  if p_role not in ('owner', 'editor') then raise exception 'invalid role' using errcode = '22023'; end if;
+  update public.admin_users set role = p_role, is_active = p_is_active, updated_at = now() where user_id = p_user_id;
+  if not found then raise exception 'user not found' using errcode = 'P0002'; end if;
+  if not exists (select 1 from public.admin_users where role = 'owner' and is_active) then
+    raise exception 'need at least one owner' using errcode = '22023';
+  end if;
+end;
+$$;
+
+-- Gỡ quyền quản trị (tài khoản đăng nhập vẫn còn, chỉ mất quyền). Không tự gỡ chính mình.
+create or replace function public.admin_revoke_user(p_user_id uuid)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_owner() then raise exception 'not authorized' using errcode = '42501'; end if;
+  if p_user_id = auth.uid() then raise exception 'cannot change yourself' using errcode = '22023'; end if;
+  delete from public.admin_users where user_id = p_user_id;
+  if not found then raise exception 'user not found' using errcode = 'P0002'; end if;
+  if not exists (select 1 from public.admin_users where role = 'owner' and is_active) then
+    raise exception 'need at least one owner' using errcode = '22023';
+  end if;
+end;
+$$;
+
+revoke all on function public.admin_update_profile(text, text, text) from public;
+revoke all on function public.admin_list_users() from public;
+revoke all on function public.admin_grant_user(text, text, text) from public;
+revoke all on function public.admin_set_user(uuid, text, boolean) from public;
+revoke all on function public.admin_revoke_user(uuid) from public;
+grant execute on function public.admin_update_profile(text, text, text) to authenticated;
+grant execute on function public.admin_list_users() to authenticated;
+grant execute on function public.admin_grant_user(text, text, text) to authenticated;
+grant execute on function public.admin_set_user(uuid, text, boolean) to authenticated;
+grant execute on function public.admin_revoke_user(uuid) to authenticated;
 
 -- ============================================================
 -- 2. Dự án
@@ -351,3 +470,150 @@ drop policy if exists "CV: admin read" on storage.objects;
 create policy "CV: admin read" on storage.objects for select using (bucket_id = 'cv' and public.is_admin());
 drop policy if exists "CV: admin delete" on storage.objects;
 create policy "CV: admin delete" on storage.objects for delete using (bucket_id = 'cv' and public.is_admin());
+
+-- ============================================================
+-- 10. Thống kê lượt quan tâm
+--   content_views : số lượt xem mỗi dự án / bài viết theo ngày (giờ Việt Nam).
+--   Website gọi track_view() khi khách mở trang chi tiết; khách không đọc / sửa được bảng này.
+--   Trang quản trị đọc qua các hàm admin_*_stats() — trả về rỗng nếu người gọi không phải admin.
+-- ============================================================
+create table if not exists public.content_views (
+  kind text not null check (kind in ('project', 'news')),
+  item_id bigint not null,
+  day date not null,
+  views integer not null default 0 check (views >= 0),
+  primary key (kind, item_id, day)
+);
+create index if not exists content_views_day_idx on public.content_views (day);
+
+alter table public.content_views enable row level security;
+drop policy if exists "Views: admin read" on public.content_views;
+create policy "Views: admin read" on public.content_views for select using (public.is_admin());
+-- Không có policy ghi: chỉ ghi qua track_view().
+
+create or replace function public.vn_today() returns date
+language sql stable as $$
+  select (now() at time zone 'Asia/Ho_Chi_Minh')::date;
+$$;
+
+-- Ghi nhận 1 lượt xem. Bỏ qua (không báo lỗi) nếu dự án / bài viết không tồn tại hoặc chưa xuất bản.
+create or replace function public.track_view(p_kind text, p_id bigint) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if p_kind = 'project' then
+    if not exists (select 1 from public.projects where id = p_id and is_published) then return; end if;
+  elsif p_kind = 'news' then
+    if not exists (select 1 from public.news where id = p_id and is_published and published_at <= public.vn_today()) then return; end if;
+  else
+    return;
+  end if;
+  insert into public.content_views (kind, item_id, day, views) values (p_kind, p_id, public.vn_today(), 1)
+  on conflict (kind, item_id, day) do update set views = public.content_views.views + 1;
+end;
+$$;
+revoke all on function public.track_view(text, bigint) from public;
+grant execute on function public.track_view(text, bigint) to anon, authenticated;
+
+-- Số liệu từng ngày của 2 × p_days ngày gần nhất (nửa đầu = kỳ trước, để so sánh).
+create or replace function public.admin_daily_stats(p_days integer)
+returns table (day date, project_views bigint, news_views bigint, leads bigint, applications bigint)
+language sql stable security definer set search_path = public as $$
+  with d as (
+    select g::date as day
+    from generate_series(public.vn_today() - (2 * least(greatest(p_days, 1), 366) - 1), public.vn_today(), interval '1 day') g
+  ),
+  v as (
+    select cv.day,
+      sum(cv.views) filter (where cv.kind = 'project') as pv,
+      sum(cv.views) filter (where cv.kind = 'news') as nv
+    from public.content_views cv where cv.day >= (select min(day) from d) group by cv.day
+  ),
+  c as (
+    select (created_at at time zone 'Asia/Ho_Chi_Minh')::date as day, count(*) as n
+    from public.contact_submissions where status <> 'spam' group by 1
+  ),
+  a as (
+    select (created_at at time zone 'Asia/Ho_Chi_Minh')::date as day, count(*) as n
+    from public.job_applications group by 1
+  )
+  select d.day, coalesce(v.pv, 0)::bigint, coalesce(v.nv, 0)::bigint, coalesce(c.n, 0)::bigint, coalesce(a.n, 0)::bigint
+  from d left join v using (day) left join c using (day) left join a using (day)
+  where public.is_admin()
+  order by d.day;
+$$;
+
+-- Lượt xem / yêu cầu tư vấn của TỪNG dự án và bài viết: kỳ này (p_days ngày gần nhất), kỳ trước, tổng từ trước tới nay.
+create or replace function public.admin_item_stats(p_days integer)
+returns table (
+  kind text, item_id bigint, title text, image_url text, label text, building_type text, is_published boolean,
+  views bigint, prev_views bigint, total_views bigint, leads bigint, prev_leads bigint, total_leads bigint
+)
+language sql stable security definer set search_path = public as $$
+  with s as (
+    select public.vn_today() - (least(greatest(p_days, 1), 366) - 1) as cur,
+           public.vn_today() - (2 * least(greatest(p_days, 1), 366) - 1) as prev
+  ),
+  v as (
+    select cv.kind, cv.item_id,
+      coalesce(sum(cv.views) filter (where cv.day >= s.cur), 0) as cur,
+      coalesce(sum(cv.views) filter (where cv.day >= s.prev and cv.day < s.cur), 0) as prev,
+      sum(cv.views) as total
+    from public.content_views cv cross join s group by cv.kind, cv.item_id
+  ),
+  l as (
+    select c.project_interest as name,
+      count(*) filter (where (c.created_at at time zone 'Asia/Ho_Chi_Minh')::date >= s.cur) as cur,
+      count(*) filter (where (c.created_at at time zone 'Asia/Ho_Chi_Minh')::date >= s.prev
+                         and (c.created_at at time zone 'Asia/Ho_Chi_Minh')::date < s.cur) as prev,
+      count(*) as total
+    from public.contact_submissions c cross join s
+    where c.project_interest is not null and c.status <> 'spam'
+    group by c.project_interest
+  )
+  select 'project', p.id, p.name, p.cover_image_url, p.location, p.building_type, p.is_published,
+    coalesce(v.cur, 0)::bigint, coalesce(v.prev, 0)::bigint, coalesce(v.total, 0)::bigint,
+    coalesce(l.cur, 0)::bigint, coalesce(l.prev, 0)::bigint, coalesce(l.total, 0)::bigint
+  from public.projects p
+  left join v on v.kind = 'project' and v.item_id = p.id
+  left join l on l.name = p.name
+  where public.is_admin()
+  union all
+  select 'news', n.id, n.title, n.image_url, n.category, null, n.is_published and n.published_at <= public.vn_today(),
+    coalesce(v.cur, 0)::bigint, coalesce(v.prev, 0)::bigint, coalesce(v.total, 0)::bigint, 0, 0, 0
+  from public.news n
+  left join v on v.kind = 'news' and v.item_id = n.id
+  where public.is_admin();
+$$;
+
+-- Lượt xem (và yêu cầu tư vấn, với dự án) từng ngày của MỘT dự án / bài viết, p_days ngày gần nhất.
+create or replace function public.admin_item_daily(p_kind text, p_id bigint, p_days integer)
+returns table (day date, views bigint, leads bigint)
+language sql stable security definer set search_path = public as $$
+  with d as (
+    select g::date as day
+    from generate_series(public.vn_today() - (least(greatest(p_days, 1), 366) - 1), public.vn_today(), interval '1 day') g
+  ),
+  c as (
+    select (c.created_at at time zone 'Asia/Ho_Chi_Minh')::date as day, count(*) as n
+    from public.contact_submissions c
+    join public.projects p on p.name = c.project_interest
+    where p_kind = 'project' and p.id = p_id and c.status <> 'spam'
+    group by 1
+  )
+  select d.day, coalesce(cv.views, 0)::bigint, coalesce(c.n, 0)::bigint
+  from d
+  left join public.content_views cv on cv.kind = p_kind and cv.item_id = p_id and cv.day = d.day
+  left join c on c.day = d.day
+  where public.is_admin()
+  order by d.day;
+$$;
+
+revoke all on function public.admin_daily_stats(integer) from public;
+revoke all on function public.admin_item_stats(integer) from public;
+revoke all on function public.admin_item_daily(text, bigint, integer) from public;
+grant execute on function public.admin_daily_stats(integer) to authenticated;
+grant execute on function public.admin_item_stats(integer) to authenticated;
+grant execute on function public.admin_item_daily(text, bigint, integer) to authenticated;
+
+-- Báo API (PostgREST) nạp lại danh sách bảng / hàm vừa tạo
+notify pgrst, 'reload schema';

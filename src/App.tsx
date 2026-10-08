@@ -5,6 +5,7 @@ import Sidebar from './components/Sidebar';
 import ScrollToTop from './components/ScrollToTop';
 import { ProjectsProvider } from './context/ProjectsContext';
 import { ActiveSectionProvider } from './context/ActiveSectionContext';
+import { hideSplash } from './lib/splash';
 import Home from './pages/Home';
 import About from './pages/About';
 import ProjectsPage from './pages/Projects';
@@ -13,6 +14,7 @@ import Contact from './pages/Contact';
 import News from './pages/News';
 import NewsDetail from './pages/NewsDetail';
 import Careers from './pages/Careers';
+import { Spinner } from './components/Loading';
 
 // Trang quản trị: tách khỏi khung website (không header / sidebar / nền động), chỉ tải khi vào /quan-tri
 const AdminApp = lazy(() => import('./admin/AdminApp'));
@@ -25,7 +27,7 @@ export default function App() {
           <Route
             path="/quan-tri/*"
             element={
-              <Suspense fallback={null}>
+              <Suspense fallback={<Spinner full label="Đang mở trang quản trị…" />}>
                 <AdminApp />
               </Suspense>
             }
@@ -43,6 +45,14 @@ function Site() {
   useEffect(() => {
     document.documentElement.classList.toggle('nav-open', sidebarOpen);
   }, [sidebarOpen]);
+
+  // Trang không có ảnh nền lớn → ẩn màn hình chờ ngay khi vẽ xong; có ảnh thì HeroPhoto ẩn khi ảnh tải xong
+  useEffect(() => {
+    const id = requestAnimationFrame(() => {
+      if (!document.querySelector('.hero-scene-photo')) hideSplash();
+    });
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   return (
     <ActiveSectionProvider>

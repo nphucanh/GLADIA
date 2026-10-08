@@ -7,14 +7,14 @@ import type { NewsCategory } from '../../data/mockNews';
 import { NEWS_FEATURED_IMAGE } from '../../data/images';
 import { ADMIN_BASE } from '../AdminApp';
 import { NEWS_CATEGORY_LABEL } from '../meta';
-import { Badge, Empty, ErrorBox, fmtDate, Loading, PageHeader, Pager, usePaging, ResultInfo, SearchBox, today, useAction, useAsync, useDebounced, useFeedback } from '../ui';
+import { Badge, Empty, ErrorBox, fmtDate, Loading, PageHeader, Pager, usePaging, ResultInfo, SearchBox, Select, today, useAction, useAsync, useDebounced, useFeedback } from '../ui';
 
 type Visibility = '' | 'published' | 'draft';
 
 export default function News() {
   const navigate = useNavigate();
   const { confirm } = useFeedback();
-  const { run } = useAction();
+  const { runOk } = useAction();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<NewsCategory | ''>('');
   const [visibility, setVisibility] = useState<Visibility>('');
@@ -34,7 +34,7 @@ export default function News() {
 
   async function remove(n: NewsRow) {
     const ok = await confirm({ title: 'Xoá bài viết?', message: `"${n.title}" sẽ bị xoá vĩnh viễn.`, confirmLabel: 'Xoá bài', danger: true });
-    if (ok && (await run(() => admin.news.deleteNews(n.id), 'Đã xoá bài viết')) !== undefined) list.reload();
+    if (ok && (await runOk(() => admin.news.deleteNews(n.id), 'Đã xoá bài viết'))) list.reload();
   }
 
   const now = today();
@@ -63,37 +63,31 @@ export default function News() {
             }}
             placeholder="Tìm theo tiêu đề…"
           />
-          <select
-            className="a-input"
-           
+          <Select<NewsCategory | ''>
             value={category}
-            onChange={(e) => {
-              setCategory(e.target.value as NewsCategory | '');
+            onChange={(v) => {
+              setCategory(v);
               setPage(1);
             }}
             aria-label="Chuyên mục"
-          >
-            <option value="">Mọi chuyên mục</option>
-            {(Object.keys(NEWS_CATEGORY_LABEL) as NewsCategory[]).map((c) => (
-              <option key={c} value={c}>
-                {NEWS_CATEGORY_LABEL[c]}
-              </option>
-            ))}
-          </select>
-          <select
-            className="a-input"
-           
+            options={[
+              { value: '', label: 'Mọi chuyên mục' },
+              ...(Object.keys(NEWS_CATEGORY_LABEL) as NewsCategory[]).map((c) => ({ value: c, label: NEWS_CATEGORY_LABEL[c] })),
+            ]}
+          />
+          <Select<Visibility>
             value={visibility}
-            onChange={(e) => {
-              setVisibility(e.target.value as Visibility);
+            onChange={(v) => {
+              setVisibility(v);
               setPage(1);
             }}
             aria-label="Trạng thái"
-          >
-            <option value="">Mọi trạng thái</option>
-            <option value="published">Đã đăng / hẹn giờ</option>
-            <option value="draft">Bản nháp</option>
-          </select>
+            options={[
+              { value: '', label: 'Mọi trạng thái' },
+              { value: 'published', label: 'Đã đăng / hẹn giờ' },
+              { value: 'draft', label: 'Bản nháp' },
+            ]}
+          />
           <ResultInfo
             total={list.data?.total}
             unit="bài viết"

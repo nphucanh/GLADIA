@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { trackView } from '../api/public/tracking';
 import NewsCard from '../components/NewsCard';
 import Reveal from '../components/Reveal';
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '../components/ui/carousel';
@@ -7,6 +9,7 @@ import { useNewsList } from '../hooks/useApiData';
 import { fmtDate } from '../utils/format';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import '../styles/news.css';
+import { Spinner } from '../components/Loading';
 
 const WORDS_PER_MINUTE = 200;
 
@@ -19,6 +22,10 @@ export default function NewsDetail() {
   const { id } = useParams();
   const { data: news, loading } = useNewsList();
   const item = news.find((n) => n.id === Number(id));
+  const itemId = item?.id ?? 0;
+  useEffect(() => {
+    if (itemId) trackView('news', itemId);
+  }, [itemId]);
 
   useDocumentTitle(item ? `${item.title} — Terra` : loading ? 'Tin tức — Terra' : 'Không tìm thấy tin — Terra');
 
@@ -26,7 +33,7 @@ export default function NewsDetail() {
     return (
       <main className="news-page-bg">
         <section className="wrap" style={{ paddingTop: 160, paddingBottom: 120 }}>
-          <p className="news-empty">{loading ? 'Đang tải bài viết…' : 'Không tìm thấy bài viết này.'}</p>
+          {loading ? <Spinner label="Đang tải bài viết…" /> : <p className="news-empty">Không tìm thấy bài viết này.</p>}
           <Link to="/tin-tuc" className="news-back-link">
             ← Quay lại Tin tức
           </Link>

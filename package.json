@@ -5,8 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/check-boundaries.mjs",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "db:push": "node scripts/db/schema-sync.mjs push",
+    "db:watch": "node scripts/db/schema-sync.mjs watch",
+    "db:seed": "node scripts/db/schema-sync.mjs seed",
+    "check:boundaries": "node scripts/check-boundaries.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.23",
@@ -34,6 +39,7 @@
     "@types/react-dom": "^18.3.0",
     "@types/three": "^0.169.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "pg": "^8.23.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.5.4",
     "vite": "^5.4.6"

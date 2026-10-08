@@ -8,7 +8,8 @@ import { PROJECT_IMAGE_BY_BUILDING } from '../../data/images';
 import { ADMIN_BASE } from '../AdminApp';
 import { BUILDING_LABEL, BUILDING_OF_TYPE, BUILDING_TYPES, PROJECT_STATUSES, PROJECT_TYPES } from '../meta';
 import PlanSetEditor from '../PlanSetEditor';
-import { Badge, Empty, ErrorBox, Field, ImageField, Loading, PageHeader, Switch, useAction, useAsync, useFeedback } from '../ui';
+import { Badge, Empty, ErrorBox, Field, ImageField, Loading, PageHeader, Select, Switch, useAction, useAsync, useFeedback } from '../ui';
+import { LocationInput } from '../LocationInput';
 
 type Tab = 'info' | 'gallery' | 'plans';
 
@@ -119,7 +120,7 @@ function TabBtn({ active, disabled, onClick, children }: { active: boolean; disa
 function InfoTab({ project, onSaved }: { project: ProjectRow | null; onSaved: (row: ProjectRow) => void }) {
   const navigate = useNavigate();
   const { confirm } = useFeedback();
-  const { run, busy } = useAction();
+  const { run, runOk, busy } = useAction();
   const [initial, setInitial] = useState(() => (project ? toInput(project) : blankProject()));
   const [d, setD] = useState(initial);
   const [touched, setTouched] = useState(false);
@@ -171,7 +172,7 @@ function InfoTab({ project, onSaved }: { project: ProjectRow | null; onSaved: (r
       confirmLabel: 'Xoá dự án',
       danger: true,
     });
-    if (ok && (await run(() => admin.projects.deleteProject(project.id), 'Đã xoá dự án')) !== undefined) navigate(`${ADMIN_BASE}/du-an`);
+    if (ok && (await runOk(() => admin.projects.deleteProject(project.id), 'Đã xoá dự án'))) navigate(`${ADMIN_BASE}/du-an`);
   }
 
   const err = (k: keyof typeof errors) => (touched ? errors[k] : null);
@@ -184,50 +185,22 @@ function InfoTab({ project, onSaved }: { project: ProjectRow | null; onSaved: (r
             <input id="p-name" className={`a-input${err('name') ? ' invalid' : ''}`} value={d.name} onChange={(e) => set('name', e.target.value)} />
           </Field>
           <Field label="Vị trí (tỉnh / thành)" required error={err('location')} hint="Quyết định mục Vị trí đắc địa và bản đồ." htmlFor="p-loc">
-            <input
-              id="p-loc"
-              className={`a-input${err('location') ? ' invalid' : ''}`}
-              value={d.location}
-              onChange={(e) => set('location', e.target.value)}
-              list="p-locations"
-            />
-            <datalist id="p-locations">
-              {['TP.HCM', 'Hà Nội', 'Đà Nẵng', 'Bình Dương', 'Đồng Nai', 'Long An'].map((l) => (
-                <option key={l} value={l} />
-              ))}
-            </datalist>
+            <LocationInput id="p-loc" value={d.location} onChange={(v) => set('location', v)} invalid={!!err('location')} />
           </Field>
         </div>
         <div className="a-grid-3">
           <Field label="Loại hình" required>
-            <select
-              className="a-input"
+            <Select
               value={d.type}
-              onChange={(e) => {
-                const t = e.target.value as ProjectInput['type'];
-                setD((x) => ({ ...x, type: t, building_type: project ? x.building_type : BUILDING_OF_TYPE[t] }));
-              }}
-            >
-              {PROJECT_TYPES.map((t) => (
-                <option key={t}>{t}</option>
-              ))}
-            </select>
+              onChange={(t) => setD((x) => ({ ...x, type: t, building_type: project ? x.building_type : BUILDING_OF_TYPE[t] }))}
+              options={PROJECT_TYPES.map((t) => ({ value: t, label: t }))}
+            />
           </Field>
           <Field label="Kiểu công trình" hint="Chọn bộ mặt bằng mặc định, tiện ích và ảnh minh hoạ.">
-            <select className="a-input" value={d.building_type} onChange={(e) => set('building_type', e.target.value as ProjectInput['building_type'])}>
-              {BUILDING_TYPES.map((b) => (
-                <option key={b} value={b}>
-                  {BUILDING_LABEL[b]}
-                </option>
-              ))}
-            </select>
+            <Select value={d.building_type} onChange={(v) => set('building_type', v)} options={BUILDING_TYPES.map((b) => ({ value: b, label: BUILDING_LABEL[b] }))} />
           </Field>
           <Field label="Trạng thái" required>
-            <select className="a-input" value={d.status} onChange={(e) => set('status', e.target.value as ProjectInput['status'])}>
-              {PROJECT_STATUSES.map((s) => (
-                <option key={s}>{s}</option>
-              ))}
-            </select>
+            <Select value={d.status} onChange={(v) => set('status', v)} options={PROJECT_STATUSES.map((s) => ({ value: s, label: s }))} />
           </Field>
         </div>
         <div className="a-grid-3">
@@ -324,7 +297,7 @@ function InfoTab({ project, onSaved }: { project: ProjectRow | null; onSaved: (r
 function GalleryTab({ project }: { project: ProjectRow }) {
   const items = useAsync(() => admin.projects.listGallery(project.id), [project.id]);
   const input = useRef<HTMLInputElement>(null);
-  const { run, busy } = useAction();
+  const { run, runOk, busy } = useAction();
   const { confirm } = useFeedback();
   const list = items.data ?? [];
 
@@ -349,7 +322,7 @@ function GalleryTab({ project }: { project: ProjectRow }) {
 
   async function remove(g: GalleryRow) {
     const ok = await confirm({ title: `Xoá ảnh "${g.room}"?`, confirmLabel: 'Xoá ảnh', danger: true });
-    if (ok && (await run(() => admin.projects.deleteGalleryItem(g.id), 'Đã xoá ảnh')) !== undefined) items.reload();
+    if (ok && (await runOk(() => admin.projects.deleteGalleryItem(g.id), 'Đã xoá ảnh'))) items.reload();
   }
 
   if (items.error) return <div className="a-card"><ErrorBox message={items.error} onRetry={items.reload} /></div>;
@@ -452,7 +425,7 @@ function GalleryCard({
 
 function PlansTab({ project }: { project: ProjectRow }) {
   const sets = useAsync(() => admin.floorPlans.listFloorPlanSets(), []);
-  const { run, busy } = useAction();
+  const { run, runOk, busy } = useAction();
   const { confirm } = useFeedback();
   if (sets.error) return <div className="a-card"><ErrorBox message={sets.error} onRetry={sets.reload} /></div>;
   if (!sets.data) return <Loading />;
@@ -491,7 +464,7 @@ function PlansTab({ project }: { project: ProjectRow }) {
       confirmLabel: 'Xoá mặt bằng riêng',
       danger: true,
     });
-    if (ok && (await run(() => admin.floorPlans.deleteFloorPlanSet(s.id), 'Đã xoá mặt bằng riêng')) !== undefined) sets.reload();
+    if (ok && (await runOk(() => admin.floorPlans.deleteFloorPlanSet(s.id), 'Đã xoá mặt bằng riêng'))) sets.reload();
   }
 
   if (!own) {

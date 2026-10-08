@@ -8,7 +8,7 @@ import { mockNews } from '../../data/mockNews';
 import { NEWS_FEATURED_IMAGE } from '../../data/images';
 import { ADMIN_BASE } from '../AdminApp';
 import { NEWS_CATEGORY_LABEL } from '../meta';
-import { ErrorBox, Field, ImageField, Loading, PageHeader, Switch, today, useAction, useAsync, useFeedback } from '../ui';
+import { ErrorBox, Field, ImageField, Loading, PageHeader, Select, Switch, today, useAction, useAsync, useFeedback } from '../ui';
 
 // Nội dung soạn trong một ô: các đoạn cách nhau bằng một dòng trống
 const joinParagraphs = (p: string[]) => p.join('\n\n');
@@ -63,7 +63,7 @@ export default function NewsEdit() {
 function Editor({ row }: { row: NewsRow | null }) {
   const navigate = useNavigate();
   const { confirm } = useFeedback();
-  const { run, busy } = useAction();
+  const { run, runOk, busy } = useAction();
   const [initial, setInitial] = useState(() => (row ? fromRow(row) : blank()));
   const [d, setD] = useState(initial);
   const [touched, setTouched] = useState(false);
@@ -110,7 +110,7 @@ function Editor({ row }: { row: NewsRow | null }) {
   async function remove() {
     if (!row) return;
     const ok = await confirm({ title: 'Xoá bài viết?', message: `"${row.title}" sẽ bị xoá vĩnh viễn.`, confirmLabel: 'Xoá bài', danger: true });
-    if (ok && (await run(() => admin.news.deleteNews(row.id), 'Đã xoá bài viết')) !== undefined) navigate(`${ADMIN_BASE}/tin-tuc`);
+    if (ok && (await runOk(() => admin.news.deleteNews(row.id), 'Đã xoá bài viết'))) navigate(`${ADMIN_BASE}/tin-tuc`);
   }
 
   return (
@@ -139,13 +139,11 @@ function Editor({ row }: { row: NewsRow | null }) {
           </Field>
           <div className="a-grid-3">
             <Field label="Chuyên mục">
-              <select className="a-input" value={d.category} onChange={(e) => set('category', e.target.value as NewsCategory)}>
-                {(Object.keys(NEWS_CATEGORY_LABEL) as NewsCategory[]).map((c) => (
-                  <option key={c} value={c}>
-                    {NEWS_CATEGORY_LABEL[c]}
-                  </option>
-                ))}
-              </select>
+              <Select
+                value={d.category}
+                onChange={(v) => set('category', v)}
+                options={(Object.keys(NEWS_CATEGORY_LABEL) as NewsCategory[]).map((c) => ({ value: c, label: NEWS_CATEGORY_LABEL[c] }))}
+              />
             </Field>
             <Field label="Ngày đăng" hint={scheduled ? 'Bài sẽ tự hiện vào ngày này.' : 'Chọn ngày trong tương lai để hẹn giờ đăng.'}>
               <input className="a-input" type="date" value={d.published_at} onChange={(e) => set('published_at', e.target.value || today())} />
