@@ -34,6 +34,7 @@ src/api/
 src/hooks/useApiData.ts   hook React: useProjectList, useNewsList, useJobs, useFloorPlanSet
 supabase/schema.sql       bảng, RLS, kho file, trigger
 supabase/seed.sql         dữ liệu mẫu (sinh bởi scripts/seed/generate.mjs)
+supabase/demo-data.sql    (tuỳ chọn) dữ liệu thử cho trang quản trị: yêu cầu tư vấn, hồ sơ, lượt xem, bản nháp…
 ```
 
 ## Cài đặt
@@ -42,6 +43,8 @@ supabase/seed.sql         dữ liệu mẫu (sinh bởi scripts/seed/generate.mj
    `VITE_SUPABASE_URL` và `VITE_SUPABASE_ANON_KEY` (Project Settings → API).
 2. Supabase Dashboard → SQL Editor: chạy **`supabase/schema.sql`**, rồi **`supabase/seed.sql`**.
    Cả hai chạy lại nhiều lần được; chạy đè lên schema cũ (`supabase-schema.sql` trước đây) cũng được, dữ liệu cũ giữ nguyên.
+   *(Tuỳ chọn)* chạy thêm **`supabase/demo-data.sql`** để trang quản trị có dữ liệu thử đủ các trường hợp
+   (đủ trạng thái yêu cầu tư vấn / hồ sơ, lượt xem 180 ngày, dự án nháp, bài hẹn giờ, vị trí đã đóng). Xoá: khối cuối file.
 3. Tạo admin ĐẦU TIÊN (chủ sở hữu): Authentication → Users → *Add user* (email + mật khẩu), rồi trong SQL Editor:
    ```sql
    insert into public.admin_users (user_id, email, role)
