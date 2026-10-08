@@ -11,13 +11,37 @@ import { useEffect, useRef, useState } from 'react';
  * thiết kế vừa khít 100vh, nên bất kỳ chênh lệch scrollHeight/clientHeight nào ở đó chỉ là
  * sai số box-model/bo tròn — nếu vẫn xét chung, sẽ có lúc "kẹt" không đổi được slide.
  */
+/**
+ * Màn hình hẹp (điện thoại dọc) hoặc thấp (điện thoại xoay ngang): slide cố định 100vh không đủ
+ * chỗ cho nội dung → bỏ chế độ trình chiếu, các slide xếp dọc và cuộn tự nhiên như trang thường
+ * (CSS tương ứng: khối @media cùng điều kiện trong home.css). Giữ đồng bộ với FLOW_QUERY ở đó.
+ */
+export const FLOW_QUERY = '(max-width:640px), (max-height:560px)';
+
+function useFlowLayout() {
+  const [flow, setFlow] = useState(() => typeof window !== 'undefined' && window.matchMedia(FLOW_QUERY).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(FLOW_QUERY);
+    const onChange = () => setFlow(mq.matches);
+    onChange();
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+  return flow;
+}
+
 export function usePresentationScroll(slideIds: string[], disabled = false, scrollableIds: string[] = []) {
   const currentIndex = useRef(0);
   const animating = useRef(false);
   const [activeIndex, setActiveIndexState] = useState(0);
+  const flow = useFlowLayout();
 
   function goTo(nextIndex: number) {
     const clamped = Math.max(0, Math.min(slideIds.length - 1, nextIndex));
+    if (flow) {
+      document.getElementById(slideIds[clamped])?.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
     if (clamped === currentIndex.current || animating.current) return;
     animating.current = true;
     currentIndex.current = clamped;
@@ -28,7 +52,7 @@ export function usePresentationScroll(slideIds: string[], disabled = false, scro
   }
 
   useEffect(() => {
-    if (disabled) return;
+    if (disabled || flow) return;
     if (typeof window === 'undefined') return;
 
     function menuIsOpen() {
@@ -106,7 +130,13 @@ export function usePresentationScroll(slideIds: string[], disabled = false, scro
       window.removeEventListener('touchstart', onTouchStart);
       window.removeEventListener('touchend', onTouchEnd);
     };
-  }, [slideIds, disabled, scrollableIds]);
+  }, [slideIds, disabled, scrollableIds, flow]);
 
-  return { activeIndex, goTo };
+  /** Trạng thái "active" của 1 slide, truyền cho prop `active` của <Reveal>. Ở chế độ cuộn tự
+   * nhiên trả về undefined → Reveal tự dùng IntersectionObserver, hiện dần khi cuộn tới. */
+  function revealActive(id: string): boolean | undefined {
+    return flow ? undefined : activeIndex === slideIds.indexOf(id);
+  }
+
+  return { activeIndex, goTo, flow, revealActive };
 }

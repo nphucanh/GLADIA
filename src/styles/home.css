@@ -32,9 +32,36 @@ section.morph-slide.is-active{
   display:flex;
   flex-direction:column;
   justify-content:center;
+  /* Nội dung cao hơn khung: dồn từ trên xuống thay vì tràn đều 2 đầu (phần đầu chui dưới header) */
+  justify-content:safe center;
 }
+/* width:100% bắt buộc: margin:0 auto của .wrap trong flex cột khiến khối co theo nội dung —
+   dải logo chạy ngang (width:max-content) kéo .wrap rộng tới max-width, tràn khỏi màn hình. */
+.slide-center > .wrap{width:100%;}
 @media (max-width:720px){
   .morph-slide{padding-top:96px;padding-bottom:96px;}
+}
+/* Tablet: chừa đủ chỗ cho header cố định (76px) phía trên và nút Scroll / Nhận tin phía dưới */
+@media (min-width:641px) and (max-width:1024px){
+  section.morph-slide{padding-top:96px;padding-bottom:96px;}
+}
+/* Slide Tin tức xếp 1 cột trên tablet dọc — giới hạn ảnh bài nổi bật để cả slide vừa 1 màn hình */
+@media (max-width:860px){
+  #slide-news .news-hero .news-thumb{height:clamp(220px, 28vh, 340px);}
+}
+
+/* Điện thoại (dọc hoặc xoay ngang): bỏ trình chiếu, slide xếp dọc và cuộn tự nhiên — nội dung
+   không còn bị cắt khi cao hơn 1 màn hình. Điều kiện đồng bộ với FLOW_QUERY (usePresentationScroll). */
+@media (max-width:640px), (max-height:560px){
+  html.home-snap, html.home-snap body{overflow:visible;height:auto;}
+  section.morph-slide{
+    position:relative;inset:auto;
+    min-height:100svh;padding-top:96px;padding-bottom:72px;
+    overflow:hidden;
+    opacity:1;visibility:visible;pointer-events:auto;
+    transform:none;filter:none;transition:none;will-change:auto;
+  }
+  section.morph-slide.hero{padding-bottom:64px;}
 }
 
 /* ---------- Slide "Hero" ---------- */
@@ -79,7 +106,7 @@ section.morph-slide.is-active{
 
 .hero-skyline-svg{position:absolute;left:0;right:0;bottom:0;z-index:1;opacity:.5;}
 .hero-inner{position:relative;z-index:2;max-width:680px;}
-@media (min-width:641px){
+@media (min-width:1025px){
   .hero .wrap.hero-inner{
     margin-left:max(calc((100% - 680px) / 2 - 170px), calc(var(--sidebar-w) + 32px));
     margin-right:auto;
@@ -153,7 +180,7 @@ section.morph-slide.is-active{
 .home-slide-nav-btn:hover .hsn-circle{animation-play-state:paused;}
 .hsn-circle svg{width:16px;height:16px;}
 @keyframes hsnBob{0%,100%{transform:translateY(-4px);}50%{transform:translateY(4px);}}
-@media (max-width:640px), (max-height:560px){.home-slide-nav-btn{display:none;}}
+@media (max-width:1024px), (max-height:560px){.home-slide-nav-btn{display:none;}}
 
 /* Nút "Nhận tin" nổi, đối xứng bên phải với nút cuộn — hiện xuyên suốt mọi slide Trang chủ */
 .home-subscribe-fab{

@@ -11,7 +11,7 @@
 /* Rail (sidebar nhỏ) giờ canh giữa theo chiều dọc màn hình (layout.css) nên có thể trôi tới
    bất kỳ section nào khi cuộn trang, không còn chỉ nằm gọn trong banner hero như trước — mỗi
    section vì vậy cần tự chừa chỗ bên trái cho rail, giống cách .page-hero-photo .wrap đã làm. */
-@media (min-width:641px){
+@media (min-width:1025px){
   #career-intro > .wrap,
   #career-why > .wrap,
   #career-jobs > .wrap,

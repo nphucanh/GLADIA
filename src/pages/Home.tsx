@@ -78,7 +78,7 @@ export default function Home() {
     document.documentElement.classList.add('home-snap');
     return () => document.documentElement.classList.remove('home-snap');
   }, []);
-  const { activeIndex, goTo } = usePresentationScroll(SLIDE_IDS, false, SCROLLABLE_SLIDE_IDS);
+  const { activeIndex, goTo, flow, revealActive } = usePresentationScroll(SLIDE_IDS, false, SCROLLABLE_SLIDE_IDS);
 
   // Đồng bộ mục sáng trong Sidebar theo slide đang active, và đăng ký hàm chuyển slide
   // để Sidebar (component riêng, không phải con của Home) có thể điều khiển từ xa.
@@ -101,7 +101,7 @@ export default function Home() {
     goTo(isLastSlide ? 0 : activeIndex + 1);
   }
   function slideClass(id: string, extra = '') {
-    return `morph-slide ${extra} ${activeIndex === SLIDE_IDS.indexOf(id) ? 'is-active' : ''}`.trim();
+    return `morph-slide ${extra} ${flow || activeIndex === SLIDE_IDS.indexOf(id) ? 'is-active' : ''}`.trim();
   }
 
   const newsList = useNewsList();
@@ -150,7 +150,7 @@ export default function Home() {
         <span className="about-orb about-orb-1" aria-hidden="true" />
         <span className="about-orb about-orb-2" aria-hidden="true" />
         <div className="wrap about-layout">
-          <Reveal variant="left" delay={220} active={activeIndex === SLIDE_IDS.indexOf('slide-about')}>
+          <Reveal variant="left" delay={220} active={revealActive('slide-about')}>
             <div className="about-copy">
               <div className="eyebrow">Về Terra</div>
               <h2>Hơn một chủ đầu tư — một người kiến tạo cộng đồng.</h2>
@@ -169,7 +169,7 @@ export default function Home() {
                 key={s.label}
                 variant="pop"
                 delay={600 + i * 260}
-                active={activeIndex === SLIDE_IDS.indexOf('slide-about')}
+                active={revealActive('slide-about')}
               >
                 <Card className="about-stat-card border-0">
                   <span className="about-stat-icon">{s.icon}</span>
@@ -177,7 +177,7 @@ export default function Home() {
                     target={s.target}
                     label={s.label}
                     delay={280}
-                    active={activeIndex === SLIDE_IDS.indexOf('slide-about')}
+                    active={revealActive('slide-about')}
                   />
                 </Card>
               </Reveal>
@@ -188,7 +188,7 @@ export default function Home() {
 
       <section className={slideClass('slide-news', 'slide-center')} id="slide-news">
         <div className="wrap news-layout">
-          <Reveal variant="down" delay={150} active={activeIndex === SLIDE_IDS.indexOf('slide-news')}>
+          <Reveal variant="down" delay={150} active={revealActive('slide-news')}>
             <div className="news-heading">
               <span className="news-heading-watermark" aria-hidden="true">
                 Lifestyle
@@ -199,7 +199,7 @@ export default function Home() {
             </div>
           </Reveal>
           <div className="news-content">
-            <Reveal variant="pop" delay={400} active={activeIndex === SLIDE_IDS.indexOf('slide-news')}>
+            <Reveal variant="pop" delay={400} active={revealActive('slide-news')}>
               {featuredNews && <NewsCard item={featuredNews} variant="featured" />}
               {newsWaiting && (
                 <>
@@ -215,7 +215,7 @@ export default function Home() {
                   key={n.id}
                   variant="right"
                   delay={680 + i * 260}
-                  active={activeIndex === SLIDE_IDS.indexOf('slide-news')}
+                  active={revealActive('slide-news')}
                 >
                   <NewsCard item={n} />
                 </Reveal>
@@ -247,19 +247,19 @@ export default function Home() {
         </div>
 
         <div className="wrap contact-showcase">
-          <Reveal variant="pop" delay={150} active={activeIndex === SLIDE_IDS.indexOf('slide-contact')}>
+          <Reveal variant="pop" delay={150} active={revealActive('slide-contact')}>
             <div className="partner-block">
               <div className="partner-label">Đầu tư và phát triển bởi</div>
               <div className="partner-wordmark partner-wordmark-lg">TERRA</div>
             </div>
           </Reveal>
-          <Reveal variant="pop" delay={400} active={activeIndex === SLIDE_IDS.indexOf('slide-contact')}>
+          <Reveal variant="pop" delay={400} active={revealActive('slide-contact')}>
             <div className="partner-block">
               <div className="partner-label">Đối tác thi công</div>
               <div className="partner-wordmark">TERRA Construction</div>
             </div>
           </Reveal>
-          <Reveal variant="pop" delay={650} active={activeIndex === SLIDE_IDS.indexOf('slide-contact')}>
+          <Reveal variant="pop" delay={650} active={revealActive('slide-contact')}>
             <div className="partner-block">
               <div className="partner-label">Phân phối &amp; tiếp thị</div>
               <div className="partner-logo-row-wrap">
@@ -274,7 +274,7 @@ export default function Home() {
             </div>
           </Reveal>
 
-          <Reveal variant="up" delay={950} active={activeIndex === SLIDE_IDS.indexOf('slide-contact')}>
+          <Reveal variant="up" delay={950} active={revealActive('slide-contact')}>
           <div className="contact-info-block">
             <span className="contact-info-watermark" aria-hidden="true">
               Lifestyle

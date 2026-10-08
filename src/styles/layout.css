@@ -198,7 +198,9 @@ html.nav-open, html.nav-open body{
   .sidebar.open .sidebar-watermark{display:none;}
 }
 
-@media (max-width:640px){
+/* Tablet & điện thoại: ẩn rail (đè lên nội dung khi màn hình hẹp) — menu hamburger vẫn mở bình
+   thường. Lề trái chừa cho rail ở các trang (margin-left ... var(--sidebar-w)) chỉ áp từ 1025px. */
+@media (max-width:1024px){
   .sidebar{
     transform:translateX(-100%);
     width:260px;

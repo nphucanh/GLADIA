@@ -249,8 +249,8 @@ function Topbar({ email, profile, onMenu }: { email: string; profile: AdminUserR
         ))}
       </nav>
       <div className="a-topbar-right">
-        <a className="a-btn a-btn--secondary a-btn--sm" href="/" target="_blank" rel="noreferrer">
-          <ExternalLink size={15} /> Xem website
+        <a className="a-btn a-btn--secondary a-btn--sm a-topbar-site" href="/" target="_blank" rel="noreferrer" title="Xem website">
+          <ExternalLink size={15} /> <span>Xem website</span>
         </a>
         <ThemeToggle />
         <span className="a-topbar-sep" aria-hidden="true" />

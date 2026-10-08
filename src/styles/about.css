@@ -16,7 +16,7 @@
   font-family:var(--font-display);font-weight:600;font-style:normal;
   font-size:1em;letter-spacing:-.01em;
 }
-@media (min-width:641px){
+@media (min-width:1025px){
   #slide-intro.hero .wrap.hero-inner{
     margin-left:max(calc((100% - 680px) / 2), calc(var(--sidebar-w) + 32px));
   }
@@ -53,7 +53,7 @@
   z-index:2;
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:225px;
+  gap:clamp(56px, calc((100vw - 1000px) / 3), 225px);
   max-width:1360px;
   margin:0 auto;
 }
@@ -123,6 +123,13 @@
 .mission-col:hover h3{color:#ead9bf;}
 .mission-col:hover .mission-col-line{
   background:linear-gradient(180deg, #dac09b 0%, rgba(218,192,155,0) 100%);
+}
+/* Rail sidebar luôn hiện từ 1025px — các slide nội dung trải rộng (3 cột, đoạn văn dài, dải logo)
+   chừa lề đối xứng bằng bề rộng rail để không bị rail đè lên mà vẫn canh giữa màn hình. */
+@media (min-width:1025px){
+  section.morph-slide.mission-slide, section.morph-slide.direction-slide, section.morph-slide.partners-slide{
+    padding-left:var(--sidebar-w);padding-right:var(--sidebar-w);
+  }
 }
 @media (max-width:860px){
   .mission-columns{grid-template-columns:1fr;gap:48px;max-width:360px;}

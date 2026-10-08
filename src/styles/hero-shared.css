@@ -46,7 +46,7 @@
   background:linear-gradient(180deg, rgba(10,9,7,.35) 0%, rgba(10,9,7,.55) 60%, rgba(10,9,7,.82) 100%);
 }
 .page-hero-photo .wrap{position:relative;z-index:2;}
-@media (min-width:641px){
+@media (min-width:1025px){
   .page-hero-photo .wrap{
     margin-left:max(calc((100% - 1180px) / 2), calc(var(--sidebar-w) + 24px));
     margin-right:auto;

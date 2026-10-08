@@ -139,7 +139,7 @@ export default function About() {
     return () => document.documentElement.classList.remove('home-snap');
   }, []);
   const navigate = useNavigate();
-  const { activeIndex, goTo } = usePresentationScroll(SLIDE_IDS, false);
+  const { activeIndex, goTo, flow, revealActive } = usePresentationScroll(SLIDE_IDS, false);
 
   // Đồng bộ mục sáng trong Sidebar theo slide đang active, và đăng ký bộ mục + hàm chuyển
   // slide riêng của trang này (Sidebar là component riêng, không phải con của About).
@@ -164,7 +164,7 @@ export default function About() {
 
   const isLastSlide = activeIndex === SLIDE_IDS.length - 1;
   function slideClass(id: string, extra = '') {
-    return `morph-slide ${extra} ${activeIndex === SLIDE_IDS.indexOf(id) ? 'is-active' : ''}`.trim();
+    return `morph-slide ${extra} ${flow || activeIndex === SLIDE_IDS.indexOf(id) ? 'is-active' : ''}`.trim();
   }
 
   return (
@@ -193,14 +193,14 @@ export default function About() {
         <HeroPhoto image={ABOUT_MISSION_IMAGE} />
         <div className="mission-overlay" aria-hidden="true" />
         <div className="wrap mission-heading">
-          <Reveal variant="up" delay={100} active={activeIndex === SLIDE_IDS.indexOf('slide-mission')}>
+          <Reveal variant="up" delay={100} active={revealActive('slide-mission')}>
             <div className="eyebrow">{`01 / 0${TOTAL_DETAIL_SECTIONS}`}</div>
             <h2>Sứ mệnh</h2>
           </Reveal>
         </div>
         <div className="wrap mission-columns">
           {MISSION_COLUMNS.map((col, ci) => {
-            const active = activeIndex === SLIDE_IDS.indexOf('slide-mission');
+            const active = revealActive('slide-mission');
             return (
               <div className="mission-col" key={col.title}>
                 <Reveal variant="pop" delay={220 + ci * 180} active={active}>
@@ -225,7 +225,7 @@ export default function About() {
         <HeroPhoto image={ABOUT_MISSION_IMAGE} />
         <div className="vision-overlay" aria-hidden="true" />
         {(() => {
-          const active = activeIndex === SLIDE_IDS.indexOf('slide-vision');
+          const active = revealActive('slide-vision');
           return (
             <>
               <div className="wrap vision-heading">
@@ -257,14 +257,14 @@ export default function About() {
         <HeroPhoto image={ABOUT_MISSION_IMAGE} />
         <div className="direction-overlay" aria-hidden="true" />
         <div className="wrap mission-heading">
-          <Reveal variant="up" delay={100} active={activeIndex === SLIDE_IDS.indexOf('slide-direction')}>
+          <Reveal variant="up" delay={100} active={revealActive('slide-direction')}>
             <div className="eyebrow">{`03 / 0${TOTAL_DETAIL_SECTIONS}`}</div>
             <h2>Định hướng phát triển</h2>
           </Reveal>
         </div>
         <div className="wrap values-columns">
           {DIRECTION_COLUMNS.map((col, ci) => {
-            const active = activeIndex === SLIDE_IDS.indexOf('slide-direction');
+            const active = revealActive('slide-direction');
             return (
               <div className="mission-col" key={col.title}>
                 <Reveal variant="pop" delay={220 + ci * 180} active={active}>
@@ -289,7 +289,7 @@ export default function About() {
         <HeroPhoto image={ABOUT_MISSION_IMAGE} />
         <div className="values-overlay" aria-hidden="true" />
         {(() => {
-          const active = activeIndex === SLIDE_IDS.indexOf('slide-values');
+          const active = revealActive('slide-values');
           return (
             <>
               <div className="wrap direction-heading">
@@ -319,7 +319,7 @@ export default function About() {
         <HeroPhoto image={ABOUT_MISSION_IMAGE} />
         <div className="partners-overlay" aria-hidden="true" />
         {(() => {
-          const active = activeIndex === SLIDE_IDS.indexOf('slide-partners');
+          const active = revealActive('slide-partners');
           return (
             <div className="wrap partners-layout">
               <Reveal variant="up" delay={100} active={active}>
