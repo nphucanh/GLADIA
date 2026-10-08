@@ -44,7 +44,6 @@ export default function Projects() {
     <>
       <PageHeader
         title="Dự án"
-        subtitle="Danh sách dự án hiển thị trên trang Dự án và Trang chủ."
         actions={
           <Link to={`${ADMIN_BASE}/du-an/moi`} className="a-btn a-btn--primary">
             <Plus size={16} /> Thêm dự án

@@ -46,7 +46,6 @@ export default function News() {
     <>
       <PageHeader
         title="Tin tức"
-        subtitle="Bài viết trên trang Tin tức và mục Tin tức ở Trang chủ."
         actions={
           <Link to={`${ADMIN_BASE}/tin-tuc/moi`} className="a-btn a-btn--primary">
             <Plus size={16} /> Viết bài mới

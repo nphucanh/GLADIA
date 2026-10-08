@@ -27,7 +27,6 @@ export default function FloorPlans() {
     <>
       <PageHeader
         title="Mặt bằng"
-        subtitle="Bộ mặt bằng mặc định theo loại hình — áp dụng cho mọi dự án cùng loại, trừ dự án có mặt bằng riêng."
       />
       <div className="a-tabs a-tabs--line" role="tablist">
         {BUILDING_TYPES.map((b) => (

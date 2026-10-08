@@ -25,7 +25,7 @@ export default function Contacts() {
 
   return (
     <>
-      <PageHeader title="Yêu cầu tư vấn" subtitle="Gửi từ form Liên hệ trên website. Bấm vào một yêu cầu để xem chi tiết và cập nhật trạng thái." />
+      <PageHeader title="Yêu cầu tư vấn"  />
       <div className="a-card">
         <div className="a-toolbar">
           <Seg<ContactStatus | ''>
@@ -94,7 +94,7 @@ export default function Contacts() {
                       <td className="actions">
                         <div className="a-row-actions">
                           <button type="button" className="a-btn a-btn--secondary a-btn--sm">
-                            Xem & xử lý
+                            Xem
                           </button>
                         </div>
                       </td>
@@ -155,6 +155,7 @@ function ContactSheet({
   return (
     <Sheet
       open
+      variant="modal"
       onClose={onClose}
       title={row.full_name}
       subtitle={`Gửi lúc ${fmtDateTime(row.created_at)}`}
@@ -207,7 +208,7 @@ function ContactSheet({
       <Field label="Lời nhắn của khách">
         {row.message ? <p className="a-quote">{row.message}</p> : <span className="a-hint">Không có lời nhắn.</span>}
       </Field>
-      <Field label="Ghi chú nội bộ" hint="Chỉ quản trị viên thấy.">
+      <Field label="Ghi chú nội bộ" >
         <textarea className="a-input" rows={3} value={note} onChange={(e) => setNote(e.target.value)} placeholder="vd. Đã gọi, hẹn xem nhà mẫu thứ 7…" />
         {note !== (row.admin_note ?? '') && (
           <button type="button" className="a-btn a-btn--secondary a-btn--sm" style={{ alignSelf: 'flex-start' }} disabled={busy} onClick={saveNote}>

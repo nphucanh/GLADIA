@@ -130,7 +130,6 @@ export default function Stats() {
     <>
       <PageHeader
         title="Thống kê lượt quan tâm"
-        subtitle="Lượt xem trang chi tiết của từng dự án và bài viết trên website, kèm số yêu cầu tư vấn theo dự án."
         actions={
           <>
             <RefreshButton loading={stats.loading} onClick={refresh} updatedAt={updatedAt} />

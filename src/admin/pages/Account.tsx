@@ -57,7 +57,6 @@ function ProfileCard({ email, onSaved }: { email: string; onSaved: () => void })
           <h2>
             <UserRound size={17} /> Thông tin cá nhân
           </h2>
-          <p className="a-card-sub">Họ tên và ảnh hiện ở góc trên, trong lời chào và danh sách người quản trị.</p>
         </div>
       </div>
       <div className="a-card-body a-form">
