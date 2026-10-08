@@ -8,13 +8,15 @@ export interface AdminSession {
 }
 
 /** Có trong admin_users và đang hoạt động (tài khoản bị tạm khoá → không còn quyền). */
-async function isAdminUser(userId: string) {
+/** Trạng thái quản trị của một tài khoản: 'ok' | 'none' (chưa được cấp quyền) | 'locked' (bị tạm khoá). */
+async function adminStatus(userId: string): Promise<'ok' | 'none' | 'locked'> {
   // select('*'): vẫn chạy với database chưa có cột is_active (chưa chạy update-nguoi-dung.sql)
   const row = unwrap<{ user_id: string; is_active?: boolean } | null>(
     await db().from('admin_users').select('*').eq('user_id', userId).maybeSingle(),
   );
-  return row !== null && row.is_active !== false;
+  return row === null ? 'none' : row.is_active === false ? 'locked' : 'ok';
 }
+const isAdminUser = async (userId: string) => (await adminStatus(userId)) === 'ok';
 
 /** Lỗi captcha từ Supabase Auth (thiếu / sai / hết hạn mã xác minh). */
 const isCaptchaError = (e: { message?: string; code?: string } | null) => !!e && (/captcha/i.test(e.message ?? '') || /captcha/i.test(e.code ?? ''));
@@ -32,10 +34,28 @@ export async function signIn(email: string, password: string, captchaToken?: str
   });
   if (isCaptchaError(error)) throw new ApiError(CAPTCHA_MESSAGE, 'validation', error);
   if (error?.status === 429) throw new ApiError('Đăng nhập sai quá nhiều lần. Vui lòng đợi vài phút rồi thử lại.', 'unauthorized', error);
+  if (error?.code === 'email_not_confirmed')
+    throw new ApiError(
+      'Tài khoản chưa xác nhận email. Bấm link trong email xác nhận, hoặc nhờ chủ sở hữu vào Supabase › Authentication › Users › chọn tài khoản › "Confirm email".',
+      'unauthorized',
+      error,
+    );
+  if (error?.code === 'user_banned') throw new ApiError('Tài khoản đăng nhập này đã bị chặn trên Supabase.', 'unauthorized', error);
+  if (error && error.code !== 'invalid_credentials' && (error.status ?? 0) >= 500)
+    throw new ApiError('Máy chủ đăng nhập đang lỗi, vui lòng thử lại sau ít phút.', 'network', error);
   if (error || !data.session) throw new ApiError('Email hoặc mật khẩu không đúng.', 'unauthorized', error);
-  if (!(await isAdminUser(data.user.id))) {
+  const status = await adminStatus(data.user.id).catch((e) => {
+    void db().auth.signOut();
+    throw e;
+  });
+  if (status !== 'ok') {
     await db().auth.signOut();
-    throw new ApiError('Tài khoản này không có quyền quản trị hoặc đã bị tạm khoá.', 'unauthorized');
+    throw new ApiError(
+      status === 'locked'
+        ? 'Tài khoản này đang bị tạm khoá. Liên hệ chủ sở hữu trang quản trị để mở khoá.'
+        : 'Tài khoản này chưa được cấp quyền quản trị. Nhờ chủ sở hữu vào Người quản trị › Thêm quản trị viên › Cấp quyền cho tài khoản có sẵn.',
+      'unauthorized',
+    );
   }
   return { user: data.user, session: data.session };
 }

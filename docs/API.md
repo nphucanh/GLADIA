@@ -56,6 +56,9 @@ supabase/seed.sql         dữ liệu mẫu (sinh bởi scripts/seed/generate.mj
    ```
    (`<ref>` là phần đầu của `VITE_SUPABASE_URL`.) Function dùng khoá `service_role` do Supabase tự cấp trên máy chủ,
    không bao giờ nằm ở trình duyệt. Chưa deploy thì vẫn "cấp quyền cho tài khoản có sẵn" được.
+   Tạo bằng Dashboard › Edge Functions › *Via Editor* thì Supabase có thể tự đặt đường dẫn khác tên (vd. tên
+   `admin-create-user` nhưng URL `…/functions/v1/smooth-processor`): khai báo `VITE_ADMIN_CREATE_USER_FN=smooth-processor`
+   trong `.env` rồi chạy lại `npm run dev` / build lại. Nhớ tắt *Enforce JWT verification* của function.
 4. Nên tắt tự đăng ký: Authentication → Providers → Email → bỏ chọn *Allow new users to sign up*. Không bắt buộc,
    vì user thường không có quyền gì thêm, nhưng tắt đi cho gọn.
 

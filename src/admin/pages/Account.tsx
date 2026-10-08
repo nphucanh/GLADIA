@@ -115,12 +115,24 @@ function ProfileCard({ email, onSaved }: { email: string; onSaved: () => void })
   );
 }
 
+/** Ô mật khẩu có nút con mắt riêng để ẩn/hiện. */
+function PasswordInput({ id, autoComplete, value, onChange }: { id: string; autoComplete: string; value: string; onChange: (v: string) => void }) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="a-pw">
+      <input id={id} className="a-input" type={show ? 'text' : 'password'} autoComplete={autoComplete} value={value} onChange={(e) => onChange(e.target.value)} />
+      <button type="button" className="a-pw-eye" onClick={() => setShow((v) => !v)} aria-label={show ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'} aria-pressed={show}>
+        {show ? <EyeOff size={16} /> : <Eye size={16} />}
+      </button>
+    </div>
+  );
+}
+
 function PasswordCard({ email }: { email: string }) {
   const { profile } = useAdmin();
   const [current, setCurrent] = useState('');
   const [next, setNext] = useState('');
   const [again, setAgain] = useState('');
-  const [show, setShow] = useState(false);
   const [touched, setTouched] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const captcha = useRef<CaptchaHandle>(null);
@@ -149,7 +161,6 @@ function PasswordCard({ email }: { email: string }) {
     }
   }
 
-  const type = show ? 'text' : 'password';
   return (
     <div className="a-card">
       <div className="a-card-head">
@@ -171,10 +182,10 @@ function PasswordCard({ email }: { email: string }) {
       >
         <input type="email" autoComplete="username" value={email} readOnly hidden />
         <Field label="Mật khẩu hiện tại" htmlFor="pw-current" error={touched ? errors.current : null}>
-          <input id="pw-current" className="a-input" type={type} autoComplete="current-password" value={current} onChange={(e) => setCurrent(e.target.value)} />
+          <PasswordInput id="pw-current" autoComplete="current-password" value={current} onChange={setCurrent} />
         </Field>
         <Field label="Mật khẩu mới" htmlFor="pw-next" error={touched ? errors.next : null}>
-          <input id="pw-next" className="a-input" type={type} autoComplete="new-password" value={next} onChange={(e) => setNext(e.target.value)} />
+          <PasswordInput id="pw-next" autoComplete="new-password" value={next} onChange={setNext} />
         </Field>
         {next && (
           <div className={`a-pw-meter s${strength.score}`} aria-live="polite">
@@ -188,12 +199,8 @@ function PasswordCard({ email }: { email: string }) {
           </div>
         )}
         <Field label="Nhập lại mật khẩu mới" htmlFor="pw-again" error={touched ? errors.again : null}>
-          <input id="pw-again" className="a-input" type={type} autoComplete="new-password" value={again} onChange={(e) => setAgain(e.target.value)} />
+          <PasswordInput id="pw-again" autoComplete="new-password" value={again} onChange={setAgain} />
         </Field>
-        <label className="a-check">
-          <input type="checkbox" checked={show} onChange={(e) => setShow(e.target.checked)} />
-          {show ? <EyeOff size={14} /> : <Eye size={14} />} Hiện mật khẩu
-        </label>
         {needCaptcha && (
           <Field label="Xác minh bạn không phải robot">
             <Captcha ref={captcha} onToken={setCaptchaToken} />

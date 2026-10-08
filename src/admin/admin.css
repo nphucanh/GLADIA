@@ -362,6 +362,11 @@ textarea.a-input.sm{height:auto;padding:7px 9px;}
 .a-input-affix{position:relative;}
 .a-input-affix span{position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--a-faint);font-size:.84rem;pointer-events:none;}
 .a-input-affix .a-input{padding-right:58px;}
+.a-pw{position:relative;}
+.a-pw .a-input{padding-right:44px;}
+.a-pw-eye{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:34px;height:34px;display:grid;place-items:center;border:0;border-radius:7px;background:none;color:var(--a-muted);cursor:pointer;}
+.a-pw-eye:hover{color:var(--a-ink);background:var(--a-hover);}
+.a-pw-eye:focus-visible{outline:none;box-shadow:0 0 0 3px var(--a-ring);}
 .a-form-foot{
   position:sticky;bottom:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:10px;
   padding:14px 20px;border-top:1px solid var(--a-line);background:var(--a-surface);box-shadow:0 -6px 16px rgba(34,27,22,.06);

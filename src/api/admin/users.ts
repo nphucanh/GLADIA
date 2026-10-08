@@ -6,6 +6,12 @@ import { ApiError, db, toApiError } from '../client';
 import type { AdminRole, AdminUserRow } from '../rows';
 import { ensure, isValidEmail } from '../validate';
 
+/**
+ * Đường dẫn (slug) của Edge Function tạo tài khoản. Mặc định "admin-create-user"; tạo bằng Dashboard › Via Editor
+ * mà Supabase tự đặt slug khác (vd. "smooth-processor") thì khai báo VITE_ADMIN_CREATE_USER_FN trong .env.
+ */
+const CREATE_USER_FN = import.meta.env.VITE_ADMIN_CREATE_USER_FN?.trim() || 'admin-create-user';
+
 export interface NewAdminInput {
   email: string;
   full_name: string;
@@ -50,7 +56,7 @@ export function validateNewAdmin(u: NewAdminInput) {
  */
 export async function canCreateAccounts(): Promise<boolean> {
   try {
-    const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-create-user`, { method: 'OPTIONS' });
+    const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${CREATE_USER_FN}`, { method: 'OPTIONS' });
     return res.ok;
   } catch {
     return false;
@@ -64,7 +70,7 @@ export async function addUser(u: NewAdminInput): Promise<void> {
     await rpc('admin_grant_user', { p_email: u.email.trim(), p_role: u.role, p_full_name: u.full_name });
     return;
   }
-  const { error } = await db().functions.invoke('admin-create-user', {
+  const { error } = await db().functions.invoke(CREATE_USER_FN, {
     body: { email: u.email.trim(), password: u.password, full_name: u.full_name, role: u.role },
   });
   if (!error) return;
